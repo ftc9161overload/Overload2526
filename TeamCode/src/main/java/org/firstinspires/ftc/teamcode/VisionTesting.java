@@ -71,6 +71,7 @@ public class VisionTesting extends OpMode{
 
                 // Now take action based on this tag's ID code, or store info for later action.
                 telemetry.addData("ID CODE: ", code);
+                /*
                 telemetry.addLine("ID CODE INDEX: " + detections.indexOf(detected) + " LOOKUP: ");
                 telemetry.addData("metadata: ",detected.metadata.toString());
                 telemetry.addData("center",detected.center);
@@ -81,6 +82,14 @@ public class VisionTesting extends OpMode{
                 telemetry.addData("frameAcquisitionNanoTime",detected.frameAcquisitionNanoTime);
                 telemetry.addData("hamming", detected.hamming);
                 telemetry.addData("robotPose",detected.robotPose);
+                 */
+                telemetry.addData("X: ", String.valueOf(detected.ftcPose.x));
+                telemetry.addData("Y: ", String.valueOf(detected.ftcPose.y));
+                telemetry.addData("Z: ", String.valueOf(detected.ftcPose.z));
+
+                telemetry.addData("P: ", String.valueOf(detected.ftcPose.pitch));
+                telemetry.addData("R: ", String.valueOf(detected.ftcPose.roll));
+                telemetry.addData("Y: ", String.valueOf(detected.ftcPose.yaw));
             }
         }
         telemetry.update();
