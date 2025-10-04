@@ -83,13 +83,13 @@ public class VisionTesting extends OpMode{
                 telemetry.addData("hamming", detected.hamming);
                 telemetry.addData("robotPose",detected.robotPose);
                  */
-                telemetry.addData("X: ", String.valueOf(detected.ftcPose.x));
-                telemetry.addData("Y: ", String.valueOf(detected.ftcPose.y));
-                telemetry.addData("Z: ", String.valueOf(detected.ftcPose.z));
+                telemetry.addData("X", String.valueOf(detected.ftcPose.x));
+                telemetry.addData("Y", String.valueOf(detected.ftcPose.y));
+                telemetry.addData("Z", String.valueOf(detected.ftcPose.z));
 
-                telemetry.addData("P: ", String.valueOf(detected.ftcPose.pitch));
-                telemetry.addData("R: ", String.valueOf(detected.ftcPose.roll));
-                telemetry.addData("Y: ", String.valueOf(detected.ftcPose.yaw));
+                telemetry.addData("P", String.valueOf(detected.ftcPose.pitch));
+                telemetry.addData("R", String.valueOf(detected.ftcPose.roll));
+                telemetry.addData("Y", String.valueOf(detected.ftcPose.yaw));
             }
         }
         telemetry.update();
