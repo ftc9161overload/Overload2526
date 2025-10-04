@@ -16,6 +16,24 @@ public class Timer {
     public Timer() {reset();}
 
     /**
+     * Checks if a certain amount of time has elapsed.
+     * @param time The time to check for in nanoseconds.
+     * @return True if the time has elapsed, false otherwise.
+     */
+    public boolean hasElapsed(long time) {
+        return getTime() >= time;
+    }
+
+    /**
+     * Checks if a certain amount of time has elapsed in seconds.
+     * @param time The time to check for in seconds.
+     * @return True if the time has elapsed, false otherwise.
+     */
+    public boolean hasElapsedSeconds(double time) {
+        return getTimeSeconds() >= time;
+    }
+
+    /**
      * Resets the timer.
      */
     public void reset() {

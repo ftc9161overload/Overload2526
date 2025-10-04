@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -20,6 +21,7 @@ public class VisionSubsystem implements Subsystem {
     private final Telemetry telemetry;
     private boolean debugMode = false;
 
+    private Timer timer = new Timer();
     private ArrayList<AprilTagDetection> detections;  // list of all current detections
 
     public VisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -94,9 +96,9 @@ public class VisionSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        // happens every loop
-
+        if (timer.hasElapsedSeconds(1.0)) {
+            findPosition();
+            timer.reset();
+        }
     }
-
-
 }
