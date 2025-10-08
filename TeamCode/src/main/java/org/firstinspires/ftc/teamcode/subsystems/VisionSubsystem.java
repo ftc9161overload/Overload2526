@@ -22,7 +22,6 @@ public class VisionSubsystem implements Subsystem {
     private boolean debugMode = false;
 
     private Timer timer = new Timer();
-    private ArrayList<AprilTagDetection> detections;  // list of all current detections
 
     public VisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -62,28 +61,38 @@ public class VisionSubsystem implements Subsystem {
         return -1;
     }
 
+    public AprilTagDetection getFirstTagData() {
+        ArrayList<AprilTagDetection> detections = getDetections();
+        if (!detections.isEmpty()) {
+            return detections.get(0);
+        }
+        return null;
+    }
+
     public void findPosition() {
-        int tagId = getFirstTagId();
-        if (tagId != -1) {
+        AprilTagDetection tagData = getFirstTagData();
+        if (tagData != null) {
             // Logic to determine position based on tag ID
-            if (tagId == 20){
+            if (tagData.id == 20 || true){
                 // determine position if blue tag is seen
-                double x = detections.get(0).ftcPose.x;
-                double y = detections.get(0).ftcPose.y;
-                double yaw = detections.get(0).ftcPose.yaw;
+                double x = tagData.ftcPose.x;
+                double y = tagData.ftcPose.y;
+                double yaw = tagData.ftcPose.yaw;
+                double realYaw = Math.toDegrees(Math.atan2(x,y));
                 
                 double hypotenuse = Math.hypot(x, y);
                 
                 if (debugMode) {
-                    telemetry.addData("Tag ID: ", tagId);
+                    telemetry.addData("Tag ID: ", tagData.id);
                     telemetry.addData("X: ", x);
                     telemetry.addData("Y: ", y);
                     telemetry.addData("Yaw: ", yaw);
+                    telemetry.addData("Real Yaw: ", realYaw);
                     telemetry.addData("Hypotenuse: ", hypotenuse);
                     telemetry.update();
                 }
 
-            } else if (tagId == 24){
+            } else if (tagData.id == 24){
                 // determine position if red tag is seen
             }
         }
