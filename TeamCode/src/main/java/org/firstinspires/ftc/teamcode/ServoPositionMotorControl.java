@@ -31,6 +31,19 @@ public class ServoPositionMotorControl extends OpMode {
     private double M2_POWER = -0.6;
     private double M3_POWER = 0.3;
 
+    private double distCW;
+    private double distCW2;
+    private double distCCW2;
+    private double distCCW;
+    private double currentPos;
+
+    private double currentPos2;
+    private double targetPos2;
+    private double targetPos;
+
+    private final double S1Offset = (double) 30/360*3.3;
+    private final double S2Offset = (double) 330/360*3.3;
+
     AnalogInput S1_In;
     AnalogInput S2_In;
     AnalogInput S3_In;
@@ -62,17 +75,40 @@ public class ServoPositionMotorControl extends OpMode {
     @Override
     public void loop() {
 
+        currentPos = (S1_In.getVoltage() + S1Offset)%3.3;
+        targetPos = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x)/2/Math.PI*3.3;
+
+        currentPos2 = (S2_In.getVoltage() + S2Offset)%3.3;
+        targetPos2 = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x)/2/Math.PI*3.3;
+
+        distCW = 3.3 - Math.abs(currentPos - targetPos);
+        distCCW = Math.abs(currentPos - targetPos);
+
+        distCW2 = 3.3 - Math.abs(currentPos2 - targetPos2);
+        distCCW2 = Math.abs(currentPos2 - targetPos2);
+
+        if (distCW < distCCW){
+            telemetry.addLine("CW < CCW");
+            s1Con.setTarget(currentPos + distCW);
+        } else {
+            s1Con.setTarget(currentPos - distCCW);
+        }
+
+        if(distCW2 < distCCW2) {
+            telemetry.addLine("CW2 < CCW2");
+            s2Con.setTarget(currentPos2 + distCW2);
+        } else {
+            s2Con.setTarget(currentPos2 - distCCW2);
+        }
 
 
-        s1Con.setTarget(Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x)/2/Math.PI);
-        s2Con.setTarget(Math.atan2(gamepad1.right_stick_y, gamepad1.right_stick_x)/2/Math.PI);
+        s1Con.update(currentPos );
+        s2Con.update(currentPos2 );
 
-        s1Con.update(S1_In.getVoltage()/3.3);
-        s2Con.update(S2_In.getVoltage()/3.3);
-
-        s1.setPower(s1Con.runPDFL(0.1));
-        s2.setPower(s2Con.runPDFL(0.1));
-
+        s1.setPower(-s1Con.runPDFL(0.05));
+        s2.setPower(-s2Con.runPDFL(0.05));
+//        s1.setPower(0);
+//        s2.setPower(0);
 
 
         //s3.setPosition(S3_POS);
@@ -97,20 +133,30 @@ public class ServoPositionMotorControl extends OpMode {
 
 
         // Telemetry for debugging
-        telemetry.addData("Servo 1 Pos", S1_POS);
-        telemetry.addData("Servo 2 Pos", S2_POS);
-        telemetry.addData("Servo 3 Pos", S3_POS);
+        telemetry.addData("Servo 1 Pos", currentPos);
+        telemetry.addData("Servo 2 Pos", currentPos2);
+//        telemetry.addData("Servo 3 Pos", S3_POS);
 
         telemetry.addData("Servo 1 Input", S1_In.getVoltage());
         telemetry.addData("Servo 2 Input", S2_In.getVoltage());
 
+        telemetry.addData("Servo 1 Target", targetPos);
+        telemetry.addData("Servo 2 Target", targetPos2);
+
         telemetry.addData("Servo 1 Controller output: ", s1Con.runPDFL(0.05));
         telemetry.addData("Servo 2 Controller output: ", s2Con.runPDFL(0.05));
+        telemetry.addData("S1 Controller target: ", s1Con.getTarget());
+        telemetry.addData("S2 Controller target: ", s2Con.getTarget());
         //telemetry.addData("Servo 3 Input", S3_In.getVoltage());
+
+        telemetry.addData("Counter Clockwise distance 1: ", distCCW);
+        telemetry.addData("Counter Clockwise distance 2: ", distCCW2);
+        telemetry.addData("Clockwise distance 1: ", distCW);
+        telemetry.addData("Clockwise distance 2: ", distCW2);
 
         telemetry.addData("Motor 1 Power", M1_POWER);
         telemetry.addData("Motor 2 Power", M2_POWER);
-        telemetry.addData("Motor 3 Power", M3_POWER);
+//        telemetry.addData("Motor 3 Power", M3_POWER);
 
 
         telemetry.update();

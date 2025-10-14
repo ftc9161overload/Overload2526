@@ -131,4 +131,6 @@ public class PDFLController {
      * @return The lower limit
      */
     public double getL() {return l;}
+
+    public double getTarget() {return target;}
 }
