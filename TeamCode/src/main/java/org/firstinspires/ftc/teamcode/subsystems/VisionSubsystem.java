@@ -75,17 +75,22 @@ public class VisionSubsystem implements Subsystem {
             // Logic to determine position based on tag ID
             if (tagData.id == 20 || true){
                 // determine position if blue tag is seen
-                double x = tagData.ftcPose.x;
-                double y = tagData.ftcPose.y;
+                double camx = tagData.ftcPose.x;
+                double camy = tagData.ftcPose.y;
                 double yaw = tagData.ftcPose.yaw;
-                double realYaw = Math.toDegrees(Math.atan2(x,y));
-                
-                double hypotenuse = Math.hypot(x, y);
-                
+                double centerYaw = Math.toDegrees(Math.atan2(camx,camy));
+                double realYaw = yaw - centerYaw;
+
+                double hypotenuse = Math.hypot(camx, camy);
+
+                double realX = hypotenuse * Math.sin(realYaw);
+                double realY = hypotenuse * Math.cos(realYaw);
+
                 if (debugMode) {
                     telemetry.addData("Tag ID: ", tagData.id);
-                    telemetry.addData("X: ", x);
-                    telemetry.addData("Y: ", y);
+                    telemetry.addData("Real X: ", realX);
+                    telemetry.addData("Real Y: ", realY);
+                    telemetry.addData("Center Yaw: ", centerYaw);
                     telemetry.addData("Yaw: ", yaw);
                     telemetry.addData("Real Yaw: ", realYaw);
                     telemetry.addData("Hypotenuse: ", hypotenuse);
