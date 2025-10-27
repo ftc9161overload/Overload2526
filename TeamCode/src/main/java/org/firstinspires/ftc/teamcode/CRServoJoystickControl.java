@@ -2,36 +2,34 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 
-@TeleOp(name = "CR Servo Joystick Control", group = "TeleOp")
+
+@TeleOp(name = "Swerve Pod Tester", group = "TeleOp")
 public class CRServoJoystickControl extends OpMode {
 
-    private CRServo crServo;
+    private SwervePodSubsystem[] pods;
 
     @Override
     public void init() {
-        crServo = hardwareMap.get(CRServo.class, "armServo");
-        telemetry.addLine("Continuous Rotation Servo Initialized");
-        telemetry.addLine("Use left joystick up/down to control speed & direction");
-        telemetry.update();
+        SwervePodSubsystem fl = new SwervePodSubsystem(-156.0, 156.0, "fls", "flm", "flsai", hardwareMap); // Front Left
+        SwervePodSubsystem br = new SwervePodSubsystem(156.0, -156.0, "brs", "brm", "brsai", hardwareMap); // Back Right
+        pods = new SwervePodSubsystem[]{fl, br};
     }
 
     @Override
     public void loop() {
-        // Joystick value ranges from -1.0 (full back) to 1.0 (full forward)
-        double power = -gamepad1.left_stick_y; // invert so up = forward
-
-        // Apply directly to CR servo power
-        crServo.setPower(power);
+        for (SwervePodSubsystem pod : pods) {
+            pod.Update(gamepad1.left_stick_x,gamepad1.left_stick_y,gamepad1.right_stick_x);
+        }
 
         telemetry.addData("Joystick", gamepad1.left_stick_y);
-        telemetry.addData("Servo Power", power);
         telemetry.update();
     }
 
     @Override
     public void stop() {
-        crServo.setPower(0);
+
     }
 }
