@@ -11,14 +11,15 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 
 public class SwerveDrivetrain extends Drivetrain {
 
-    private SwervePodSubsystem fr,fl,br,bl;
+    private SwervePodSubsystem[] pods;
 
     public SwerveDrivetrain(HardwareMap hMap) {
-        // swerve pod subsystems       X       Y    Servo  Motor  AnaInput 
-        fr = new SwervePodSubsystem( 156.0,  156.0, "frs", "frm", "frsai", hMap); // Front Right
-        fl = new SwervePodSubsystem(-156.0,  156.0, "fls", "flm", "flsai", hMap); // Front Left
-        br = new SwervePodSubsystem( 156.0, -156.0, "brs", "brm", "brsai", hMap); // Back Right
-        //bl = new SwervePodSubsystem(-156.0, -156.0, "bls", "blm", "blsai", hMap); // Back Left
+        //SwervePodSubsystem fr = new SwervePodSubsystem( 156.0,  156.0, "frs", "frm", "frsai", hMap); // Front Right
+        SwervePodSubsystem fl = new SwervePodSubsystem(-156.0,  156.0, "fls", "flm", "flsai", hMap); // Front Left
+        SwervePodSubsystem br = new SwervePodSubsystem( 156.0, -156.0, "brs", "brm", "brsai", hMap); // Back Right
+        //SwervePodSubsystem bl = new SwervePodSubsystem(-156.0, -156.0, "bls", "blm", "blsai", hMap); // Back Left
+
+        pods = new SwervePodSubsystem[]{fl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
     }
     
     @Override

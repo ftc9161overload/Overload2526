@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.subsystems;
-import dev.nextftc.core.subsystems.Subsystem;
+
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class IntakeSubystem implements Subsystem {
+import dev.nextftc.core.subsystems.Subsystem;
+
+public class OuttakeSubystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
-    private final double motorSpeed = 0.2;
+    private final double motorSpeed = 0.8;
 
-    public IntakeSubystem(String motor, HardwareMap hMap){
+    public OuttakeSubystem(String motor, HardwareMap hMap){
         this.motor = hMap.get(DcMotorEx.class, motor);
     }
 

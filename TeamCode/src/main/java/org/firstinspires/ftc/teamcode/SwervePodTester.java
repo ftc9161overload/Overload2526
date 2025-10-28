@@ -2,12 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 
 
 @TeleOp(name = "Swerve Pod Tester", group = "TeleOp")
-public class CRServoJoystickControl extends OpMode {
+public class SwervePodTester extends OpMode {
 
     private SwervePodSubsystem[] pods;
 
@@ -24,7 +24,9 @@ public class CRServoJoystickControl extends OpMode {
             pod.Update(gamepad1.left_stick_x,gamepad1.left_stick_y,gamepad1.right_stick_x);
         }
 
-        telemetry.addData("Joystick", gamepad1.left_stick_y);
+        telemetry.addData("LX", gamepad1.left_stick_x);
+        telemetry.addData("LY", gamepad1.left_stick_y);
+        telemetry.addData("RX", gamepad1.right_stick_x);
         telemetry.update();
     }
 
