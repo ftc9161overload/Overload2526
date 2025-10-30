@@ -9,7 +9,7 @@ import dev.nextftc.core.subsystems.Subsystem;
 public class RotarySubsystem implements Subsystem {
     private final DcMotorEx motor;
     private boolean isOn = false;
-    private double motorSpeed = 0.5;
+    private double motorSpeed = 0.2;
 
     // Constructor for building a Rotary Subsystem object
     public RotarySubsystem(HardwareMap hMap, String motor) {
@@ -35,5 +35,10 @@ public class RotarySubsystem implements Subsystem {
         if(isOn) {
             motor.setPower(motorSpeed);
         }
+    }
+
+    public void moveOne() {
+        motor.setTargetPosition((int) (motor.getCurrentPosition() + 1000));
+        motor.setPower(motorSpeed);
     }
 }

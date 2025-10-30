@@ -26,6 +26,8 @@ public class RotaryOpMode extends OpMode {
             else {
                 rotary.setIsOn(true);
             }
+        } else if (gamepad1.bWasPressed()) {
+            rotary.moveOne();
         }
 
         rotary.periodic();
