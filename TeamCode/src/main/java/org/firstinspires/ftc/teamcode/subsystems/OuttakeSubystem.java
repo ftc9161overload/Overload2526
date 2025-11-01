@@ -3,12 +3,15 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Util.PDFLController;
+
 import dev.nextftc.core.subsystems.Subsystem;
 
 public class OuttakeSubystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
     private final double motorSpeed = 0.8;
+    private PDFLController mCon;
 
     public OuttakeSubystem(String motor, HardwareMap hMap){
         this.motor = hMap.get(DcMotorEx.class, motor);

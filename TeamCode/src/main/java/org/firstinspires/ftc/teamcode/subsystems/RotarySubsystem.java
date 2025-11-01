@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import dev.nextftc.core.subsystems.Subsystem;
 
 // This is basically the same as the intake and outtake because they're all just one motor spinning
@@ -10,6 +10,7 @@ public class RotarySubsystem implements Subsystem {
     private final DcMotorEx motor;
     private boolean isOn = false;
     private double motorSpeed = 0.2;
+    private PDFLController mCon;
 
     // Constructor for building a Rotary Subsystem object
     public RotarySubsystem(HardwareMap hMap, String motor) {
@@ -29,11 +30,12 @@ public class RotarySubsystem implements Subsystem {
         this.motorSpeed = motorSpeed;
     }
 
-    // Runs the motor if motorSpeed is true
+    // Runs the motor if isOn is true
     @Override
     public void periodic() {
         if(isOn) {
-            motor.setPower(motorSpeed);
+            mCon.update(motor.getCurrentPosition());
+            motor.setPower(mCon.runPDFL(0.5));
         }
     }
 
