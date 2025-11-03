@@ -18,7 +18,7 @@ public class SwervePodSubsystem {
     private DcMotorEx motor;
     private double mPow;
     private double servoOffset, currentPos, targetPos, distCW, distCCW;
-    private PDFLController sCon = new PDFLController(0.5, 0.0, 0.0, 0.05);
+    private PDFLController sCon = new PDFLController(0.5, 0.0, 0.0, 0.1);
     AnalogInput sIn;
 
     public SwervePodSubsystem(double x, double y, String servo, String motor, String analogInput, HardwareMap hMap) {
@@ -58,7 +58,7 @@ public class SwervePodSubsystem {
         }
 
         sCon.update(currentPos);
-        servo.setPower(-sCon.runPDFL(0.1));
+        servo.setPower(-sCon.runPDFL(0.05));
         motor.setPower(resultant.magnitude());
     }
     public void Update(double x, double y, double rotation) {
@@ -81,7 +81,7 @@ public class SwervePodSubsystem {
         }
 
         sCon.update(currentPos);
-        servo.setPower(-sCon.runPDFL(0.1));
+        servo.setPower(-sCon.runPDFL(0.05));
         motor.setPower(resultant.magnitude());
     }
 
@@ -90,7 +90,11 @@ public class SwervePodSubsystem {
     }
 
     public String debugText() {
-        return "Servo: " + sIn.getVoltage() + "\ntargetPos: " + targetPos + "\ndistCW: " + distCW + "\ndistCCW: " + distCCW + "\nPDFL: " + sCon.runPDFL(0.05);
+        return "Servo: " + sIn.getVoltage() + "\nCurrentPos: " + currentPos + "\ntargetPos: " + targetPos + "\ndistCW: " + distCW + "\ndistCCW: " + distCCW + "\nPDFL: " + sCon.runPDFL(0.05) + "\n Offset: " + servoOffset + "\n\nCWTarget: " + (currentPos + distCW) + "\nCCWTarget: " + (currentPos - distCCW);
+    }
+
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
+        motor.setZeroPowerBehavior(zeroPowerBehavior);
     }
 
 

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.Drivetrain;
 import com.pedropathing.math.Vector;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 
@@ -11,6 +12,7 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 
 public class SwerveDrivetrain extends Drivetrain {
 
+    //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
 
     public SwerveDrivetrain(HardwareMap hMap) {
@@ -28,6 +30,18 @@ public class SwerveDrivetrain extends Drivetrain {
         return new double[0];
     }
 
+    public void setMotorsToBrake() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        }
+
+    }
+
+    public void setMotorsToFloat() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        }
+    }
     @Override
     public void runDrive(double[] drivePowers) {
 

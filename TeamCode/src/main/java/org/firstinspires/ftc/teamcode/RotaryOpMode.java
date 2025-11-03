@@ -20,16 +20,8 @@ public class RotaryOpMode extends OpMode {
 
         // Should turn the rotary on/off on the press of the a button on gamepad 1
         if(gamepad1.aWasPressed()) {
-            if (rotary.getIsOn()) {
-                rotary.setIsOn(false);
-            }
-            else {
-                rotary.setIsOn(true);
-            }
-        } else if (gamepad1.bWasPressed()) {
-            rotary.moveOne();
+            rotary.nextChamber();
         }
-
         rotary.periodic();
     }
 }

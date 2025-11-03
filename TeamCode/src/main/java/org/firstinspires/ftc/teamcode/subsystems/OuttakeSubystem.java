@@ -31,7 +31,8 @@ public class OuttakeSubystem implements Subsystem {
     @Override
     public void periodic() {
         if (isOn){
-            motor.setPower(motorSpeed);
+            mCon.update(motor.getVelocity());
+            motor.setPower(mCon.runPDFL(.1));
         }
     }
 
