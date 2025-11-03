@@ -23,7 +23,7 @@ public class SwervePodTester extends OpMode {
     @Override
     public void loop() {
         for (SwervePodSubsystem pod : pods) {
-            pod.Update(-gamepad1.left_stick_x,gamepad1.left_stick_y,-gamepad1.right_stick_x);
+            pod.update(-gamepad1.left_stick_x,gamepad1.left_stick_y,-gamepad1.right_stick_x);
         }
 
         telemetry.addData("LX", gamepad1.left_stick_x);

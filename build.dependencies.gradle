@@ -18,7 +18,7 @@ dependencies {
 
     implementation 'com.pedropathing:ftc:2.0.1'
     implementation 'com.pedropathing:telemetry:0.0.6'
-    implementation 'com.bylazar:fullpanels:1.0.0'
+    implementation 'com.bylazar:fullpanels:1.0.9'
 
     implementation 'dev.nextftc:ftc:1.0.0'
     implementation 'dev.nextftc:hardware:1.0.0'
