@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode.Util;
 
 public class MathUtil {
     public static double piWraparound(double angle) {
-        angle %= Math.PI*2;
-        if (angle < 0) {
-            angle += Math.PI;
+        angle %= (2 * Math.PI);
+        if (angle <= -Math.PI) {
+            angle += 2 * Math.PI;
+        } else if (angle > Math.PI) {
+            angle -= 2 * Math.PI;
         }
-
-        angle -= Math.PI;
-
         return angle;
 
 

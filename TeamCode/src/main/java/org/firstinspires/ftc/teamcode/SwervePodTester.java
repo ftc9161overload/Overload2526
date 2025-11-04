@@ -16,8 +16,8 @@ public class SwervePodTester extends OpMode {
         SwervePodSubsystem fl = new SwervePodSubsystem(-156.0, 156.0, "fls", "flm", "flsai", hardwareMap); // Front Left
         SwervePodSubsystem br = new SwervePodSubsystem(156.0, -156.0, "brs", "brm", "brsai", hardwareMap); // Back Right
         pods = new SwervePodSubsystem[]{fl, br};
-        fl.setServoOffsetDeg(315);
-        br.setServoOffsetDeg(60);
+        fl.setServoOffsetDeg(315-90);
+        br.setServoOffsetDeg(60-90);
     }
 
     @Override
