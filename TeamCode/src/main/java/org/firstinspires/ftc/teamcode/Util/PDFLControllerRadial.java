@@ -8,7 +8,7 @@ package org.firstinspires.ftc.teamcode.Util;
  * @ author Asher Childress - 9161 Overlaod
  */
 
-public class PDFLController {
+public class PDFLControllerRadial {
 
     private double p,d,f,l;
 
@@ -27,7 +27,7 @@ public class PDFLController {
      * @param f The feedforward gain
      * @param l The lower limit of the controller
      */
-    public PDFLController(double p,double d,double f,double l) {
+    public PDFLControllerRadial(double p, double d, double f, double l) {
         this.p = p;
         this.d = d;
         this.f = f;
@@ -59,7 +59,7 @@ public class PDFLController {
      */
     public void update(double position) {
         oldError = error;
-        error = target-position;
+        error = MathUtil.piWraparound(target-position);
 
         oldTime = time;
         time = System.nanoTime();
@@ -134,5 +134,7 @@ public class PDFLController {
 
     public double getTarget() {return target;}
 
-
+    public String debugText() {
+        return "target: " + target + "\nerror: " + error + "\natTarget: ";
+    }
 }

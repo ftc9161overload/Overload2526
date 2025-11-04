@@ -16,8 +16,8 @@ public class SwervePodTester extends OpMode {
         SwervePodSubsystem fl = new SwervePodSubsystem(-156.0, 156.0, "fls", "flm", "flsai", hardwareMap); // Front Left
         SwervePodSubsystem br = new SwervePodSubsystem(156.0, -156.0, "brs", "brm", "brsai", hardwareMap); // Back Right
         pods = new SwervePodSubsystem[]{fl, br};
-        fl.setServoOffset(315);
-        br.setServoOffset(60);
+        fl.setServoOffsetDeg(315);
+        br.setServoOffsetDeg(60);
     }
 
     @Override
@@ -30,6 +30,7 @@ public class SwervePodTester extends OpMode {
         telemetry.addData("LY", gamepad1.left_stick_y);
         telemetry.addData("RX", gamepad1.right_stick_x);
         telemetry.addLine(pods[0].debugText());
+        telemetry.addLine(pods[1].debugText());
         telemetry.update();
 
     }

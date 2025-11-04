@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
@@ -20,9 +21,9 @@ public class SwervePodSubsystem {
     private double x,y, posOffset;
     private DcMotorEx motor;
     private double mPow;
-    private double servoOffset, currentPos, targetPos, distCW, distCCW;
+    private double servoOffset, currentPos, targetPos;
     public static double p = .5, d = 0, f = 0, l = 0.1;
-    private PDFLController sCon = new PDFLController(0.5, 0.0, 0.0, 0.1);
+    private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
     public static boolean pdflUpdate = false;
     AnalogInput sIn;
 
@@ -35,8 +36,8 @@ public class SwervePodSubsystem {
         posOffset = Math.atan2(this.x, this.y);
     }
 
-    public void setServoOffset(double offset) {
-        this.servoOffset = offset/360*3.3;
+    public void setServoOffsetDeg(double offset) {
+        this.servoOffset = offset/360*2*Math.PI;
     }
 
     public void setTargetPos() {
@@ -52,22 +53,14 @@ public class SwervePodSubsystem {
         Vector2D resultant = translational.add(rotational.rotate(posOffset + Math.PI/2));
 
 
-        currentPos = (sIn.getVoltage() + servoOffset)%3.3;
-//        targetPos = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x)/2/Math.PI*3.3;
-        targetPos = resultant.angle()/2/Math.PI*3.3;
-        distCW = 3.3 - Math.abs(currentPos - targetPos);
-        distCCW = Math.abs(currentPos - targetPos);
+        currentPos = (sIn.getVoltage()/3.3*2*Math.PI) - Math.PI;
+        targetPos = (resultant.angle()+servoOffset) % (2*Math.PI) - Math.PI;
 
 
-        if (distCW < distCCW){
-            sCon.setTarget(currentPos + distCW);
-        }
-        else {
-            sCon.setTarget(currentPos - distCCW);
-        }
+       sCon.setTarget(targetPos);
 
         sCon.update(currentPos);
-        servo.setPower(-sCon.runPDFL(0.05));
+        servo.setPower(sCon.runPDFL(0.05));
         motor.setPower(resultant.magnitude());
     }
 
@@ -81,7 +74,7 @@ public class SwervePodSubsystem {
     }
 
     public String debugText() {
-        return "Servo: " + sIn.getVoltage() + "\nCurrentPos: " + currentPos + "\ntargetPos: " + targetPos + "\ndistCW: " + distCW + "\ndistCCW: " + distCCW + "\nPDFL: " + sCon.runPDFL(0.05) + "\n Offset: " + servoOffset + "\n\nCWTarget: " + (currentPos + distCW) + "\nCCWTarget: " + (currentPos - distCCW);
+        return "Servo: " + sIn.getVoltage() + "\nCurrentPos: " + currentPos + "\ntargetPos: " + targetPos + "\nPDFL: "  + sCon.runPDFL(0.05) + "\n Offset: " + servoOffset + "\n\n" + sCon.debugText();
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
