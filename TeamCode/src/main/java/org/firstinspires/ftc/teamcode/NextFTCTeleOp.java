@@ -43,7 +43,18 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-
+        if (gamepad1.aWasReleased()){
+            intakeSubystem.toggle();
+        }
+        if (gamepad1.bWasReleased()){
+            outtakeSubystem.toggle();
+        }
+        if (gamepad1.yWasReleased()){
+            rotarySubsystem.setIsOn(true);
+        }
+        if (gamepad1.xWasReleased()){
+            rotarySubsystem.nextChamber();
+        }
 
     }
 

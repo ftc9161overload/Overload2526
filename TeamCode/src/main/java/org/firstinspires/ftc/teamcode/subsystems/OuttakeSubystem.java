@@ -27,6 +27,11 @@ public class OuttakeSubystem implements Subsystem {
         return isOn;
     }
 
+    // Toggles the isOn bool
+    public void toggle() {
+        this.isOn = !isOn;
+    }
+
     // Runs the motor if isOn is True with the motorSpeed
     @Override
     public void periodic() {
