@@ -2,11 +2,49 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.Drivetrain;
 import com.pedropathing.math.Vector;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
+
+/* Pedro Pathing Docs:  
+https://pedropathing.com/docs/pathing/custom/drivetrain
+*/
 
 public class SwerveDrivetrain extends Drivetrain {
+
+    //private constants SwerveDrivetrainConstants();
+    private SwervePodSubsystem[] pods;
+
+    public SwerveDrivetrain(HardwareMap hMap) {
+        //SwervePodSubsystem fr = new SwervePodSubsystem( 156.0,  156.0, "frs", "frm", "frsai", hMap); // Front Right
+        SwervePodSubsystem fl = new SwervePodSubsystem(-156.0,  156.0, "fls", "flm", "flsai", hMap); // Front Left
+        SwervePodSubsystem br = new SwervePodSubsystem( 156.0, -156.0, "brs", "brm", "brsai", hMap); // Back Right
+        //SwervePodSubsystem bl = new SwervePodSubsystem(-156.0, -156.0, "bls", "blm", "blsai", hMap); // Back Left
+
+        pods = new SwervePodSubsystem[]{fl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
+    }
+    
     @Override
     public double[] calculateDrive(Vector correctivePower, Vector headingPower, Vector pathingPower, double robotHeading) {
+        
         return new double[0];
+    }
+
+    public void setMotorsToBrake() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        }
+
+    }
+
+    public void setMotorsToFloat() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        }
+    }
+    @Override
+    public void runDrive(double[] drivePowers) {
+
     }
 
     @Override
@@ -16,11 +54,6 @@ public class SwerveDrivetrain extends Drivetrain {
 
     @Override
     public void breakFollowing() {
-
-    }
-
-    @Override
-    public void runDrive(double[] drivePowers) {
 
     }
 
