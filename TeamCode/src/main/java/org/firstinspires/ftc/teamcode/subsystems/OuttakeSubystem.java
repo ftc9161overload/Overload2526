@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Util.PDFLController;
 
 import dev.nextftc.core.subsystems.Subsystem;
 
+@Configurable
 public class OuttakeSubystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
@@ -54,5 +56,7 @@ public class OuttakeSubystem implements Subsystem {
             motor.setPower(0);
         }
     }
-
+    public String debug() {
+        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn;
+    }
 }
