@@ -1,16 +1,7 @@
-package org.firstinspires.ftc.teamcode.subsystems;
-
-import android.graphics.Color;
+package org.firstinspires.ftc.teamcode.Util;
 
 //import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
-import org.firstinspires.ftc.vision.opencv.ColorRange;
-import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 //@Config
 public class UniConstants {
@@ -18,16 +9,32 @@ public class UniConstants {
 
 
     //Drive
-    public static final String DRIVE_FRONT_LEFT_STRING = "LFM", DRIVE_FRONT_RIGHT_STRING = "RFM", DRIVE_BACK_LEFT_STRING = "LRM", DRIVE_BACK_RIGHT_STRING = "RRM";
-    public static final String DRIVE_FRONT_LEFT_SERVO_STRING = "LFS", DRIVE_FRONT_RIGHT_SERVO_STRING = "RFS", DRIVE_BACK_LEFT_SERVO_STRING = "LRS", DRIVE_BACK_RIGHT_SERVO_STRING = "RRS";
-    public static final String DRIVE_FRONT_LEFT_ANALOG_INPUT = "LFA", DRIVE_FRONT_RIGHT_ANALOG_INPUT = "RFA", DRIVE_BACK_LEFT_ANALOG_INPUT = "LRA", DRIVE_BACK_RIGHT_ANALOG_INPUT = "RRA";
+    public static final String
+            DRIVE_FRONT_LEFT_STRING = "LFM", // Exp - 0
+            DRIVE_FRONT_RIGHT_STRING = "RFM", // Ctrl - 0
+            DRIVE_BACK_LEFT_STRING = "LRM", // Exp - 1
+            DRIVE_BACK_RIGHT_STRING = "RRM"; // Ctrl - 1
+    public static final String
+            DRIVE_FRONT_LEFT_SERVO_STRING = "LFS", // Exp - 0
+            DRIVE_FRONT_RIGHT_SERVO_STRING = "RFS",  // Ctrl - 0
+            DRIVE_BACK_LEFT_SERVO_STRING = "LRS", // Exp - 1
+            DRIVE_BACK_RIGHT_SERVO_STRING = "RRS"; // Ctrl - 1
+    public static final String
+            DRIVE_FRONT_LEFT_ANALOG_INPUT = "LFA", // Exp - 0
+            DRIVE_FRONT_RIGHT_ANALOG_INPUT = "RFA", // Ctrl - 0
+            DRIVE_BACK_LEFT_ANALOG_INPUT = "LRA", // Exp  - 1
+            DRIVE_BACK_RIGHT_ANALOG_INPUT = "RRA"; // Ctrl - 1
     public static final DcMotorEx.Direction DRIVE_FRONT_LEFT_DIRECTION = DcMotorEx.Direction.FORWARD;
     public static final DcMotorEx.Direction DRIVE_FRONT_RIGHT_DIRECTION = DcMotorEx.Direction.REVERSE;
     public static final DcMotorEx.Direction DRIVE_BACK_LEFT_DIRECTION = DcMotorEx.Direction.FORWARD;
     public static final DcMotorEx.Direction DRIVE_BACK_RIGHT_DIRECTION = DcMotorEx.Direction.REVERSE;
 
 
-    public static final String ROTARY_MOTOR_STRING = "RoM", OUTTAKE_MOTOR_STRING = "OuM", INTAKE_MOTOR_STRING = "InM";
+    public static final String
+            ROTARY_MOTOR_STRING = "RoM", // Exp - 3
+            OUTTAKE_MOTOR_STRING = "OuM", // Exp - 2
+            INTAKE_MOTOR_STRING = "InM",// Ctrl - 2
+            OUTTAKE_SERVO_STRING = "OuS"; // Exp - 2
 
     public static final  DcMotorEx.ZeroPowerBehavior ROTARY_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.BRAKE, OUTTAKE_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.FLOAT, INTAKE_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.BRAKE;
     public static final DcMotorEx.RunMode ROTARY_RUN_MODE = DcMotorEx.RunMode.RUN_USING_ENCODER, OUTTAKE_RUN_MODE = DcMotorEx.RunMode.RUN_USING_ENCODER;

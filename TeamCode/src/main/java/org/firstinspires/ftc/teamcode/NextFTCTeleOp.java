@@ -2,20 +2,21 @@ package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubystem;
 import org.firstinspires.ftc.teamcode.subsystems.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.UniConstants;
+import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.ftc.NextFTCOpMode;
-import kotlin.Unit;
 
 @TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
+
+    public static double intakePower = 0.1;
+    public static double outtakePower = 0.1;
 
 
     private static RotarySubsystem rotarySubsystem;
@@ -39,23 +40,28 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
 
+
     }
 
     @Override
     public void onUpdate() {
-        if (gamepad1.aWasReleased()){
-            intakeSubystem.toggle();
+        if (gamepad1.a){
+            intakeSubystem.debug(intakePower);
+        } else  {
+            intakeSubystem.debug(0);
         }
-        if (gamepad1.bWasReleased()){
-            outtakeSubystem.toggle();
-        }
-        if (gamepad1.yWasReleased()){
-            rotarySubsystem.setIsOn(true);
-        }
-        if (gamepad1.xWasReleased()){
-            rotarySubsystem.nextChamber();
+        if (gamepad1.b){
+            outtakeSubystem.set(true);
+        } else {
+            outtakeSubystem.set(false);
         }
 
+        outtakeSubystem.setVel(outtakePower);
+//        if (gamepad1.x) {
+//            rotarySubsystem.de
+//        }
+
+        outtakeSubystem.periodic();
     }
 
 }

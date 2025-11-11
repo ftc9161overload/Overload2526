@@ -30,6 +30,10 @@ public class IntakeSubystem implements Subsystem {
         this.isOn = !isOn;
     }
 
+    public void debug(double power) {
+        motor.setPower (power);
+    }
+
     // Runs the motor if isOn is True with the motorSpeed
     @Override
     public void periodic() {
