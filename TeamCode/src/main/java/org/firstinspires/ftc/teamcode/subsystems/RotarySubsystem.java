@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import dev.nextftc.core.subsystems.Subsystem;
 
+@Configurable
 // This is basically the same as the intake and outtake because they're all just one motor spinning
 public class RotarySubsystem implements Subsystem {
     private final DcMotorEx motor;
@@ -88,6 +90,10 @@ public class RotarySubsystem implements Subsystem {
             mCon.update(currentPosition);
             motor.setPower(mCon.runPDFL(1));
         }
+
+    }
+    public String debug() {
+        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition;
     }
 
 }

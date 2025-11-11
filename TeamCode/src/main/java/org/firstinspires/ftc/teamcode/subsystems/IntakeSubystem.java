@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 import dev.nextftc.core.subsystems.Subsystem;
+
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 
+@Configurable
 public class IntakeSubystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
@@ -37,6 +41,10 @@ public class IntakeSubystem implements Subsystem {
             mCon.update(motor.getVelocity());
             motor.setPower(mCon.runPDFL(.1));
         }
+    }
+
+    public String debug() {
+        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn;
     }
 
 }
