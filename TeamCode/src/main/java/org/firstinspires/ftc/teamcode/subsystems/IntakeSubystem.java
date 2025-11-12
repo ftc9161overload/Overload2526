@@ -5,7 +5,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 
 @Configurable
@@ -13,7 +12,7 @@ public class IntakeSubystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
     private final double motorSpeed = 0.2;
-    private PDFLController mCon;
+    private PDFLController mCon = new PDFLController(0.1, 0,0,0);
 
     public IntakeSubystem(String motor, HardwareMap hMap){
         this.motor = hMap.get(DcMotorEx.class, motor);
@@ -46,8 +45,7 @@ public class IntakeSubystem implements Subsystem {
             motor.setPower(mCon.runPDFL(.1));
         }
     }
-
-    public String debug() {
+    public String debugText() {
         return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn;
     }
 

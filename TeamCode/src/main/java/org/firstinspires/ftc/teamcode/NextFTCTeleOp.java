@@ -30,6 +30,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         intakeSubystem = new IntakeSubystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
         outtakeSubystem = new OuttakeSubystem(UniConstants.OUTTAKE_MOTOR_STRING, hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+
+        rotarySubsystem.setIsOn(true);
     }
 
     @Override
@@ -55,13 +57,21 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         } else {
             outtakeSubystem.set(false);
         }
+        if (gamepad1.xWasReleased()) {
+            rotarySubsystem.nextChamber();
+        }
 
         outtakeSubystem.setVel(outtakePower);
 //        if (gamepad1.x) {
 //            rotarySubsystem.de
 //        }
+        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
+        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
+        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
+        telemetry.update();
 
         outtakeSubystem.periodic();
+        rotarySubsystem.periodic();
     }
 
 }

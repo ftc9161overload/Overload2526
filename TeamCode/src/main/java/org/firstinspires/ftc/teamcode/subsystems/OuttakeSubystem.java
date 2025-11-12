@@ -12,9 +12,10 @@ import dev.nextftc.core.subsystems.Subsystem;
 public class OuttakeSubystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
-    private double motorSpeed = 0.8;
+    private double motorPower = 0.8;
     private double targetVel = 1;
-    private PDFLController mCon = new PDFLController(0.1, 0,0,0);
+    public static double p = 0.000001, d = 0, f = 0, l = 0;
+    private PDFLController mCon = new PDFLController(p, d,f,l);
 
     public OuttakeSubystem(String motor, HardwareMap hMap){
         this.motor = hMap.get(DcMotorEx.class, motor);
@@ -36,7 +37,7 @@ public class OuttakeSubystem implements Subsystem {
     }
 
     public void debug(double power) {
-        motor.setPower (power);
+        motor.setPower(power);
     }
 
     public void setVel(double vel ) {
@@ -49,14 +50,18 @@ public class OuttakeSubystem implements Subsystem {
         if (isOn){
             mCon.setTarget(targetVel);
             mCon.update(motor.getVelocity());
-            motor.setPower(motorSpeed += mCon.runPDFL(.1));
+            motor.setPower(motorPower += mCon.runPDFL(.1));
 
         }
         else {
             motor.setPower(0);
         }
+
+
+        motorPower = Math.max(-1, Math.min(1,motorPower));
     }
-    public String debug() {
-        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn;
+    public String debugText() {
+        mCon.setPDFL(p,d,f,l);
+        return "motorSpeed: " + motorPower + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nMotor Val: " + motor.getVelocity() + "\nTarget Vel: " + targetVel;
     }
 }
