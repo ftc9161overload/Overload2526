@@ -50,6 +50,8 @@ public class OuttakeSubystem implements Subsystem {
     public void setVel(double vel ) {
         targetVel = vel;
     }
+    public double getVel() {return motor.getVelocity();}
+    public double getTargetVel() { return targetVel;}
 
     // Runs the motor if isOn is True with the motorSpeed
     @Override

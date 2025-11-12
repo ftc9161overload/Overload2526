@@ -19,6 +19,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public static double outtakePower = 0.1;
     public static double servoPos = 0; // 0.3 off, 0.8 on
 
+    private boolean intaking = false;
+    private boolean outtaking = false;
+    private boolean chamberOffset = true;
+
 
     private static RotarySubsystem rotarySubsystem;
     private static IntakeSubystem intakeSubystem;
@@ -48,28 +52,44 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-        if (gamepad1.a){
+
+
+        if (gamepad1.aWasPressed() && !intaking){
             intakeSubystem.debug(intakePower);
-        } else  {
+            intaking = true;
+        } else if (gamepad1.aWasPressed()){
             intakeSubystem.debug(0);
+            intaking = false;
         }
-        if (gamepad1.b){
+        if (gamepad1.b && !outtaking){
             outtakeSubystem.set(true);
-        } else {
+        } else if (gamepad1.bWasPressed()){
             outtakeSubystem.set(false);
         }
         if (gamepad1.xWasPressed()) {
             rotarySubsystem.nextChamber();
         }
-
+        if (gamepad1.yWasPressed() && !chamberOffset) {
+            rotarySubsystem.OffsetHalfChamber();
+            chamberOffset = true;
+        } else if (gamepad1.yWasPressed()) {
+            rotarySubsystem.noOffset();
+            chamberOffset = false;
+        }
+        outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
         outtakeSubystem.debugServo(servoPos);
 
+        if (gamepad1.dpad_left) {
+            servoPos = 0.3;
+        } else if (gamepad1.dpad_up) {
+            servoPos = 0.8;
+        }
 
 
+        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
         outtakeSubystem.setVel(outtakePower);
-//        if (gamepad1.x) {
-//            rotarySubsystem.de
-//        }
+
+
         telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
         telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
         telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());

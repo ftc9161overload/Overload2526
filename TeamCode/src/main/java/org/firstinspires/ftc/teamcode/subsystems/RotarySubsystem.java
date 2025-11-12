@@ -26,6 +26,9 @@ public class RotarySubsystem implements Subsystem {
     private double chamber2 = 2*Math.PI*2/3;
     private double chamber3 = 2*Math.PI;
 
+    private boolean halfChamber = false;
+    private double chamberOffset = 0;
+
     // Constructor for building a Rotary Subsystem object
     public RotarySubsystem(HardwareMap hMap, String motor) {
         this.motor = hMap.get(DcMotorEx.class, motor);
@@ -79,22 +82,34 @@ public class RotarySubsystem implements Subsystem {
         }
     }
 
+    public void OffsetHalfChamber() {
+        halfChamber = true;
+    }
+    public void noOffset() {
+        halfChamber = false;
+    }
+
 
     // Runs the motor if isOn is true
     @Override
     public void periodic() {
+        if (halfChamber) {
+            chamberOffset = chamberTicks/2;
+        } else {
+            chamberOffset = 0;
+        }
         currentPosition = ((motor.getCurrentPosition() % ticksPerRotation)/ticksPerRotation * 2 * Math.PI);
 
         if(isOn) {
             if(targetPosition > currentPosition) {
-                mCon.setTarget(targetPosition);
+                mCon.setTarget(targetPosition + chamberOffset);
             }
             else {
-                mCon.setTarget(targetPosition+Math.PI*2);
+                mCon.setTarget(targetPosition+Math.PI*2 + chamberOffset);
             }
 
             mCon.update(currentPosition);
-            motor.setPower(mCon.runPDFL(0.01));
+            motor.setPower(Math.abs(mCon.runPDFL(0.01)));
         }
 
     }
