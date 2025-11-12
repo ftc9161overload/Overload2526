@@ -15,7 +15,7 @@ public class RotarySubsystem implements Subsystem {
     private final DcMotorEx motor;
     private boolean isOn = false;
     private double motorSpeed = 0.2;
-    private static double p = 0.000001, d = 0, f = 0, l = 0;
+    private static double p = 0.5, d = 0, f = 0, l = 0.07;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d,f,l);
     private int currentChamber = 1;
     private double currentPosition = 0;

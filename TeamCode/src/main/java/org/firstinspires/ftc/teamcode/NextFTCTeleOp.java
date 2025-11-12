@@ -17,6 +17,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     public static double intakePower = 0.1;
     public static double outtakePower = 0.1;
+    public static double servoPos = 0; // 0.3 off, 0.8 on
 
 
     private static RotarySubsystem rotarySubsystem;
@@ -28,7 +29,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public void onInit() {
         rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
         intakeSubystem = new IntakeSubystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
-        outtakeSubystem = new OuttakeSubystem(UniConstants.OUTTAKE_MOTOR_STRING, hardwareMap);
+        outtakeSubystem = new OuttakeSubystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
         rotarySubsystem.setIsOn(true);
@@ -57,9 +58,13 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         } else {
             outtakeSubystem.set(false);
         }
-        if (gamepad1.xWasReleased()) {
+        if (gamepad1.xWasPressed()) {
             rotarySubsystem.nextChamber();
         }
+
+        outtakeSubystem.debugServo(servoPos);
+
+
 
         outtakeSubystem.setVel(outtakePower);
 //        if (gamepad1.x) {
