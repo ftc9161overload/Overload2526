@@ -109,7 +109,7 @@ public class RotarySubsystem implements Subsystem {
             }
 
             mCon.update(currentPosition);
-            motor.setPower(Math.abs(mCon.runPDFL(0.01)));
+            motor.setPower((mCon.runPDFL(0.01)));
         }
 
     }

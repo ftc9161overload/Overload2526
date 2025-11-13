@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 
 
@@ -18,8 +19,8 @@ public class SwervePodTester extends OpMode {
 
     @Override
     public void init() {
-        SwervePodSubsystem fl = new SwervePodSubsystem(-156.0, 156.0, "fls", "flm", "flsai", hardwareMap); // Front Left
-        SwervePodSubsystem br = new SwervePodSubsystem(156.0, -156.0, "brs", "brm", "brsai", hardwareMap); // Back Right
+        SwervePodSubsystem fl = new SwervePodSubsystem(-156.0, 156.0, UniConstants.DRIVE_FRONT_LEFT_SERVO_STRING, UniConstants.DRIVE_FRONT_LEFT_STRING, UniConstants.DRIVE_FRONT_LEFT_ANALOG_INPUT, hardwareMap); // Front Left
+        SwervePodSubsystem br = new SwervePodSubsystem(156.0, -156.0, UniConstants.DRIVE_BACK_RIGHT_SERVO_STRING, UniConstants.DRIVE_BACK_RIGHT_STRING, UniConstants.DRIVE_BACK_RIGHT_ANALOG_INPUT, hardwareMap); // Back Right
         pods = new SwervePodSubsystem[]{fl, br};
         fl.setServoOffsetDeg(flOffset);
         br.setServoOffsetDeg(brOffset);

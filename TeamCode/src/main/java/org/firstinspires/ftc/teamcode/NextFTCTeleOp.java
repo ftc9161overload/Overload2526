@@ -15,7 +15,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
 
-    public static double intakePower = 0.1;
+    public static double intakePower = 0.5;
     public static double outtakePower = 0.1;
     public static double servoPos = 0; // 0.3 off, 0.8 on
 
@@ -54,12 +54,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public void onUpdate() {
 
 
-        if (gamepad1.aWasPressed() && !intaking){
-            intakeSubystem.debug(intakePower);
-            intaking = true;
-        } else if (gamepad1.aWasPressed()){
-            intakeSubystem.debug(0);
-            intaking = false;
+        if (gamepad1.aWasPressed()){
+            intakeSubystem.toggle();
         }
         if (gamepad1.b && !outtaking){
             outtakeSubystem.set(true);
@@ -76,6 +72,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             rotarySubsystem.noOffset();
             chamberOffset = false;
         }
+
+        intakeSubystem.debug(intakePower);
         outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
         outtakeSubystem.debugServo(servoPos);
 
@@ -86,13 +84,13 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
 
-        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
         outtakeSubystem.setVel(outtakePower);
 
 
         telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
-        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
+        telemetry.addData("\nIntake Debug: ",intakeSubystem.debugText());
+        telemetry.addData("\nOuttake Debug: ", outtakeSubystem.debugText());
         telemetry.update();
 
         outtakeSubystem.periodic();

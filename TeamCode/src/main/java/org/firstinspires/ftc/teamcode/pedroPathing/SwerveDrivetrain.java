@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.Drivetrain;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -11,8 +12,11 @@ import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 /* Pedro Pathing Docs:  
 https://pedropathing.com/docs/pathing/custom/drivetrain
 */
-
+@Configurable
 public class SwerveDrivetrain extends Drivetrain {
+
+    public static int frOffset = 325;
+    public static int blOffset = 340;
 
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
@@ -22,6 +26,9 @@ public class SwerveDrivetrain extends Drivetrain {
         SwervePodSubsystem fl = new SwervePodSubsystem(-156.0,  156.0, UniConstants.DRIVE_FRONT_LEFT_SERVO_STRING, UniConstants.DRIVE_FRONT_LEFT_STRING, UniConstants.DRIVE_FRONT_LEFT_ANALOG_INPUT, hMap); // Front Left
         SwervePodSubsystem br = new SwervePodSubsystem( 156.0, -156.0, UniConstants.DRIVE_BACK_RIGHT_SERVO_STRING, UniConstants.DRIVE_BACK_RIGHT_STRING,  UniConstants.DRIVE_BACK_RIGHT_ANALOG_INPUT, hMap); // Back Right
         //SwervePodSubsystem bl = new SwervePodSubsystem(-156.0, -156.0, "bls", "blm", "blsai", hMap); // Back Left
+
+        fl.setServoOffsetDeg(frOffset);
+        br.setServoOffsetDeg(blOffset);
 
         pods = new SwervePodSubsystem[]{fl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
     }
