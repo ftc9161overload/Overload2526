@@ -34,11 +34,7 @@ public class IntakeSubystem implements Subsystem {
     }
 
     public void debug(double power) {
-        if (isOn){
-            motor.setPower(power);
-        } else {
-            motor.setPower(0);
-        }
+        motor.setPower(power);
     }
 
     // Runs the motor if isOn is True with the motorSpeed

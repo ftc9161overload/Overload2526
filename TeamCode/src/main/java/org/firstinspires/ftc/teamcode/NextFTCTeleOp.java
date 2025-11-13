@@ -123,13 +123,13 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         //outtakeSubystem.setVel(outtakePower);
 
 
-//        telemetry.addData("gamepad1 y: ", gamepad1.y);
-//        telemetry.addData("chamberOffset", chamberOffset);
-//        telemetry.addData("intaking: ", intaking);
-//        telemetry.addData("outtaking: ", outtaking);
-//        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
-//        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-//        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
+        telemetry.addData("gamepad1 y: ", gamepad1.y);
+        telemetry.addData("chamberOffset", chamberOffset);
+        telemetry.addData("intaking: ", intaking);
+        telemetry.addData("outtaking: ", outtaking);
+        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
+        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
+        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
         userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
         for (int i = 0; i < 20; i++) {
             userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
