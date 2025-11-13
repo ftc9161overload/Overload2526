@@ -16,7 +16,7 @@ public class OuttakeSubystem implements Subsystem {
     private final Servo servo;
     private double motorPower = 0.8;
     private double targetVel = 1;
-    public static double p = 0.0001, d = 0, f = 0, l = 0;
+    public static double p = 0.0001, d = 0.000001, f = 0, l = 0;
     private PDFLController mCon = new PDFLController(p, d,f,l);
 
     public OuttakeSubystem(String motor, String servo, HardwareMap hMap){

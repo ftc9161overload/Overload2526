@@ -16,8 +16,8 @@ import dev.nextftc.ftc.NextFTCOpMode;
 public class NextFTCTeleOp extends NextFTCOpMode {
 
     public static double intakePower = 0.5;
-    public static double outtakePower = 0.1;
-    public static double servoPos = 0; // 0.3 off, 0.8 on
+    //public static double outtakePower = 10;
+    public static double servoPos = 0.3; // 0.3 off, 0.8 on
 
     private boolean intaking = false;
     private boolean outtaking = false;
@@ -53,27 +53,57 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-
-        if (gamepad1.aWasPressed()){
-            intakeSubystem.toggle();
+        if (gamepad1.aWasPressed()) {
+            intaking = !intaking;
         }
-        if (gamepad1.b && !outtaking){
+        if (intaking) {
+            intakeSubystem.debug(intakePower);
+        } else {
+            intakeSubystem.debug(0);
+        }
+
+        if (gamepad1.yWasPressed()) {
+            chamberOffset = !chamberOffset;
+        }
+
+        if (chamberOffset) {
+            rotarySubsystem.OffsetHalfChamber();
+        } else {
+            rotarySubsystem.noOffset();
+        }
+
+        if (gamepad1.bWasPressed()) {
+            outtaking = !outtaking;
+        }
+
+        if (outtaking) {
             outtakeSubystem.set(true);
-        } else if (gamepad1.bWasPressed()){
+        } else {
             outtakeSubystem.set(false);
         }
+
+//        if (gamepad1.aWasPressed() && !intaking){
+//            intakeSubystem.debug(intakePower);
+//            intaking = true;
+//        } else if (gamepad1.aWasPressed() && intaking){
+//            intakeSubystem.debug(0);
+//            intaking = false;
+//        }
+//        if (gamepad1.b && !outtaking){
+//            outtakeSubystem.set(true);
+//        } else if (gamepad1.bWasPressed()){
+//            outtakeSubystem.set(false);
+//        }
         if (gamepad1.xWasPressed()) {
             rotarySubsystem.nextChamber();
         }
-        if (gamepad1.yWasPressed() && !chamberOffset) {
-            rotarySubsystem.OffsetHalfChamber();
-            chamberOffset = true;
-        } else if (gamepad1.yWasPressed()) {
-            rotarySubsystem.noOffset();
-            chamberOffset = false;
-        }
-
-        intakeSubystem.debug(intakePower);
+//        if (gamepad1.yWasPressed() && !chamberOffset) {
+//            rotarySubsystem.OffsetHalfChamber();
+//            chamberOffset = true;
+//        } else if (gamepad1.yWasPressed()) {
+//            //rotarySubsystem.noOffset();
+//            chamberOffset = false;
+//        }
         outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
         outtakeSubystem.debugServo(servoPos);
 
@@ -84,13 +114,17 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
 
-        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
-        outtakeSubystem.setVel(outtakePower);
+        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        //outtakeSubystem.setVel(outtakePower);
 
 
+        telemetry.addData("gamepad1 y: ", gamepad1.y);
+        telemetry.addData("chamberOffset", chamberOffset);
+        telemetry.addData("intaking: ", intaking);
+        telemetry.addData("outtaking: ", outtaking);
         telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
-        telemetry.addData("\nIntake Debug: ",intakeSubystem.debugText());
-        telemetry.addData("\nOuttake Debug: ", outtakeSubystem.debugText());
+        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
+        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
         telemetry.update();
 
         outtakeSubystem.periodic();

@@ -94,7 +94,7 @@ public class RotarySubsystem implements Subsystem {
     @Override
     public void periodic() {
         if (halfChamber) {
-            chamberOffset = chamberTicks/2;
+            chamberOffset = Math.PI/3;
         } else {
             chamberOffset = 0;
         }
@@ -109,13 +109,13 @@ public class RotarySubsystem implements Subsystem {
             }
 
             mCon.update(currentPosition);
-            motor.setPower((mCon.runPDFL(0.01)));
+            motor.setPower(mCon.runPDFL(0.01));
         }
 
     }
     public String debugText() {
         mCon.setPDFL(p,d,f,l);
-        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition;
+        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;
     }
 
 }
