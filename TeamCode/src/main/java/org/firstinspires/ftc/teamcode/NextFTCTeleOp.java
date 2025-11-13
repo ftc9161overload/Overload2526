@@ -20,8 +20,11 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
 
     private boolean intaking = false;
-    private boolean outtaking = false;
+    private boolean outtaking = false, transitioning = false;
+
     private boolean chamberOffset = true;
+
+    private String userInterface = "";
 
 
     private static RotarySubsystem rotarySubsystem;
@@ -62,7 +65,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             intakeSubystem.debug(0);
         }
 
-        if (gamepad1.yWasPressed()) {
+        if (gamepad1.yWasPressed() && !transitioning) {
             chamberOffset = !chamberOffset;
         }
 
@@ -73,7 +76,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
         if (gamepad1.bWasPressed()) {
-            outtaking = !outtaking;
+            outtaking = !transitioning;
         }
 
         if (outtaking) {
@@ -94,7 +97,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        } else if (gamepad1.bWasPressed()){
 //            outtakeSubystem.set(false);
 //        }
-        if (gamepad1.xWasPressed()) {
+        if (gamepad1.xWasPressed()&& !outtaking) {
             rotarySubsystem.nextChamber();
         }
 //        if (gamepad1.yWasPressed() && !chamberOffset) {
@@ -109,8 +112,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         if (gamepad1.dpad_left) {
             servoPos = 0.3;
+            transitioning = false;
         } else if (gamepad1.dpad_up) {
             servoPos = 0.8;
+            transitioning = true;
         }
 
 
@@ -118,14 +123,21 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         //outtakeSubystem.setVel(outtakePower);
 
 
-        telemetry.addData("gamepad1 y: ", gamepad1.y);
-        telemetry.addData("chamberOffset", chamberOffset);
-        telemetry.addData("intaking: ", intaking);
-        telemetry.addData("outtaking: ", outtaking);
-        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
-        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
+//        telemetry.addData("gamepad1 y: ", gamepad1.y);
+//        telemetry.addData("chamberOffset", chamberOffset);
+//        telemetry.addData("intaking: ", intaking);
+//        telemetry.addData("outtaking: ", outtaking);
+//        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
+//        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
+//        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
+        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
+        for (int i = 0; i < 20; i++) {
+            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
+        }
+
+        telemetry.addLine(userInterface);
         telemetry.update();
+        userInterface = "";
 
         outtakeSubystem.periodic();
         rotarySubsystem.periodic();
