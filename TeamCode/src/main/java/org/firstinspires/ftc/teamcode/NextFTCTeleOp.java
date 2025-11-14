@@ -76,7 +76,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
         if (gamepad1.bWasPressed()) {
-            outtaking = !transitioning;
+            outtaking = !outtaking;
         }
 
         if (outtaking) {
@@ -97,7 +97,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        } else if (gamepad1.bWasPressed()){
 //            outtakeSubystem.set(false);
 //        }
-        if (gamepad1.xWasPressed()&& !outtaking) {
+        if (gamepad1.xWasPressed() && !outtaking) {
             rotarySubsystem.nextChamber();
         }
 //        if (gamepad1.yWasPressed() && !chamberOffset) {
@@ -114,12 +114,12 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             servoPos = 0.3;
             transitioning = false;
         } else if (gamepad1.dpad_up) {
-            servoPos = 0.8;
+            servoPos = 0.85;
             transitioning = true;
         }
 
 
-        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        swerveDrivetrain.simpleRunDrive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
         //outtakeSubystem.setVel(outtakePower);
 
 
@@ -131,9 +131,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
         telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
         userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
-        for (int i = 0; i < 20; i++) {
-            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
-        }
+//        for (int i = 0; i < 20; i++) {
+//            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
+//        }
 
         telemetry.addLine(userInterface);
         telemetry.update();
