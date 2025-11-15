@@ -22,7 +22,7 @@ public class SwervePodSubsystem {
     private DcMotorEx motor;
     private double mPow;
     private double servoOffset, currentPos, targetPos;
-    public static double p = .9, d = 0.01, f = 0, l = 0.03, errorMin = 0.05;
+    public static double p = .25, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
     public static boolean pdflUpdate = false;
     AnalogInput sIn;
@@ -71,6 +71,7 @@ public class SwervePodSubsystem {
 
     public void setPDFL(double p, double d, double f, double l) {
         SwervePodSubsystem.p = p; SwervePodSubsystem.d = d; SwervePodSubsystem.f = f; SwervePodSubsystem.l = l;
+        sCon.setPDFL(p,d,f,l);
     }
 
     public String debugText() {
