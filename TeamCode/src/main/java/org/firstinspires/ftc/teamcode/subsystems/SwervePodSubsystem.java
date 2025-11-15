@@ -22,7 +22,7 @@ public class SwervePodSubsystem {
     private DcMotorEx motor;
     private double mPow;
     private double servoOffset, currentPos, targetPos;
-    public static double p = .25, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
+    public static double p = .7, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
     public static boolean pdflUpdate = false;
     AnalogInput sIn;
@@ -51,17 +51,21 @@ public class SwervePodSubsystem {
 
 
         Vector2D resultant = translational.add(rotational.rotate(posOffset + Math.PI/2));
+        currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
+        targetPos = (resultant.angle() + servoOffset) % (2 * Math.PI) - Math.PI;
 
 
-        currentPos = (sIn.getVoltage()/3.3*2*Math.PI) - Math.PI;
-        targetPos = (resultant.angle()+servoOffset) % (2*Math.PI) - Math.PI;
+        if(resultant.magnitude() > 0.02) {
+
+            sCon.setTarget(targetPos);
+        }
 
 
-       sCon.setTarget(targetPos);
+       sCon.update(currentPos);
 
-        sCon.update(currentPos);
-        servo.setPower(-sCon.runPDFL(errorMin));
-        motor.setPower(resultant.magnitude());
+
+       servo.setPower(-sCon.runPDFL(errorMin));
+       motor.setPower(resultant.magnitude());
     }
 
     public void update(double x, double y, double rotation) {

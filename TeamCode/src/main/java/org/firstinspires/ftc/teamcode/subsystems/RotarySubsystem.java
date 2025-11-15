@@ -28,6 +28,7 @@ public class RotarySubsystem implements Subsystem {
 
     private boolean halfChamber = false;
     private double chamberOffset = 0;
+    private double chamberOffset2 = 0;
 
     // Constructor for building a Rotary Subsystem object
     public RotarySubsystem(HardwareMap hMap, String motor) {
@@ -54,6 +55,13 @@ public class RotarySubsystem implements Subsystem {
 
     public void setTargetPositionRad(int targetPosition) {this.targetPosition = (int) (targetPosition*ticksPerRotation/2/Math.PI);}
 
+
+    public void setChamberOffset2(double set) {
+        chamberOffset2 = set;
+    }
+    public double getChamberOffset2() {
+        return chamberOffset2;
+    }
     public void Chamber(int chamber) {
         if (chamber == 1) {
             targetPosition = chamber1;
@@ -102,7 +110,7 @@ public class RotarySubsystem implements Subsystem {
 
         if(isOn) {
             if(targetPosition > currentPosition) {
-                mCon.setTarget(targetPosition + chamberOffset);
+                mCon.setTarget(targetPosition + chamberOffset + chamberOffset2);
             }
             else {
                 mCon.setTarget(targetPosition+Math.PI*2 + chamberOffset);

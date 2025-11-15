@@ -1,20 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Util.Timer;
+import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubystem;
 import org.firstinspires.ftc.teamcode.subsystems.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.ftc.NextFTCOpMode;
 
-@TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
+@Autonomous(name = "NextFTC Auton", group = "Auton")
 @Configurable
-public class NextFTCTeleOp extends NextFTCOpMode {
+public class NextFTCAuton extends NextFTCOpMode {
 
+
+    private Timer timer = new Timer();
     public static double intakePower = 0.5;
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
@@ -40,6 +44,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
         rotarySubsystem.setIsOn(true);
+        outtakeSubystem.set(true);
+        outtakeSubystem.setVel(2000);
+        outtaking=true;
     }
 
     @Override
@@ -49,25 +56,29 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-
+        timer.reset();
 
     }
 
     @Override
     public void onUpdate() {
+        outtaking=true;
 
-        if (gamepad1.aWasPressed()) {
-            intaking = !intaking;
-        }
+
+//
+//        if (gamepad1.aWasPressed()) {
+//            intaking = !intaking;
+//        }
         if (intaking) {
             intakeSubystem.debug(intakePower);
         } else {
             intakeSubystem.debug(0);
+            outtaking = false;
         }
 
-        if (gamepad1.yWasPressed() && !transitioning) {
-            chamberOffset = !chamberOffset;
-        }
+//        if (gamepad1.yWasPressed() && !transitioning) {
+//            chamberOffset = !chamberOffset;
+//        }
 
         if (chamberOffset) {
             rotarySubsystem.OffsetHalfChamber();
@@ -75,9 +86,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             rotarySubsystem.noOffset();
         }
 
-        if (gamepad1.bWasPressed()) {
-            outtaking = !outtaking;
-        }
+//        if (gamepad1.bWasPressed()) {
+//            outtaking = !outtaking;
+//        }
 
         if (outtaking) {
             outtakeSubystem.set(true);
@@ -97,9 +108,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        } else if (gamepad1.bWasPressed()){
 //            outtakeSubystem.set(false);
 //        }
-        if (gamepad1.xWasPressed() && !transitioning) {
-            rotarySubsystem.nextChamber();
-        }
+//        if (gamepad1.xWasPressed() && !transitioning) {
+//            rotarySubsystem.nextChamber();
+//        }
 //        if (gamepad1.yWasPressed() && !chamberOffset) {
 //            rotarySubsystem.OffsetHalfChamber();
 //            chamberOffset = true;
@@ -107,34 +118,36 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //            //rotarySubsystem.noOffset();
 //            chamberOffset = false;
 //        }
-        outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
+       // outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
         outtakeSubystem.debugServo(servoPos);
 
-        if (gamepad1.dpad_left) {
-            servoPos = 0.3;
-            transitioning = false;
-        } else if (gamepad1.dpad_up) {
-            servoPos = 0.87;
-            transitioning = true;
+//        if (gamepad1.dpad_left) {
+//            servoPos = 0.3;
+//            transitioning = false;
+//        } else if (gamepad1.dpad_up) {
+//            servoPos = 0.85;
+//            transitioning = true;
+//        }
+
+        rotarySubsystem.setChamberOffset2(rotarySubsystem.getChamberOffset2() + (gamepad1.left_bumper ? -.005 : gamepad1.right_bumper ? .005 : 0) );
+
+
+        if (timer.getTimeSeconds() <1) {
+            swerveDrivetrain.simpleRunDrive(0, -1, 0);
+        } else {
+            swerveDrivetrain.simpleRunDrive(0,0,0);
         }
-
-//        rotarySubsystem.setChamberOffset2(rotarySubsystem.getChamberOffset2() + (gamepad1.left_bumper ? -.005 : gamepad1.right_bumper ? .005 : 0) );
-
-
-        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x);
-        //outtakeSubystem.setVel(outtakePower);
+//        outtakeSubystem.setVel(outtakePower);
 
 
-//        telemetry.addData("gamepad1 y: ", gamepad1.y);
-//        telemetry.addData("chamberOffset", chamberOffset);
-//        telemetry.addData("intaking: ", intaking);
-//        telemetry.addData("outtaking: ", outtaking);
-//        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
-//        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-//        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
+        telemetry.addData("gamepad1 y: ", gamepad1.y);
+        telemetry.addData("chamberOffset", chamberOffset);
+        telemetry.addData("intaking: ", intaking);
+        telemetry.addData("outtaking: ", outtaking);
+        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
+        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
+        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
         userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
-//        userInterface += "\n nudge amount: " + rotarySubsystem.getChamberOffset2();
-//        userInterface += "\n" + rotarySubsystem.debugText();
 ////        for (int i = 0; i < 20; i++) {
 //            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
 //        }
