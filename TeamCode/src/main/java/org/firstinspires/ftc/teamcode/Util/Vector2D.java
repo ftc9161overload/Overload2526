@@ -48,6 +48,8 @@ public class Vector2D {
         this.y = y;
     }
 
+    public Vector2D
+
     // --- Basic Vector Operations ---
 
     /**

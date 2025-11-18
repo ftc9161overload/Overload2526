@@ -7,12 +7,14 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
+import com.pedropathing.math.*;
 
 
 @Configurable
@@ -22,9 +24,9 @@ public class SwervePodSubsystem {
     private DcMotorEx motor;
     private double mPow;
     private double servoOffset, currentPos, targetPos;
-    public static double p = .7, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
+    private double p = .7, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
-    public static boolean pdflUpdate = false;
+
     AnalogInput sIn;
 
     public SwervePodSubsystem(double x, double y, String servo, String motor, String analogInput, HardwareMap hMap) {
@@ -39,15 +41,10 @@ public class SwervePodSubsystem {
     public void setServoOffsetDeg(double offset) {
         this.servoOffset = offset/360*2*Math.PI;
     }
+    public void setServoOffsetRad(double offset) {this.servoOffset = offset;}
 
-    public void setTargetPos() {
-        targetPos = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x)/2/Math.PI*3.3;
-    }
+
     public void update(Vector2D translational, Vector2D rotational) {
-
-        if (pdflUpdate) {
-            sCon.setPDFL(p, d, f, l);
-        }
 
 
         Vector2D resultant = translational.add(rotational.rotate(posOffset + Math.PI/2));
@@ -74,7 +71,7 @@ public class SwervePodSubsystem {
     }
 
     public void setPDFL(double p, double d, double f, double l) {
-        SwervePodSubsystem.p = p; SwervePodSubsystem.d = d; SwervePodSubsystem.f = f; SwervePodSubsystem.l = l;
+        this.p = p; this.d = d; this.f = f; this.l = l;
         sCon.setPDFL(p,d,f,l);
     }
 
@@ -85,6 +82,11 @@ public class SwervePodSubsystem {
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         motor.setZeroPowerBehavior(zeroPowerBehavior);
     }
-
+    public void setMotorMode(DcMotor.RunMode runMode) {
+        motor.setMode(runMode);
+    }
+    public void setMotorDirection(DcMotorSimple.Direction direction) {
+        motor.setDirection(direction);
+    }
 
 }
