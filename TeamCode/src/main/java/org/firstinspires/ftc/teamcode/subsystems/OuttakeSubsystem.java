@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import dev.nextftc.core.subsystems.Subsystem;
 
 @Configurable
-public class OuttakeSubystem implements Subsystem {
+public class OuttakeSubsystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
     private final Servo servo;
@@ -19,7 +19,7 @@ public class OuttakeSubystem implements Subsystem {
     public static double p = 0.0001, d = 0.000001, f = 0, l = 0;
     private PDFLController mCon = new PDFLController(p, d,f,l);
 
-    public OuttakeSubystem(String motor, String servo, HardwareMap hMap){
+    public OuttakeSubsystem(String motor, String servo, HardwareMap hMap){
         this.motor = hMap.get(DcMotorEx.class, motor);
         this.servo = hMap.get(Servo.class, servo);
     }

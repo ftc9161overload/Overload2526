@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 
 @Configurable
-public class IntakeSubystem implements Subsystem {
+public class IntakeSubsystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
-    private final double motorSpeed = 0.2;
+    private final double motorSpeed = 0.5;
     private PDFLController mCon = new PDFLController(0.1, 0,0,0);
 
-    public IntakeSubystem(String motor, HardwareMap hMap){
+    public IntakeSubsystem(String motor, HardwareMap hMap){
         this.motor = hMap.get(DcMotorEx.class, motor);
     }
 
@@ -33,20 +33,14 @@ public class IntakeSubystem implements Subsystem {
         this.isOn = !isOn;
     }
 
-    public void debug(double power) {
-        motor.setPower(power);
-    }
-
     // Runs the motor if isOn is True with the motorSpeed
     @Override
     public void periodic() {
         if (isOn){
-            mCon.update(motor.getVelocity());
-            motor.setPower(mCon.runPDFL(.1));
+            motor.setPower(motorSpeed);
+        } else {
+            motor.setPower(0);
         }
-    }
-    public String debugText() {
-        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn;
     }
 
 }

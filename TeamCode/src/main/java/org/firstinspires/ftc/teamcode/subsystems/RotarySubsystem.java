@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
@@ -15,7 +16,7 @@ public class RotarySubsystem implements Subsystem {
     private final DcMotorEx motor;
     private boolean isOn = false;
     private double motorSpeed = 0.2;
-    private static double p = 0.5, d = 0, f = 0, l = 0.07;
+    private static double p = 0.6, d = 0, f = 0, l = 0.07;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d,f,l);
     private int currentChamber = 1;
     private double currentPosition = 0;
@@ -33,6 +34,7 @@ public class RotarySubsystem implements Subsystem {
     // Constructor for building a Rotary Subsystem object
     public RotarySubsystem(HardwareMap hMap, String motor) {
         this.motor = hMap.get(DcMotorEx.class, motor);
+        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motor.setMode(UniConstants.ROTARY_RUN_MODE);
     }
 

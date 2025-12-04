@@ -4,8 +4,8 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.SwerveDrivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubystem;
-import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
@@ -15,7 +15,6 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
 
-    public static double intakePower = 0.5;
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
 
@@ -28,15 +27,15 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
 
     private static RotarySubsystem rotarySubsystem;
-    private static IntakeSubystem intakeSubystem;
-    private static OuttakeSubystem outtakeSubystem;
+    private static IntakeSubsystem intakeSubsystem;
+    private static OuttakeSubsystem outtakeSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
 
     @Override
     public void onInit() {
         rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
-        intakeSubystem = new IntakeSubystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
-        outtakeSubystem = new OuttakeSubystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
+        intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
+        outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
         rotarySubsystem.setIsOn(true);
@@ -59,11 +58,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         if (gamepad1.aWasPressed()) {
             intaking = !intaking;
         }
-        if (intaking) {
-            intakeSubystem.debug(intakePower);
-        } else {
-            intakeSubystem.debug(0);
-        }
+        intakeSubsystem.set(intaking);
 
         if (gamepad1.yWasPressed() && !transitioning) {
             chamberOffset = !chamberOffset;
@@ -80,9 +75,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
         if (outtaking) {
-            outtakeSubystem.set(true);
+            outtakeSubsystem.set(true);
         } else {
-            outtakeSubystem.set(false);
+            outtakeSubsystem.set(false);
         }
 
 //        if (gamepad1.aWasPressed() && !intaking){
@@ -107,14 +102,14 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //            //rotarySubsystem.noOffset();
 //            chamberOffset = false;
 //        }
-        outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
-        outtakeSubystem.debugServo(servoPos);
+        outtakeSubsystem.setVel(outtakeSubsystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
+        outtakeSubsystem.debugServo(servoPos);
 
         if (gamepad1.dpad_left) {
             servoPos = 0.3;
             transitioning = false;
         } else if (gamepad1.dpad_up) {
-            servoPos = 0.87;
+            servoPos = 0.8;
             transitioning = true;
         }
 
@@ -129,10 +124,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        telemetry.addData("chamberOffset", chamberOffset);
 //        telemetry.addData("intaking: ", intaking);
 //        telemetry.addData("outtaking: ", outtaking);
-//        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
+        telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
 //        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-//        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
-        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
+        telemetry.addData("\n\nOuttake Debug: ", outtakeSubsystem.debugText());
+//        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
 //        userInterface += "\n nudge amount: " + rotarySubsystem.getChamberOffset2();
 //        userInterface += "\n" + rotarySubsystem.debugText();
 ////        for (int i = 0; i < 20; i++) {
@@ -143,8 +138,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         telemetry.update();
         userInterface = "";
 
-        outtakeSubystem.periodic();
+        outtakeSubsystem.periodic();
         rotarySubsystem.periodic();
+        intakeSubsystem.periodic();
     }
 
 }

@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.SwerveDrivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubystem;
-import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.RotarySubsystem;
 
 import dev.nextftc.ftc.NextFTCOpMode;
@@ -32,20 +31,20 @@ public class NextFTCAuton extends NextFTCOpMode {
 
 
     private static RotarySubsystem rotarySubsystem;
-    private static IntakeSubystem intakeSubystem;
-    private static OuttakeSubystem outtakeSubystem;
+    private static IntakeSubsystem intakeSubsystem;
+    private static OuttakeSubsystem outtakeSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
 
     @Override
     public void onInit() {
         rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
-        intakeSubystem = new IntakeSubystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
-        outtakeSubystem = new OuttakeSubystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
+        intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
+        outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
         rotarySubsystem.setIsOn(true);
-        outtakeSubystem.set(true);
-        outtakeSubystem.setVel(2000);
+        outtakeSubsystem.set(true);
+        outtakeSubsystem.setVel(2000);
         outtaking=true;
     }
 
@@ -69,12 +68,7 @@ public class NextFTCAuton extends NextFTCOpMode {
 //        if (gamepad1.aWasPressed()) {
 //            intaking = !intaking;
 //        }
-        if (intaking) {
-            intakeSubystem.debug(intakePower);
-        } else {
-            intakeSubystem.debug(0);
-            outtaking = false;
-        }
+        intakeSubsystem.set(intaking);
 
 //        if (gamepad1.yWasPressed() && !transitioning) {
 //            chamberOffset = !chamberOffset;
@@ -91,9 +85,9 @@ public class NextFTCAuton extends NextFTCOpMode {
 //        }
 
         if (outtaking) {
-            outtakeSubystem.set(true);
+            outtakeSubsystem.set(true);
         } else {
-            outtakeSubystem.set(false);
+            outtakeSubsystem.set(false);
         }
 
 //        if (gamepad1.aWasPressed() && !intaking){
@@ -119,7 +113,7 @@ public class NextFTCAuton extends NextFTCOpMode {
 //            chamberOffset = false;
 //        }
        // outtakeSubystem.setVel(outtakeSubystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
-        outtakeSubystem.debugServo(servoPos);
+        outtakeSubsystem.debugServo(servoPos);
 
 //        if (gamepad1.dpad_left) {
 //            servoPos = 0.3;
@@ -145,9 +139,8 @@ public class NextFTCAuton extends NextFTCOpMode {
         telemetry.addData("intaking: ", intaking);
         telemetry.addData("outtaking: ", outtaking);
         telemetry.addData("Rotary Debug: ",rotarySubsystem.debugText());
-        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-        telemetry.addData("\n\nOuttake Debug: ", outtakeSubystem.debugText());
-        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
+//        telemetry.addData("\n\nOuttake Debug: ", outtakeSubsystem.debugText());
+        userInterface += "\nFlywheel Speed: " + outtakeSubsystem.getVel() + " / " + outtakeSubsystem.getTargetVel() + "\n";
 ////        for (int i = 0; i < 20; i++) {
 //            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
 //        }
@@ -156,8 +149,9 @@ public class NextFTCAuton extends NextFTCOpMode {
         telemetry.update();
         userInterface = "";
 
-        outtakeSubystem.periodic();
+        outtakeSubsystem.periodic();
         rotarySubsystem.periodic();
+        intakeSubsystem.periodic();
     }
 
 }
