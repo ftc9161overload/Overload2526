@@ -18,9 +18,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
 
-    private boolean intaking = false;
-    private boolean outtaking = false, transitioning = false;
-
     private boolean chamberOffset = true;
 
     private String userInterface = "";
@@ -56,29 +53,19 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public void onUpdate() {
 
         if (gamepad1.aWasPressed()) {
-            intaking = !intaking;
-        }
-        intakeSubsystem.set(intaking);
-
-        if (gamepad1.yWasPressed() && !transitioning) {
-            chamberOffset = !chamberOffset;
+            intakeSubsystem.set(!intakeSubsystem.get());
         }
 
-        if (chamberOffset) {
-            rotarySubsystem.OffsetHalfChamber();
-        } else {
-            rotarySubsystem.noOffset();
+        if (gamepad1.yWasPressed() && !outtakeSubsystem.getTransitioning()) {
+            rotarySubsystem.setHalfChamber(!chamberOffset);
         }
+
+
 
         if (gamepad1.bWasPressed()) {
-            outtaking = !outtaking;
+            outtakeSubsystem.set(!outtakeSubsystem.get());
         }
 
-        if (outtaking) {
-            outtakeSubsystem.set(true);
-        } else {
-            outtakeSubsystem.set(false);
-        }
 
 //        if (gamepad1.aWasPressed() && !intaking){
 //            intakeSubystem.debug(intakePower);
@@ -92,7 +79,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        } else if (gamepad1.bWasPressed()){
 //            outtakeSubystem.set(false);
 //        }
-        if (gamepad1.xWasPressed() && !transitioning) {
+        if (gamepad1.xWasPressed() && !outtakeSubsystem.getTransitioning()) {
             rotarySubsystem.nextChamber();
         }
 //        if (gamepad1.yWasPressed() && !chamberOffset) {
@@ -103,14 +90,15 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //            chamberOffset = false;
 //        }
         outtakeSubsystem.setVel(outtakeSubsystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
-        outtakeSubsystem.debugServo(servoPos);
 
         if (gamepad1.dpad_left) {
-            servoPos = 0.3;
-            transitioning = false;
+            outtakeSubsystem.setServo(UniConstants.engagementLevel.OFF);
         } else if (gamepad1.dpad_up) {
-            servoPos = 0.8;
-            transitioning = true;
+            outtakeSubsystem.setServo(UniConstants.engagementLevel.ON);
+        } else if (gamepad1.dpad_right) {
+            outtakeSubsystem.setServo(UniConstants.engagementLevel.FULL_ON);
+        } else if (gamepad1.dpad_down) {
+            outtakeSubsystem.setServo(UniConstants.engagementLevel.FULL_OFF);
         }
 
 //        rotarySubsystem.setChamberOffset2(rotarySubsystem.getChamberOffset2() + (gamepad1.left_bumper ? -.005 : gamepad1.right_bumper ? .005 : 0) );

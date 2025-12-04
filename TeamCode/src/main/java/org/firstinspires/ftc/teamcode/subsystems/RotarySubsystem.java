@@ -92,12 +92,7 @@ public class RotarySubsystem implements Subsystem {
         }
     }
 
-    public void OffsetHalfChamber() {
-        halfChamber = true;
-    }
-    public void noOffset() {
-        halfChamber = false;
-    }
+    public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
 
 
     // Runs the motor if isOn is true

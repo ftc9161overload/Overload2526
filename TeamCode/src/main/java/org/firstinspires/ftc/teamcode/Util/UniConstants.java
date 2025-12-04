@@ -8,6 +8,9 @@ public class UniConstants {
 
 
 
+    //Coordinates
+    public static final int[] far_Launch_Blue = {63, 17}; // Not set in stone
+
     //Drive
     public static final String
             DRIVE_FRONT_LEFT_STRING = "LFM", // Exp - 0
@@ -36,6 +39,17 @@ public class UniConstants {
             INTAKE_MOTOR_STRING = "InM",// Ctrl - 2
             OUTTAKE_SERVO_STRING = "OuS"; // Exp - 2
 
+    public enum engagementLevel{
+        FULL_ON,
+        ON,
+        FULL_OFF,
+        OFF
+    }
+
+    public enum swerveDriveType {
+        DEADZONE,
+        TURN_GO
+    }
     public static final  DcMotorEx.ZeroPowerBehavior ROTARY_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.BRAKE, OUTTAKE_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.FLOAT, INTAKE_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.BRAKE;
     public static final DcMotorEx.RunMode ROTARY_RUN_MODE = DcMotorEx.RunMode.RUN_USING_ENCODER, OUTTAKE_RUN_MODE = DcMotorEx.RunMode.RUN_USING_ENCODER;
     public static final DcMotorEx.Direction ROTARY_DIRECTION = DcMotorEx.Direction.FORWARD, OUTTAKE_DIRECTION = DcMotorEx.Direction.FORWARD, INTAKE_DIRECTION = DcMotorEx.Direction.FORWARD;
