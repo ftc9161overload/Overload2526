@@ -94,6 +94,8 @@ public class OuttakeSubsystem implements Subsystem {
             motorPower = 0;
         }
 
+        servo.setPosition(servoPos);
+
 
         motorPower = Math.max(-1, Math.min(1,motorPower));
     }

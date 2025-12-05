@@ -75,9 +75,9 @@ public class NextFTCAuton extends NextFTCOpMode {
 //        }
 
         if (chamberOffset) {
-            rotarySubsystem.OffsetHalfChamber();
+            rotarySubsystem.setHalfChamber(true);
         } else {
-            rotarySubsystem.noOffset();
+            rotarySubsystem.setHalfChamber(false);
         }
 
 //        if (gamepad1.bWasPressed()) {

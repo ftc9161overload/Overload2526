@@ -40,6 +40,7 @@ public class RotarySubsystem implements Subsystem {
 
     // Getter method for returning the isOn boolean
     public boolean getIsOn() {return isOn;}
+    public boolean getHalfChamber() {return halfChamber;}
 
     // Setter method for setting isOn to an input value
     public void setIsOn(boolean isOn) {
