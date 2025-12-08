@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 
 /* Pedro Pathing Docs:  
@@ -40,7 +39,27 @@ public class SwerveDrivetrain extends Drivetrain {
         return new double[0];
     }
 
-    public Vector2D[] calculateDrive(Vector2D )
+    @Override
+    public double xVelocity() {
+        return 0;
+    };
+
+    @Override
+    public double yVelocity() {
+        return 0;
+    };
+
+    @Override
+    public void setXVelocity(double ahh) {
+
+    }
+
+    @Override
+    public void setYVelocity(double ahh) {
+
+    }
+
+
 
     public void setMotorsToBrake() {
         for (SwervePodSubsystem pod : pods) {

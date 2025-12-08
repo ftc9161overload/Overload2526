@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
@@ -27,6 +28,8 @@ public class SwervePodSubsystem {
     private double servoOffset, currentPos, targetPos;
     private double p = .7, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
+
+    private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
 
     AnalogInput sIn;
 
@@ -66,7 +69,18 @@ public class SwervePodSubsystem {
 
 
         servo.setPower(-sCon.runPDFL(errorMin));
-        motor.setPower(drive.magnitude());
+        switch (driveMode) {
+            case DEADZONE:
+                motor.setPower(drive.magnitude());
+                break;
+            case TURN_GO:
+                if (Math.abs(MathUtil.piWraparound(targetPos-currentPos)) <= UniConstants.radialDeadzone){
+                    motor.setPower(drive.magnitude());
+                } else {
+                    motor.setPower(0);
+                }
+
+        }
     }
 
     public void update(Vector2D translational, Vector2D rotational) {
@@ -81,6 +95,10 @@ public class SwervePodSubsystem {
         update(new Vector2D(x, y), new Vector2D(rotation,0));
     }
 
+
+    public void setServoMode(UniConstants.swerveDriveType mode) {
+        driveMode = mode;
+    }
     public void setPDFL(double p, double d, double f, double l) {
         this.p = p; this.d = d; this.f = f; this.l = l;
         sCon.setPDFL(p,d,f,l);
