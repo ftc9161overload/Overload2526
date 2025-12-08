@@ -7,6 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class UniConstants {
 
 
+    ////////////////////
+    //Drive/////////////
+    ////////////////////
 
     //Coordinates
     public static final int[] far_Launch_Blue = {63, 17}; // Not set in stone
@@ -32,7 +35,15 @@ public class UniConstants {
     public static final DcMotorEx.Direction DRIVE_BACK_LEFT_DIRECTION = DcMotorEx.Direction.FORWARD;
     public static final DcMotorEx.Direction DRIVE_BACK_RIGHT_DIRECTION = DcMotorEx.Direction.REVERSE;
 
+    //SwervePod
 
+    public static double deadzone = 0.02;
+
+
+
+    ////////////
+    //Other/////
+    ////////////
     public static final String
             ROTARY_MOTOR_STRING = "RoM", // Exp - 3
             OUTTAKE_MOTOR_STRING = "OuM", // Exp - 2
@@ -53,6 +64,8 @@ public class UniConstants {
     public static final  DcMotorEx.ZeroPowerBehavior ROTARY_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.BRAKE, OUTTAKE_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.FLOAT, INTAKE_ZERO_BEHAVIOR = DcMotorEx.ZeroPowerBehavior.BRAKE;
     public static final DcMotorEx.RunMode ROTARY_RUN_MODE = DcMotorEx.RunMode.RUN_USING_ENCODER, OUTTAKE_RUN_MODE = DcMotorEx.RunMode.RUN_USING_ENCODER;
     public static final DcMotorEx.Direction ROTARY_DIRECTION = DcMotorEx.Direction.FORWARD, OUTTAKE_DIRECTION = DcMotorEx.Direction.FORWARD, INTAKE_DIRECTION = DcMotorEx.Direction.FORWARD;
+
+
 
     public enum loggingState{
         DISABLED,

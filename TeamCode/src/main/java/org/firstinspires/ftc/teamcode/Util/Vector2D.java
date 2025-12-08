@@ -49,6 +49,7 @@ public class Vector2D {
     }
 
 
+
     // --- Basic Vector Operations ---
 
     /**

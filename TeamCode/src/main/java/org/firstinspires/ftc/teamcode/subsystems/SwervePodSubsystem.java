@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
+import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
@@ -44,25 +45,35 @@ public class SwervePodSubsystem {
     public void setServoOffsetRad(double offset) {this.servoOffset = offset;}
 
 
-    public void update(Vector2D translational, Vector2D rotational) {
+    public double getRotationOffset() {return posOffset;}
 
+    public Vector2D getResultantVector(Vector2D translational, Vector2D rotational) {
+        return translational.add(rotational.rotate(posOffset + Math.PI/2));
+    }
 
-        Vector2D resultant = translational.add(rotational.rotate(posOffset + Math.PI/2));
+    public void update(Vector2D drive) {
         currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
-        targetPos = (resultant.angle() + servoOffset) % (2 * Math.PI) - Math.PI;
+        targetPos = (drive.angle() + servoOffset) % (2 * Math.PI) - Math.PI;
 
 
-        if(resultant.magnitude() > 0.02) {
+        if(drive.magnitude() > UniConstants.deadzone) {
 
             sCon.setTarget(targetPos);
         }
 
 
-       sCon.update(currentPos);
+        sCon.update(currentPos);
 
 
-       servo.setPower(-sCon.runPDFL(errorMin));
-       motor.setPower(resultant.magnitude());
+        servo.setPower(-sCon.runPDFL(errorMin));
+        motor.setPower(drive.magnitude());
+    }
+
+    public void update(Vector2D translational, Vector2D rotational) {
+
+
+        Vector2D resultant = getResultantVector(translational,rotational);
+        update(resultant);
     }
 
     public void update(double x, double y, double rotation) {
@@ -76,7 +87,12 @@ public class SwervePodSubsystem {
     }
 
     public String debugText() {
-        return "Servo: " + sIn.getVoltage() + "\nCurrentPos: " + currentPos + "\ntargetPos: " + targetPos + "\nPDFL: "  + sCon.runPDFL(0.05) + "\n Offset: " + servoOffset + "\n\n" + sCon.debugText();
+        return "Servo: " + sIn.getVoltage() +
+                "\nCurrentPos: " + currentPos +
+                "\ntargetPos: " + targetPos +
+                "\nPDFL: "  + sCon.runPDFL(0.05) +
+                "\n Offset: " + servoOffset +
+                "\n\n" + sCon.debugText();
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
