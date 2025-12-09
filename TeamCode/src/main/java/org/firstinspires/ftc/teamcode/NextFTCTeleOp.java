@@ -119,7 +119,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 ////        for (int i = 0; i < 20; i++) {
 //            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
 //        }
-
+        swerveDrivetrain.debugString();
         telemetry.addLine(userInterface);
         telemetry.update();
         userInterface = "";

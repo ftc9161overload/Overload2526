@@ -113,6 +113,10 @@ public class SwerveDrivetrain extends Drivetrain {
 
     @Override
     public String debugString() {
+        for (SwervePodSubsystem swerve : pods) {
+            swerve.debugText();
+        }
+
         return "";
     }
 }

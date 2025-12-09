@@ -26,7 +26,7 @@ public class SwervePodSubsystem {
     private DcMotorEx motor;
     private double mPow;
     private double servoOffset, currentPos, targetPos;
-    private double p = .7, d = 0.005, f = 0, l = 0.03, errorMin = 0.07;
+    public static double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.07;
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
 
     private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
@@ -99,12 +99,14 @@ public class SwervePodSubsystem {
     public void setServoMode(UniConstants.swerveDriveType mode) {
         driveMode = mode;
     }
+
     public void setPDFL(double p, double d, double f, double l) {
         this.p = p; this.d = d; this.f = f; this.l = l;
         sCon.setPDFL(p,d,f,l);
     }
 
     public String debugText() {
+        setPDFL(p,d,f,l);
         return "Servo: " + sIn.getVoltage() +
                 "\nCurrentPos: " + currentPos +
                 "\ntargetPos: " + targetPos +
