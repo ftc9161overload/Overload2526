@@ -80,41 +80,43 @@ public class SwervePodSubsystem {
 
             // Turn and Go is the better drivemode
             case TURN_GO:
-                if(drive.magnitude() > UniConstants.deadzone) {
+
+                if (drive.magnitude() > UniConstants.deadzone) {
+
+                    // Only pick new direction when pod isn't moving
                     if (motor.getVelocity() < 5) {
-                        if (motorDirection == 1) {
-                            if (diffTargetPos >= diffFlippedTargetPos) {
-                                setTargetPos = targetPos;
-                                motorDirection = 1;
-                            } else {
-                                setTargetPos = flippedTargetPos;
-                                motorDirection = -1;
-                            }
+
+                        double errNormal = diffTargetPos;
+                        double errFlipped = diffFlippedTargetPos;
+
+                        if (errFlipped < errNormal) {
+                            // Flipping is faster
+                            setTargetPos = flippedTargetPos;
+                            motorDirection = -1;
                         } else {
-                            if (diffFlippedTargetPos >= diffTargetPos) {
-                                setTargetPos = flippedTargetPos;
-                                motorDirection = -1;
-                            } else {
-                                setTargetPos = targetPos;
-                                motorDirection = 1;
-                            }
+                            // Normal path is faster
+                            setTargetPos = targetPos;
+                            motorDirection = 1;
                         }
                     }
 
                     sCon.setTarget(setTargetPos);
                 }
-                sCon.update(currentPos);
 
+                sCon.update(currentPos);
                 servo.setPower(-sCon.runPDFL(errorMin));
-                
-                /* If the difference between the current pos of the servo and the target pos is less than the radial deadzone
-                 Then and only then will it allow the motor to turn on. This makes us not as floaty and more precise. */
-                if (diffTargetPos <= UniConstants.radialDeadzone){
+
+                // MUST compute diff from FINAL chosen target!
+                double diffFinal = Math.abs(MathUtil.piWraparound(setTargetPos - currentPos));
+
+                // Only drive when aimed properly
+                if (diffFinal <= UniConstants.radialDeadzone) {
                     motor.setPower(motorDirection * drive.magnitude());
                 } else {
                     motor.setPower(0);
                 }
 
+                break;
         }
     }
 
