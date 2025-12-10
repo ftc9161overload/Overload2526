@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
@@ -22,7 +23,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     private String userInterface = "";
 
-
+    private static LauncherSubsystem launcherSubsystem;
     private static RotarySubsystem rotarySubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
@@ -34,6 +35,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+        launcherSubsystem = new LauncherSubsystem(hardwareMap);
 
         rotarySubsystem.setIsOn(true);
     }
@@ -79,6 +81,11 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        }
         if (gamepad1.xWasPressed() && !outtakeSubsystem.getTransitioning()) {
             rotarySubsystem.nextChamber();
+        }
+
+        if(gamepad1.rightBumperWasPressed()) {
+            launcherSubsystem.update();
+            launcherSubsystem.stateUpdate(1);
         }
 //        if (gamepad1.yWasPressed() && !chamberOffset) {
 //            rotarySubsystem.OffsetHalfChamber();
