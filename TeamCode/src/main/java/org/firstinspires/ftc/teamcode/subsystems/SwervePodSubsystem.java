@@ -71,11 +71,18 @@ public class SwervePodSubsystem {
 
 
         servo.setPower(-sCon.runPDFL(errorMin));
+
+        // Based on drivemode do different stuff
         switch (driveMode) {
+            // Deadzone is just the boring not good drivemode but is reliable
             case DEADZONE:
                 motor.setPower(drive.magnitude());
                 break;
+
+            // Turn and Go is the better drivemode
             case TURN_GO:
+                /* If the difference between the current pos of the servo and the target pos is less than the radial deadzone
+                 Then and only then will it allow the motor to turn on. This makes us not as floaty and more precise. */
                 if (Math.abs(MathUtil.piWraparound(targetPos-currentPos)) <= UniConstants.radialDeadzone){
                     motor.setPower(drive.magnitude());
                 } else {
