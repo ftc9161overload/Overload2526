@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.Drivetrain;
@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
 
 /* Pedro Pathing Docs:  
 https://pedropathing.com/docs/pathing/custom/drivetrain

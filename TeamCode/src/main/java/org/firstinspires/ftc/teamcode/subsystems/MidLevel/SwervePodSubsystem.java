@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -14,9 +12,6 @@ import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
-
-import org.firstinspires.ftc.teamcode.Util.PDFLController;
-import com.pedropathing.math.*;
 
 
 @Configurable

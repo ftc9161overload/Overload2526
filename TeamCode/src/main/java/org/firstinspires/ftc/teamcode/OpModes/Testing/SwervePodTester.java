@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpModes.Testing;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
 
 
 @TeleOp(name = "Swerve Pod Tester", group = "TeleOp")

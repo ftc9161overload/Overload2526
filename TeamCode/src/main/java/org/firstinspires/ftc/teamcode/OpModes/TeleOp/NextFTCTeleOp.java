@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.SwerveDrivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.RotarySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.ftc.NextFTCOpMode;

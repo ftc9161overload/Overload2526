@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpModes.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.RotarySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 
 // Rotary OpMode to test if the rotary is good or not
 @TeleOp(name = "Rotary", group = "TeleOp")
