@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.Util;
 
 //import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-//@Config
+@Configurable
 public class UniConstants {
 
 
@@ -39,6 +40,7 @@ public class UniConstants {
 
     public static double deadzone = 0.02;
     public static double radialDeadzone = 0.8;
+    public static double servoMovementDeadzone = 5;
 
 
     ////////////

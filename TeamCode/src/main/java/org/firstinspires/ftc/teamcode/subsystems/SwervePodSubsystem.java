@@ -90,14 +90,14 @@ public class SwervePodSubsystem {
                 if (drive.magnitude() > UniConstants.deadzone) {
 
                     // Only pick new direction when pod isn't moving
-                    if (motor.getVelocity() < 5) {
+                    if (motor.getVelocity() < UniConstants.servoMovementDeadzone) {
 
                         if (diffFlippedTargetPos < diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
                             // Flipping is faster
                             setTargetPos = flippedTargetPos;
                             motorDirection = -1;
                             flipTimer.reset();
-                        } else {
+                        } else if (diffFlippedTargetPos >= diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
                             // Normal path is faster
                             setTargetPos = targetPos;
                             motorDirection = 1;
