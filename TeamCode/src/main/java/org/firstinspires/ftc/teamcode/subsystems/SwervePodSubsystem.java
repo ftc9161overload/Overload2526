@@ -24,8 +24,9 @@ public class SwervePodSubsystem {
     private CRServo servo;
     private double x,y, posOffset;
     private DcMotorEx motor;
+    private int motorDirection = 1; // positive 1 means normal but -1 means reverse
     private double mPow;
-    private double servoOffset, currentPos, targetPos;
+    private double servoOffset, currentPos, targetPos, flippedTargetPos, setTargetPos;
     public static double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.07;
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
 
@@ -57,17 +58,35 @@ public class SwervePodSubsystem {
     public void update(Vector2D drive) {
         currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
         targetPos = (drive.angle() + servoOffset) % (2 * Math.PI) - Math.PI;
+        flippedTargetPos = MathUtil.piWraparound(targetPos + Math.PI);
 
+        double diffTargetPos = Math.abs(MathUtil.piWraparound(targetPos-currentPos));
+        double diffFlippedTargetPos = Math.abs(MathUtil.piWraparound(flippedTargetPos-currentPos));
 
         if(drive.magnitude() > UniConstants.deadzone) {
+            if (motorDirection == 1){
+                if (diffTargetPos >= diffFlippedTargetPos) {
+                    setTargetPos = targetPos;
+                    motorDirection = 1;
+                } else {
+                    setTargetPos = flippedTargetPos;
+                    motorDirection = -1;
+                }
+            } else {
+                if (diffFlippedTargetPos >= diffTargetPos) {
+                    setTargetPos = flippedTargetPos;
+                    motorDirection = -1;
+                } else {
+                    setTargetPos = targetPos;
+                    motorDirection = 1;
+                }
+            }
 
-            sCon.setTarget(targetPos);
+            sCon.setTarget(setTargetPos);
         }
 
 
         sCon.update(currentPos);
-
-        
 
 
         servo.setPower(-sCon.runPDFL(errorMin));
@@ -83,8 +102,8 @@ public class SwervePodSubsystem {
             case TURN_GO:
                 /* If the difference between the current pos of the servo and the target pos is less than the radial deadzone
                  Then and only then will it allow the motor to turn on. This makes us not as floaty and more precise. */
-                if (Math.abs(MathUtil.piWraparound(targetPos-currentPos)) <= UniConstants.radialDeadzone){
-                    motor.setPower(drive.magnitude());
+                if (diffTargetPos <= UniConstants.radialDeadzone){
+                    motor.setPower(motorDirection * drive.magnitude());
                 } else {
                     motor.setPower(0);
                 }
