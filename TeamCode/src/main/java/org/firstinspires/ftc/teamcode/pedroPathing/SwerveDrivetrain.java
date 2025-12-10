@@ -3,9 +3,12 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.Drivetrain;
 import com.pedropathing.math.Vector;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.subsystems.SwervePodSubsystem;
 
@@ -21,6 +24,8 @@ public class SwerveDrivetrain extends Drivetrain {
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
 
+    private GoBildaPinpointDriver ppDriver;
+
     public SwerveDrivetrain(HardwareMap hMap) {
         //SwervePodSubsystem fr = new SwervePodSubsystem( 156.0,  156.0, "frs", "frm", "frsai", hMap); // Front Right
         SwervePodSubsystem fl = new SwervePodSubsystem(-156.0,  156.0, UniConstants.DRIVE_FRONT_LEFT_SERVO_STRING, UniConstants.DRIVE_FRONT_LEFT_STRING, UniConstants.DRIVE_FRONT_LEFT_ANALOG_INPUT, hMap); // Front Left
@@ -29,6 +34,12 @@ public class SwerveDrivetrain extends Drivetrain {
         //br.setPDFL(0.2,0.0,0,0.03);
         fl.setServoOffsetDeg(frOffset);
         br.setServoOffsetDeg(blOffset);
+
+        ppDriver = hMap.get(GoBildaPinpointDriver.class, "pinpoint");
+
+        ppDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        ppDriver.setOffsets(-182,182, DistanceUnit.MM);
+        ppDriver.resetPosAndIMU();
 
         pods = new SwervePodSubsystem[]{fl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
     }
@@ -113,10 +124,13 @@ public class SwerveDrivetrain extends Drivetrain {
 
     @Override
     public String debugString() {
+        String returnStr = "";
         for (SwervePodSubsystem swerve : pods) {
             swerve.debugText();
         }
 
-        return "";
+        returnStr += "X Pos: " + ppDriver.getPosX(DistanceUnit.INCH) + "\nY Pos: " + ppDriver.getPosY(DistanceUnit.INCH) + "\nHeading: " + ppDriver.getHeading(AngleUnit.DEGREES);
+
+        return returnStr;
     }
 }

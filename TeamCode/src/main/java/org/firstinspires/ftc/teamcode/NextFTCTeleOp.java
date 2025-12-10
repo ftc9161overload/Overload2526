@@ -121,6 +121,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        }
         swerveDrivetrain.debugString();
         telemetry.addLine(userInterface);
+        telemetry.addLine(swerveDrivetrain.debugString());
         telemetry.update();
         userInterface = "";
 
