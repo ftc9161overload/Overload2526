@@ -74,6 +74,8 @@ public class OuttakeSubsystem implements Subsystem {
         motor.setPower(power);
     }
 
+    public double getServoPos() {return servoPos;}
+
     public void setVel(double vel ) {
         targetVel = vel;
     }
