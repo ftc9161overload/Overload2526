@@ -49,7 +49,8 @@ public class LauncherSubsystem implements Subsystem {
             case 3:
                 outtakeSubsystem.setServo(UniConstants.engagementLevel.FULL_ON);
                 if((outtakeSubsystem.getServoPos() > OuttakeSubsystem.fullOn - .005) && (outtakeSubsystem.getServoPos() < OuttakeSubsystem.fullOn + .005)) {
-                    currentState = 4;
+                    timer.reset();
+                    if(timer.hasElapsed(1000)) {currentState = 4;}
                 }
                 break;
 
@@ -67,8 +68,7 @@ public class LauncherSubsystem implements Subsystem {
                 rotarySubsystem.nextChamber();
                 chamber += 1;
                 timer.reset();
-                timer.hasElapsedSeconds(1);
-                currentState = 2;
+                if(timer.hasElapsed(1000)) {currentState = 2;}
                 break;
         }
 
