@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
+import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 
@@ -26,8 +27,11 @@ public class SwervePodSubsystem {
     private DcMotorEx motor;
     private int motorDirection = 1; // positive 1 means normal but -1 means reverse
     private double mPow;
-    private double servoOffset, currentPos, targetPos, flippedTargetPos, setTargetPos;
+    private double servoOffset, currentPos, targetPos, flippedTargetPos;
+    private double setTargetPos = 0;
     public static double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.07;
+    private Timer flipTimer = new Timer();
+    private static double flipCooldownSeconds = 0.2; // tweakable
     private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
 
     private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
@@ -81,22 +85,23 @@ public class SwervePodSubsystem {
             // Turn and Go is the better drivemode
             case TURN_GO:
 
+                if (Double.isNaN(setTargetPos)) setTargetPos = currentPos;
+
                 if (drive.magnitude() > UniConstants.deadzone) {
 
                     // Only pick new direction when pod isn't moving
                     if (motor.getVelocity() < 5) {
 
-                        double errNormal = diffTargetPos;
-                        double errFlipped = diffFlippedTargetPos;
-
-                        if (errFlipped < errNormal) {
+                        if (diffFlippedTargetPos < diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
                             // Flipping is faster
                             setTargetPos = flippedTargetPos;
                             motorDirection = -1;
+                            flipTimer.reset();
                         } else {
                             // Normal path is faster
                             setTargetPos = targetPos;
                             motorDirection = 1;
+                            flipTimer.reset();
                         }
                     }
 
