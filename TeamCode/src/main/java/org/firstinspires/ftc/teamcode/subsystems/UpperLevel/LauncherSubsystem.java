@@ -34,47 +34,54 @@ public class LauncherSubsystem implements Subsystem {
                 chamber = 0;
 
                 if(start) {
-                    currentState = 1;
+                    stateUpdate(1);
                 }
                 break;
             case 1:
                 rotarySubsystem.setHalfChamber(true);
-                currentState = 2;
+                stateUpdate(2);
                 break;
             case 2:
                 outtakeSubsystem.setVel(outtakeTarget);
                 if((outtakeSubsystem.getVel() > outtakeTarget - 50) && (outtakeSubsystem.getVel() < outtakeTarget + 50)) {
-                    currentState = 3;
+                    stateUpdate(3);
                 }
                 break;
             case 3:
                 outtakeSubsystem.setServo(UniConstants.engagementLevel.FULL_ON);
                 if((outtakeSubsystem.getServoPos() > OuttakeSubsystem.fullOn - .005) && (outtakeSubsystem.getServoPos() < OuttakeSubsystem.fullOn + .005)) {
                     timer.reset();
-                    if(timer.hasElapsed(1000)) {currentState = 4;}
+                    if(timer.hasElapsed(1000)) {stateUpdate(4);}
                 }
                 break;
 
             case 4:
                 outtakeSubsystem.setServo(UniConstants.engagementLevel.FULL_OFF);
                 if(outtakeSubsystem.getServoPos() == OuttakeSubsystem.fullOff) {
-                    currentState = 5;
+                    stateUpdate(5);
                 }
                 break;
             case 5:
                 if(chamber == 2) {
-                    currentState = 0;
-                    break;
+                    stateUpdate(0);
+                    start = false;
+                    rotarySubsystem.setHalfChamber(false);
                 }
-                rotarySubsystem.nextChamber();
-                chamber += 1;
-                timer.reset();
-                if(timer.hasElapsed(1000)) {currentState = 2;}
+                else {
+                    rotarySubsystem.nextChamber();
+                    chamber += 1;
+                    timer.reset();
+                    if(timer.hasElapsed(1000)) {currentState = 2;}
+                }
                 break;
+
         }
 
 
         outtakeSubsystem.periodic();
         rotarySubsystem.periodic();
+    }
+    public String debugText() {
+        return "\nCurrent State: " + currentState + "\nlauncher chamber: " + chamber;
     }
 }

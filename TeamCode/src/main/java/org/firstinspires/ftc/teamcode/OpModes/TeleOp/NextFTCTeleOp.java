@@ -84,8 +84,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
         if(gamepad1.rightBumperWasPressed()) {
+            launcherSubsystem.setStart(true);
             launcherSubsystem.update();
-            launcherSubsystem.stateUpdate(1);
         }
 //        if (gamepad1.yWasPressed() && !chamberOffset) {
 //            rotarySubsystem.OffsetHalfChamber();
@@ -127,6 +127,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
 //        }
         swerveDrivetrain.debugString();
+        telemetry.addLine(launcherSubsystem.debugText());
         telemetry.addLine(userInterface);
         telemetry.addLine(swerveDrivetrain.debugString());
         telemetry.update();
