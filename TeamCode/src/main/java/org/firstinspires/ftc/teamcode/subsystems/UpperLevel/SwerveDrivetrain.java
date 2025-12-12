@@ -85,6 +85,12 @@ public class SwerveDrivetrain extends Drivetrain {
         }
     }
 
+    public void simpleRunDrive(double x, double y, double rotation, double movementScaler) {
+        for (SwervePodSubsystem pod : pods) {
+            pod.update(x, y, rotation, movementScaler);
+        }
+    }
+
     public void setMotorsToFloat() {
         for (SwervePodSubsystem pod : pods) {
             pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);

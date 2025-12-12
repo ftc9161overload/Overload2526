@@ -31,6 +31,8 @@ public class SwervePodSubsystem {
 
     private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
 
+    public double movementScaler = 1;
+    
     AnalogInput sIn;
 
     public SwervePodSubsystem(double x, double y, String servo, String motor, String analogInput, HardwareMap hMap) {
@@ -67,14 +69,14 @@ public class SwervePodSubsystem {
         switch (driveMode) {
             // Deadzone is just the boring not good drivemode but is reliable
             case DEADZONE:
-                if(drive.magnitude() > UniConstants.deadzone) {
+                if(drive.magnitude() > UniConstants.deadzone*movementScaler) {
                     sCon.setTarget(targetPos);
                 }
 
                 sCon.update(currentPos);
                 servo.setPower(-sCon.runPDFL(errorMin));
 
-                motor.setPower(drive.magnitude());
+                motor.setPower(drive.magnitude()*movementScaler);
                 break;
 
             // Turn and Go is the better drivemode
@@ -82,7 +84,7 @@ public class SwervePodSubsystem {
 
                 if (Double.isNaN(setTargetPos)) setTargetPos = currentPos;
 
-                if (drive.magnitude() > UniConstants.deadzone) {
+                if (drive.magnitude() > UniConstants.deadzone*movementScaler) {
 
                     // Only pick new direction when pod isn't moving
                     if (motor.getVelocity() < UniConstants.servoMovementDeadzone) {
@@ -111,7 +113,7 @@ public class SwervePodSubsystem {
 
                 // Only drive when aimed properly
                 if (diffFinal <= UniConstants.radialDeadzone) {
-                    motor.setPower(motorDirection * drive.magnitude());
+                    motor.setPower(motorDirection * drive.magnitude() * movementScaler);
                 } else {
                     motor.setPower(0);
                 }
@@ -129,6 +131,11 @@ public class SwervePodSubsystem {
 
     public void update(double x, double y, double rotation) {
 
+        update(new Vector2D(x, y), new Vector2D(rotation,0));
+    }
+
+    public void update(double x, double y, double rotation, double movementScaler) {
+        this.movementScaler = movementScaler;
         update(new Vector2D(x, y), new Vector2D(rotation,0));
     }
 

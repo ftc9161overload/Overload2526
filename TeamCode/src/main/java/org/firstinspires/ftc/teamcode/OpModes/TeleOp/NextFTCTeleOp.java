@@ -18,8 +18,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
-
-    private boolean chamberOffset = true;
+    private double movementScaler = 1.0;
 
     private String userInterface = "";
 
@@ -108,8 +107,15 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
 //        rotarySubsystem.setChamberOffset2(rotarySubsystem.getChamberOffset2() + (gamepad1.left_bumper ? -.005 : gamepad1.right_bumper ? .005 : 0) );
 
+        /*   Added a slow movement mode to allow for more precise control of the bot in play   */
+        if (gamepad2.rightBumperWasPressed()){
+            movementScaler = 0.5;
+        }
+        if (gamepad2.leftBumperWasPressed()){
+            movementScaler = 1;
+        }
 
-        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x);
+        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
         //outtakeSubystem.setVel(outtakePower);
 
 
