@@ -100,22 +100,34 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //            //rotarySubsystem.noOffset();
 //            chamberOffset = false;
 //        }
-        if(gamepad1.xWasPressed() && !launcherSubsystem.getStart()) {6
-            launcherSubsystem.outtakeSubsystem.setVel(launcherSubsystem.outtakeSubsystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
-        } else if(gamepad1.leftStickButtonWasReleased()) {
+        if(gamepad1.bWasPressed() && !launcherSubsystem.getStart()) {
+            launcherSubsystem.outtakeSubsystem.toggle();
+
+        }
+        launcherSubsystem.outtakeSubsystem.setVel(launcherSubsystem.outtakeSubsystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
+
+        if(gamepad1.leftStickButtonWasReleased()) {
             launcherSubsystem.outtakeSubsystem.setVel(outtakePreset1);
-        } else if(gamepad1.rightStickButtonWasReleased()) {
+        }
+        if(gamepad1.rightStickButtonWasReleased()) {
             launcherSubsystem.outtakeSubsystem.setVel(outtakePreset2);
         }
 
-        if(gamepad1.xWasPressed() || gamepad2.dpad_up){
+        if(gamepad1.startWasPressed() || gamepad2.dpad_up){
             launcherSubsystem.setShootCount(3);
+            launcherSubsystem.stateUpdate(1);
         } else if (gamepad2.dpad_right || gamepad2.dpad_left) {
             launcherSubsystem.setShootCount(2);
+            launcherSubsystem.stateUpdate(1);
+
         } else if (gamepad2.dpad_down) {
             launcherSubsystem.setShootCount(1);
+            launcherSubsystem.stateUpdate(1);
+
         } else if(gamepad2.xWasPressed()) {
             launcherSubsystem.setShootCount(0);
+            launcherSubsystem.stateUpdate(1);
+
         }
 
         if (gamepad1.dpad_left) {

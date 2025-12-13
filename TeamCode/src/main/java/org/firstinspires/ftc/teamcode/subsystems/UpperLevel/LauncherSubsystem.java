@@ -31,7 +31,7 @@ public class LauncherSubsystem implements Subsystem {
 
     public boolean getIsInPosition() {
 //        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
-        if((Math.abs(MathUtil.piWraparound(rotarySubsystem.getPosition() - rotarySubsystem.getTargetPosition()))) > 0.1) {
+        if((Math.abs(MathUtil.piWraparound(rotarySubsystem.getPosition() - rotarySubsystem.getTargetPosition()))) > 0.06) {
            return true;
         }
         return false;
@@ -59,9 +59,20 @@ public class LauncherSubsystem implements Subsystem {
 
                 break;
             case 1:
+                timer.reset();
+                stateUpdate(11);
+                break;
+            case 11:
                 if (shootCount > 0) {
-                    stateUpdate(10);
-                    rotarySubsystem.nextChamber();
+//                    stateUpdate(10);
+
+                    outtakeSubsystem.setServo(UniConstants.engagementLevel.FULL_OFF);
+                    if (timer.hasElapsedSeconds(1.2)) {
+                        rotarySubsystem.nextChamber();
+                        rotarySubsystem.setHalfChamber(false);
+                        outtakeSubsystem.set(true);
+                        stateUpdate(10);
+                    }
                 } else {
                     stateUpdate(0);
                 }
@@ -85,9 +96,15 @@ public class LauncherSubsystem implements Subsystem {
             case 2:
                 //outtakeSubsystem.setVel(outtakeTarget);
                 outtakeSubsystem.set(true);
-
+                if(!reset) {
+                    timer.reset();
+                    reset = true;
+                }
                 if((outtakeSubsystem.getVel() > outtakeSubsystem.getTargetVel() - 50) && (outtakeSubsystem.getVel() < outtakeSubsystem.getTargetVel() + 50)) {
-                    stateUpdate(3);
+                    if (timer.hasElapsedSeconds(0.5)) {
+                        stateUpdate(3);
+                        reset = false;
+                    }
                 }
                 break;
             case 3:
@@ -105,7 +122,11 @@ public class LauncherSubsystem implements Subsystem {
                 stateUpdate(5);
                 break;
             case 5:
-                stateUpdate(0);
+                if (shootCount > 0) {
+                    stateUpdate(1);
+                } else {
+                    stateUpdate(0);
+                }
                 shootCount --;
                 break;
 

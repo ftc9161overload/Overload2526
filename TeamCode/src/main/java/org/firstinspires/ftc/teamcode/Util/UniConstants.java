@@ -38,7 +38,7 @@ public class UniConstants {
 
     //SwervePod
 
-    public static double deadzone = 0.02;
+    public static double deadzone = 0.01;
     public static double radialDeadzone = 0.8;
     public static double servoMovementDeadzone = 3;
 
