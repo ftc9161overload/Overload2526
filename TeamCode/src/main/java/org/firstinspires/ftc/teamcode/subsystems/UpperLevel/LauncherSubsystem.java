@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
@@ -29,7 +30,8 @@ public class LauncherSubsystem implements Subsystem {
     }
 
     public boolean getIsInPosition() {
-        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
+//        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
+        if((Math.abs(MathUtil.piWraparound(rotarySubsystem.getPosition() - rotarySubsystem.getTargetPosition()))) > 0.1) {
            return true;
         }
         return false;
@@ -54,12 +56,17 @@ public class LauncherSubsystem implements Subsystem {
                 chamber = 0;
                 reset = false;
 
-                if (shootCount > 0) {
-                    stateUpdate(1);
-                    rotarySubsystem.nextChamber();
-                }
+
                 break;
             case 1:
+                if (shootCount > 0) {
+                    stateUpdate(10);
+                    rotarySubsystem.nextChamber();
+                } else {
+                    stateUpdate(0);
+                }
+                break;
+            case 10:
 
 
                 if(!reset) {

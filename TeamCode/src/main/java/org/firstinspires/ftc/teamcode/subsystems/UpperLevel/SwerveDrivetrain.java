@@ -18,8 +18,9 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 @Configurable
 public class SwerveDrivetrain extends Drivetrain {
 
-    public static int frOffset = 283;
-    public static int blOffset = 96;
+    public static int frOffset = 108;
+    public static int flOffset = 242;
+    public static int blOffset = 255;
 
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
@@ -27,21 +28,23 @@ public class SwerveDrivetrain extends Drivetrain {
     private GoBildaPinpointDriver ppDriver;
 
     public SwerveDrivetrain(HardwareMap hMap) {
-        SwervePodSubsystem fr = new SwervePodSubsystem( 156.0,  156.0, UniConstants.DRIVE_FRONT_RIGHT_SERVO_STRING, UniConstants.DRIVE_FRONT_RIGHT_STRING, UniConstants.DRIVE_FRONT_RIGHT_ANALOG_INPUT, hMap); // Front Right
+        SwervePodSubsystem fr = new SwervePodSubsystem( -156.0,  -156.0, UniConstants.DRIVE_FRONT_RIGHT_SERVO_STRING, UniConstants.DRIVE_FRONT_RIGHT_STRING, UniConstants.DRIVE_FRONT_RIGHT_ANALOG_INPUT, hMap); // Front Right
         SwervePodSubsystem fl = new SwervePodSubsystem(-156.0,  156.0, UniConstants.DRIVE_FRONT_LEFT_SERVO_STRING, UniConstants.DRIVE_FRONT_LEFT_STRING, UniConstants.DRIVE_FRONT_LEFT_ANALOG_INPUT, hMap); // Front Left
         SwervePodSubsystem br = new SwervePodSubsystem( 156.0, -156.0, UniConstants.DRIVE_BACK_RIGHT_SERVO_STRING, UniConstants.DRIVE_BACK_RIGHT_STRING,  UniConstants.DRIVE_BACK_RIGHT_ANALOG_INPUT, hMap); // Back Right
         SwervePodSubsystem bl = new SwervePodSubsystem(-156.0, -156.0, UniConstants.DRIVE_BACK_LEFT_SERVO_STRING, UniConstants.DRIVE_BACK_LEFT_STRING, UniConstants.DRIVE_BACK_LEFT_ANALOG_INPUT, hMap); // Back Left
         //br.setPDFL(0.2,0.0,0,0.03);
-        fl.setServoOffsetDeg(frOffset);
-        br.setServoOffsetDeg(blOffset);
+        fl.setServoOffsetDeg(flOffset);
+        fr.setServoOffsetDeg(frOffset);
+        bl.setServoOffsetDeg(blOffset);
 
         ppDriver = hMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         ppDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         ppDriver.setOffsets(-182,182, DistanceUnit.MM);
         ppDriver.resetPosAndIMU();
+        bl.setPDFL(.02,.01,0,.2);
 
-        pods = new SwervePodSubsystem[]{fl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
+        pods = new SwervePodSubsystem[]{fl, fr, bl}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
     }
     
     @Override
@@ -134,7 +137,7 @@ public class SwerveDrivetrain extends Drivetrain {
     public String debugString() {
         String returnStr = "";
         for (SwervePodSubsystem swerve : pods) {
-            swerve.debugText();
+            returnStr += swerve.debugText();
         }
 
         returnStr += "X Pos: " + ppDriver.getPosX(DistanceUnit.INCH) + "\nY Pos: " + ppDriver.getPosY(DistanceUnit.INCH) + "\nHeading: " + ppDriver.getHeading(AngleUnit.DEGREES);

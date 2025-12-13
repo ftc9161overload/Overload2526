@@ -86,6 +86,17 @@ public class RotarySubsystem implements Subsystem {
 
     }
 
+    public void previousChamber() {
+        if(currentChamber == 1) {
+            Chamber(3);
+        }
+        else if (currentChamber == 2) {
+            Chamber(1);
+        }
+        else if (currentChamber == 3) {
+            Chamber(2);
+        }
+    }
     public void nextChamber() {
         if (currentChamber == 1) {
             Chamber(2);

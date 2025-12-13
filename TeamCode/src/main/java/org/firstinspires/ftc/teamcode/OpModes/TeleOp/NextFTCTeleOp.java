@@ -19,6 +19,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
     private double movementScaler = 1.0;
+    public static double outtakePreset1 = 1900;
+    public static double outtakePreset2 = 2560;
 
     private String userInterface = "";
 
@@ -82,8 +84,12 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        } else if (gamepad1.bWasPressed()){
 //            outtakeSubystem.set(false);
 //        }
-        if (gamepad1.xWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
+        if (gamepad1.rightBumperWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
             launcherSubsystem.rotarySubsystem.nextChamber();
+            launcherSubsystem.stateUpdate(0);
+        }
+        if(gamepad1.leftBumperWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
+            launcherSubsystem.rotarySubsystem.previousChamber();
             launcherSubsystem.stateUpdate(0);
         }
 
@@ -94,12 +100,22 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //            //rotarySubsystem.noOffset();
 //            chamberOffset = false;
 //        }
-        if(!launcherSubsystem.getStart()) {
+        if(gamepad1.xWasPressed() && !launcherSubsystem.getStart()) {6
             launcherSubsystem.outtakeSubsystem.setVel(launcherSubsystem.outtakeSubsystem.getTargetVel() + gamepad1.left_trigger * -10 + gamepad1.right_trigger * 10);
+        } else if(gamepad1.leftStickButtonWasReleased()) {
+            launcherSubsystem.outtakeSubsystem.setVel(outtakePreset1);
+        } else if(gamepad1.rightStickButtonWasReleased()) {
+            launcherSubsystem.outtakeSubsystem.setVel(outtakePreset2);
         }
 
-        if(gamepad1.rightBumperWasPressed()) {
+        if(gamepad1.xWasPressed() || gamepad2.dpad_up){
             launcherSubsystem.setShootCount(3);
+        } else if (gamepad2.dpad_right || gamepad2.dpad_left) {
+            launcherSubsystem.setShootCount(2);
+        } else if (gamepad2.dpad_down) {
+            launcherSubsystem.setShootCount(1);
+        } else if(gamepad2.xWasPressed()) {
+            launcherSubsystem.setShootCount(0);
         }
 
         if (gamepad1.dpad_left) {
@@ -136,18 +152,18 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        telemetry.addData("chamberOffset", chamberOffset);
 //        telemetry.addData("intaking: ", intaking);
 //        telemetry.addData("outtaking: ", outtaking);
-        telemetry.addData("Rotary Debug: ",launcherSubsystem.rotarySubsystem.debugText());
+//        telemetry.addData("Rotary Debug: ",launcherSubsystem.rotarySubsystem.debugText());
 //        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
         telemetry.addData("\n\nOuttake Debug: ", launcherSubsystem.outtakeSubsystem.debugText());
 //        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
-//        userInterface += "\n nudge amount: " + rotarySubsystem.getChamberOffset2();
+//        userInterface += "\n nudge amount: " + ro[tarySubsystem.getChamberOffset2();
 //        userInterface += "\n" + rotarySubsystem.debugText();
 ////        for (int i = 0; i < 20; i++) {
 //            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
 //        }
         telemetry.addLine(launcherSubsystem.debugText());
         telemetry.addLine(userInterface);
-        telemetry.addLine(swerveDrivetrain.debugString());
+//        telemetry.addLine(swerveDrivetrain.debugString());
         telemetry.update();
         userInterface = "";
 
