@@ -15,7 +15,7 @@ public class OuttakeSubsystem implements Subsystem {
     private boolean isOn = false;
     private final DcMotorEx motor;
     private final Servo servo;
-    public static double fullOff = 0.3, off = 0.5, on = 0.8, fullOn = 0.85;
+    public static double fullOff = 0.3, off = 0.5, on = 0.82, fullOn = 0.85;
     private double servoPos = 0.3;
     private double motorPower = 0.8;
     private double targetVel = 1;
@@ -44,7 +44,7 @@ public class OuttakeSubsystem implements Subsystem {
         }
         else if(type == UniConstants.engagementLevel.OFF) {
             servoPos = off; // Unengaged
-            transitioning = true;
+            transitioning = false;
         }
         else if(type == UniConstants.engagementLevel.ON) {
             servoPos = on; // Engaged

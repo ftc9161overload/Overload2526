@@ -27,10 +27,10 @@ public class SwerveDrivetrain extends Drivetrain {
     private GoBildaPinpointDriver ppDriver;
 
     public SwerveDrivetrain(HardwareMap hMap) {
-        //SwervePodSubsystem fr = new SwervePodSubsystem( 156.0,  156.0, "frs", "frm", "frsai", hMap); // Front Right
+        SwervePodSubsystem fr = new SwervePodSubsystem( 156.0,  156.0, UniConstants.DRIVE_FRONT_RIGHT_SERVO_STRING, UniConstants.DRIVE_FRONT_RIGHT_STRING, UniConstants.DRIVE_FRONT_RIGHT_ANALOG_INPUT, hMap); // Front Right
         SwervePodSubsystem fl = new SwervePodSubsystem(-156.0,  156.0, UniConstants.DRIVE_FRONT_LEFT_SERVO_STRING, UniConstants.DRIVE_FRONT_LEFT_STRING, UniConstants.DRIVE_FRONT_LEFT_ANALOG_INPUT, hMap); // Front Left
         SwervePodSubsystem br = new SwervePodSubsystem( 156.0, -156.0, UniConstants.DRIVE_BACK_RIGHT_SERVO_STRING, UniConstants.DRIVE_BACK_RIGHT_STRING,  UniConstants.DRIVE_BACK_RIGHT_ANALOG_INPUT, hMap); // Back Right
-        //SwervePodSubsystem bl = new SwervePodSubsystem(-156.0, -156.0, "bls", "blm", "blsai", hMap); // Back Left
+        SwervePodSubsystem bl = new SwervePodSubsystem(-156.0, -156.0, UniConstants.DRIVE_BACK_LEFT_SERVO_STRING, UniConstants.DRIVE_BACK_LEFT_STRING, UniConstants.DRIVE_BACK_LEFT_ANALOG_INPUT, hMap); // Back Left
         //br.setPDFL(0.2,0.0,0,0.03);
         fl.setServoOffsetDeg(frOffset);
         br.setServoOffsetDeg(blOffset);
@@ -83,6 +83,8 @@ public class SwerveDrivetrain extends Drivetrain {
         for (SwervePodSubsystem pod : pods) {
             pod.update(x, y, rotation);
         }
+
+        ppDriver.update();
     }
 
     public void simpleRunDrive(double x, double y, double rotation, double movementScaler) {
