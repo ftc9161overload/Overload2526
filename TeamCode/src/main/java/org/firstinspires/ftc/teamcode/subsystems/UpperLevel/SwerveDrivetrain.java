@@ -126,8 +126,6 @@ public class SwerveDrivetrain extends Drivetrain {
 
     }
 
-
-
     @Override
     public double getVoltage() {
         return 0;

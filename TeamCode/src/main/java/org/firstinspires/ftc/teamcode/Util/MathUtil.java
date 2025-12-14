@@ -24,8 +24,6 @@ public class MathUtil {
         return normal;
     }
 
-
-
     public ArrayList<Vector2D> getNormalizedVectors(ArrayList<Vector2D> vectors, double target) {
         ArrayList<Vector2D> normalizedVectors = new ArrayList<>();
         ArrayList<Double> magnitudes = new ArrayList<>();
@@ -43,4 +41,7 @@ public class MathUtil {
         return a + (b - a) * t;
     }
 
+    public static double angleDiff(double from, double to) {
+        return piWraparound(to - from);
+    }
 }
