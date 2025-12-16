@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.OpModes.Auton;
+package org.firstinspires.ftc.teamcode.opmodes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
