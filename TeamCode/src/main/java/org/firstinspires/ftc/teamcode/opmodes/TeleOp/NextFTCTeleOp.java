@@ -10,6 +10,9 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
+import dev.nextftc.core.components.BindingsComponent;
+import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 
 @TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
@@ -26,15 +29,18 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     private static LauncherSubsystem launcherSubsystem;
     //private static RotarySubsystem rotarySubsystem;
-    private static IntakeSubsystem intakeSubsystem;
     //private static OuttakeSubsystem outtakeSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
 
     @Override
     public void onInit() {
+        addComponents(
+                new SubsystemComponent(IntakeSubsystem.INSTANCE),
+                BindingsComponent.INSTANCE
+        );
+
         launcherSubsystem = new LauncherSubsystem(hardwareMap);
         launcherSubsystem.rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
-        intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
         launcherSubsystem.outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
@@ -56,10 +62,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        if (gamepad1.aWasPressed()) {
-            intakeSubsystem.toggle();
-            launcherSubsystem.stateUpdate(0);
-        }
+        Gamepads.gamepad1().a()
+                .whenTrue(IntakeSubsystem.INSTANCE.run)
+                .whenFalse(IntakeSubsystem.INSTANCE.stop);
+
 
         if (gamepad1.yWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
             launcherSubsystem.rotarySubsystem.setHalfChamber(!launcherSubsystem.rotarySubsystem.getHalfChamber());
@@ -71,19 +77,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             launcherSubsystem.stateUpdate(0);
         }
 
-
-//        if (gamepad1.aWasPressed() && !intaking){
-//            intakeSubystem.debug(intakePower);
-//            intaking = true;
-//        } else if (gamepad1.aWasPressed() && intaking){
-//            intakeSubystem.debug(0);
-//            intaking = false;
-//        }
-//        if (gamepad1.b && !outtaking){
-//            outtakeSubystem.set(true);
-//        } else if (gamepad1.bWasPressed()){
-//            outtakeSubystem.set(false);
-//        }
         if (gamepad1.rightBumperWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
             launcherSubsystem.rotarySubsystem.nextChamber();
             launcherSubsystem.stateUpdate(0);
@@ -93,13 +86,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             launcherSubsystem.stateUpdate(0);
         }
 
-//        if (gamepad1.yWasPressed() && !chamberOffset) {
-//            rotarySubsystem.OffsetHalfChamber();
-//            chamberOffset = true;
-//        } else if (gamepad1.yWasPressed()) {
-//            //rotarySubsystem.noOffset();
-//            chamberOffset = false;
-//        }
         if(gamepad1.bWasPressed() && !launcherSubsystem.getStart()) {
             launcherSubsystem.outtakeSubsystem.toggle();
 
@@ -127,7 +113,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         } else if(gamepad2.xWasPressed()) {
             launcherSubsystem.setShootCount(0);
             launcherSubsystem.stateUpdate(1);
-
         }
 
         if (gamepad1.dpad_left) {
@@ -144,9 +129,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             launcherSubsystem.stateUpdate(0);
         }
 
-//        rotarySubsystem.setChamberOffset2(rotarySubsystem.getChamberOffset2() + (gamepad1.left_bumper ? -.005 : gamepad1.right_bumper ? .005 : 0) );
-
-        /*   Added a slow movement mode to allow for more precise control of the bot in play   */
         if (gamepad2.rightBumperWasPressed()){
             movementScaler = 0.5;
             launcherSubsystem.stateUpdate(0);
@@ -157,8 +139,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
         swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
-        //outtakeSubystem.setVel(outtakePower);
-
 
 //        telemetry.addData("gamepad1 y: ", gamepad1.y);
 //        telemetry.addData("chamberOffset", chamberOffset);
@@ -166,20 +146,19 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        telemetry.addData("outtaking: ", outtaking);
 //        telemetry.addData("Rotary Debug: ",launcherSubsystem.rotarySubsystem.debugText());
 //        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-        telemetry.addData("\n\nOuttake Debug: ", launcherSubsystem.outtakeSubsystem.debugText());
+//        telemetry.addData("\n\nOuttake Debug: ", launcherSubsystem.outtakeSubsystem.debugText());
 //        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
 //        userInterface += "\n nudge amount: " + ro[tarySubsystem.getChamberOffset2();
 //        userInterface += "\n" + rotarySubsystem.debugText();
-////        for (int i = 0; i < 20; i++) {
+//        for (int i = 0; i < 20; i++) {
 //            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
 //        }
-        telemetry.addLine(launcherSubsystem.debugText());
-        telemetry.addLine(userInterface);
+//        telemetry.addLine(launcherSubsystem.debugText());
+//        telemetry.addLine(userInterface);
 //        telemetry.addLine(swerveDrivetrain.debugString());
         telemetry.update();
         userInterface = "";
 
-        intakeSubsystem.periodic();
         launcherSubsystem.update();
     }
 

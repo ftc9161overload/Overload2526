@@ -1,41 +1,26 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.hardware.powerable.Powerable;
+import dev.nextftc.hardware.powerable.SetPower;
 import dev.nextftc.core.subsystems.Subsystem;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Util.UniConstants;
+
 @Configurable
 public class IntakeSubsystem implements Subsystem {
+    public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
+    private IntakeSubsystem() { }
 
-    private final DcMotorEx motor;
+    private final DcMotorEx motor = hardwareMap.get(DcMotorEx.class, UniConstants.INTAKE_MOTOR_STRING);
     public double motorSpeed = 0.5;
 
-    private boolean running = false;
+    public Command run = new SetPower((Powerable) motor,motorSpeed);
+    public Command stop = new SetPower((Powerable) motor, 0.0);
 
-    public IntakeSubsystem(String motorName, HardwareMap hMap) {
-        motor = hMap.get(DcMotorEx.class, motorName);
-    }
-
-    public void run() {
-        running = true;
-        motor.setPower(motorSpeed);
-    }
-
-    public void stop() {
-        running = false;
-        motor.setPower(0);
-    }
-
-    public void toggle() {
-        if (running) {
-            stop();
-        } else {
-            run();
-        }
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
 }

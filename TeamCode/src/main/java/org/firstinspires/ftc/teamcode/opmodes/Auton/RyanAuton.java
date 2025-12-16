@@ -38,7 +38,7 @@ public class RyanAuton extends NextFTCOpMode {
     public void onInit() {
         launcherSubsystem = new LauncherSubsystem(hardwareMap);
         launcherSubsystem.rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
-        intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
+        //intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
         launcherSubsystem.outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
