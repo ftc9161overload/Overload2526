@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
@@ -32,7 +31,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        IntakeSubsystem.motor = hardwareMap.get(DcMotorEx.class, UniConstants.INTAKE_MOTOR_STRING);
         addComponents(
                 new SubsystemComponent(IntakeSubsystem.INSTANCE)
         );
@@ -61,8 +59,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public void onUpdate() {
 
         Gamepads.gamepad1().a()
-                .whenTrue(IntakeSubsystem.INSTANCE.run)
-                .whenFalse(IntakeSubsystem.INSTANCE.stop);
+                .toggleOnBecomesTrue()
+                    .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
+                    .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
 
 
         if (gamepad1.yWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
