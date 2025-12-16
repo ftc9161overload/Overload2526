@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.Testing;
+package org.firstinspires.ftc.teamcode.OpModes.Testing;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;

@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.hardware.powerable.Powerable;
 import dev.nextftc.hardware.powerable.SetPower;
 import dev.nextftc.core.subsystems.Subsystem;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 @Configurable
 public class IntakeSubsystem implements Subsystem {
+    public static DcMotorEx motor;
+
     public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
     private IntakeSubsystem() { }
 
-    private final DcMotorEx motor = hardwareMap.get(DcMotorEx.class, UniConstants.INTAKE_MOTOR_STRING);
     public double motorSpeed = 0.5;
 
     public Command run = new SetPower((Powerable) motor,motorSpeed);

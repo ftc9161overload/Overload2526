@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.Auton;
+package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;

@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes.TeleOp;
+package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
@@ -10,7 +11,6 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
-import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
@@ -25,8 +25,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public static double outtakePreset1 = 1900;
     public static double outtakePreset2 = 2560;
 
-    private String userInterface = "";
-
     private static LauncherSubsystem launcherSubsystem;
     //private static RotarySubsystem rotarySubsystem;
     //private static OuttakeSubsystem outtakeSubsystem;
@@ -34,9 +32,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onInit() {
+        IntakeSubsystem.motor = hardwareMap.get(DcMotorEx.class, UniConstants.INTAKE_MOTOR_STRING);
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE),
-                BindingsComponent.INSTANCE
+                new SubsystemComponent(IntakeSubsystem.INSTANCE)
         );
 
         launcherSubsystem = new LauncherSubsystem(hardwareMap);
@@ -157,7 +155,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        telemetry.addLine(userInterface);
 //        telemetry.addLine(swerveDrivetrain.debugString());
         telemetry.update();
-        userInterface = "";
 
         launcherSubsystem.update();
     }
