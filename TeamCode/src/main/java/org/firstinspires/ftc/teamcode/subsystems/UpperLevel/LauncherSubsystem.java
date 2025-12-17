@@ -25,7 +25,7 @@ public class LauncherSubsystem implements Subsystem {
     private int shootCount = 0;
 
     public LauncherSubsystem(HardwareMap hMap) {
-        outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING, hMap);
+        outtakeSubsystem = new OuttakeSubsystem();
         rotarySubsystem = new RotarySubsystem(hMap, UniConstants.ROTARY_MOTOR_STRING);
     }
 

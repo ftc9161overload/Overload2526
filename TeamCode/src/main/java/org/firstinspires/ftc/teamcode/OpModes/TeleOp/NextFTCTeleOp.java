@@ -40,7 +40,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         launcherSubsystem = new LauncherSubsystem(hardwareMap);
         launcherSubsystem.rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
-        launcherSubsystem.outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
+        launcherSubsystem.outtakeSubsystem = new OuttakeSubsystem();
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
 
@@ -54,7 +54,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-        Gamepads.gamepad1().a().toggleOnBecomesTrue()
+        Gamepads.gamepad1().a()
                 .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
                 .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
     }
