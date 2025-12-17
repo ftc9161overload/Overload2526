@@ -10,29 +10,29 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
+import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
+import dev.nextftc.ftc.components.BulkReadComponent;
 
 @TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
 
-    //public static double outtakePower = 10;
-    public static double servoPos = 0.3; // 0.3 off, 0.8 on
     private double movementScaler = 1.0;
     public static double outtakePreset1 = 1900;
     public static double outtakePreset2 = 2560;
 
     private static LauncherSubsystem launcherSubsystem;
-    //private static RotarySubsystem rotarySubsystem;
-    //private static OuttakeSubsystem outtakeSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
 
     @Override
     public void onInit() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE)
+                new SubsystemComponent(IntakeSubsystem.INSTANCE),
+                BulkReadComponent.INSTANCE,
+                BindingsComponent.INSTANCE
         );
 
         launcherSubsystem = new LauncherSubsystem(hardwareMap);
@@ -59,9 +59,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     public void onUpdate() {
 
         Gamepads.gamepad1().a()
-                .toggleOnBecomesTrue()
-                    .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
-                    .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
+            .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
+            .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
 
 
         if (gamepad1.yWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
@@ -136,24 +135,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         }
 
         swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
-
-//        telemetry.addData("gamepad1 y: ", gamepad1.y);
-//        telemetry.addData("chamberOffset", chamberOffset);
-//        telemetry.addData("intaking: ", intaking);
-//        telemetry.addData("outtaking: ", outtaking);
-//        telemetry.addData("Rotary Debug: ",launcherSubsystem.rotarySubsystem.debugText());
-//        telemetry.addData("\n\nIntake Debug: ",intakeSubystem.debugText());
-//        telemetry.addData("\n\nOuttake Debug: ", launcherSubsystem.outtakeSubsystem.debugText());
-//        userInterface += "\nFlywheel Speed: " + outtakeSubystem.getVel() + " / " +outtakeSubystem.getTargetVel() + "\n";
-//        userInterface += "\n nudge amount: " + ro[tarySubsystem.getChamberOffset2();
-//        userInterface += "\n" + rotarySubsystem.debugText();
-//        for (int i = 0; i < 20; i++) {
-//            userInterface += outtakeSubystem.getVel() / 2680 > i/20.0 ? "[]" : "-";
-//        }
-//        telemetry.addLine(launcherSubsystem.debugText());
-//        telemetry.addLine(userInterface);
-//        telemetry.addLine(swerveDrivetrain.debugString());
-        telemetry.update();
 
         launcherSubsystem.update();
     }
