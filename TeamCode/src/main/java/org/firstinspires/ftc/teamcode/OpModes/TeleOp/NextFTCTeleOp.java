@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
@@ -23,6 +24,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     private double movementScaler = 1.0;
     public static double outtakePreset1 = 1900;
     public static double outtakePreset2 = 2560;
+
+    private Timer timer = new Timer();
 
     private static LauncherSubsystem launcherSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
@@ -58,7 +61,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        Gamepads.gamepad1().a()
+        Gamepads.gamepad1().a().toggleOnBecomesTrue()
             .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
             .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
 
@@ -133,6 +136,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             movementScaler = 1;
             launcherSubsystem.stateUpdate(0);
         }
+
+        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
+        telemetry.update();
+        timer.reset();
 
         swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
 
