@@ -54,17 +54,13 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-
-
+        Gamepads.gamepad1().a().toggleOnBecomesTrue()
+                .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
+                .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
     }
 
     @Override
     public void onUpdate() {
-
-        Gamepads.gamepad1().a().toggleOnBecomesTrue()
-            .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
-            .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
-
 
         if (gamepad1.yWasPressed() && !launcherSubsystem.outtakeSubsystem.getTransitioning()) {
             launcherSubsystem.rotarySubsystem.setHalfChamber(!launcherSubsystem.rotarySubsystem.getHalfChamber());

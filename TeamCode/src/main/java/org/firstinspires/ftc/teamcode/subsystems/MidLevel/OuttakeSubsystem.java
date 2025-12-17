@@ -9,12 +9,14 @@ import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.impl.ServoEx;
 
 @Configurable
 public class OuttakeSubsystem implements Subsystem {
     private boolean isOn = false;
-    private final DcMotorEx motor;
-    private final Servo servo;
+    private final MotorEx motor = new MotorEx(UniConstants.OUTTAKE_MOTOR_STRING);
+    private final ServoEx servo = new ServoEx(UniConstants.OUTTAKE_SERVO_STRING);
     public static double fullOff = 0.3, off = 0.5, on = 0.82, fullOn = 0.85;
     private double servoPos = 0.3;
     private double motorPower = 0.8;
@@ -23,10 +25,6 @@ public class OuttakeSubsystem implements Subsystem {
     public static double p = 0.0001, d = 0.000001, f = 0, l = 0;
     private PDFLController mCon = new PDFLController(p,d,f,l);
 
-    public OuttakeSubsystem(String motor, String servo, HardwareMap hMap){
-        this.motor = hMap.get(DcMotorEx.class, motor);
-        this.servo = hMap.get(Servo.class, servo);
-    }
 
     public boolean getTransitioning() {
         return transitioning;
