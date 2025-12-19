@@ -9,11 +9,13 @@ import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.impl.MotorEx;
 
 @Configurable
 // This is basically the same as the intake and outtake because they're all just one motor spinning
 public class RotarySubsystem implements Subsystem {
-    private final DcMotorEx motor;
+    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING);
+
     private boolean isOn = false;
     private double motorSpeed = 0.2;
     private static double p = 0.6, d = 0, f = 0, l = 0.07;
@@ -22,21 +24,19 @@ public class RotarySubsystem implements Subsystem {
     private double currentPosition = 0;
     private double targetPosition = 0;
     private final double ticksPerRotation = (537.7*170)/38;
-    private final int chamberTicks = (int) (ticksPerRotation/3);
     private double chamber1 = 2*Math.PI*1/3;
     private double chamber2 = 2*Math.PI*2/3;
     private double chamber3 = 2*Math.PI;
 
     private boolean halfChamber = false;
     private double chamberOffset = 0;
-    private double chamberOffset2 = 0;
 
     // Constructor for building a Rotary Subsystem object
-    public RotarySubsystem(HardwareMap hMap, String motor) {
-        this.motor = hMap.get(DcMotorEx.class, motor);
-        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.motor.setMode(UniConstants.ROTARY_RUN_MODE);
-    }
+//    public RotarySubsystem(HardwareMap hMap, String motor) {
+//        this.motor = hMap.get(DcMotorEx.class, motor);
+//        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        this.motor.setMode(UniConstants.ROTARY_RUN_MODE);
+//    }
 
     // Getter method for returning the isOn boolean
     public boolean getIsOn() {return isOn;}
@@ -52,25 +52,7 @@ public class RotarySubsystem implements Subsystem {
         this.isOn = isOn;
     }
 
-    // Setter method for setting motorSpeed to an input value
-    public void setMotorSpeed(double motorSpeed) {
-        this.motorSpeed = motorSpeed;
-    }
-
-    public void setTargetPosition(int targetPosition) {this.targetPosition = targetPosition;}
-
-    public void setTargetPositionDeg(int targetPosition) {this.targetPosition = (int) (targetPosition*ticksPerRotation/360);}
-
-    public void setTargetPositionRad(int targetPosition) {this.targetPosition = (int) (targetPosition*ticksPerRotation/2/Math.PI);}
-
-
-    public void setChamberOffset2(double set) {
-        chamberOffset2 = set;
-    }
-    public double getChamberOffset2() {
-        return chamberOffset2;
-    }
-    public void Chamber(int chamber) {
+    private void Chamber(int chamber) {
         if (chamber == 1) {
             targetPosition = chamber1;
             currentChamber = 1;
@@ -124,7 +106,7 @@ public class RotarySubsystem implements Subsystem {
 
         if(isOn) {
             if(targetPosition > currentPosition) {
-                mCon.setTarget(targetPosition + chamberOffset + chamberOffset2);
+                mCon.setTarget(targetPosition + chamberOffset);
             }
             else {
                 mCon.setTarget(targetPosition+Math.PI*2 + chamberOffset);

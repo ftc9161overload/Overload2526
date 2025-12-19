@@ -17,6 +17,7 @@ public class OuttakeSubsystem implements Subsystem {
     private boolean isOn = false;
     private final MotorEx motor = new MotorEx(UniConstants.OUTTAKE_MOTOR_STRING);
     private final ServoEx servo = new ServoEx(UniConstants.OUTTAKE_SERVO_STRING);
+
     public static double fullOff = 0.3, off = 0.5, on = 0.82, fullOn = 0.85;
     private double servoPos = 0.3;
     private double motorPower = 0.8;
