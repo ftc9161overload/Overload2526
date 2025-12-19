@@ -15,19 +15,20 @@ import dev.nextftc.hardware.impl.ServoEx;
 @Configurable
 public class OuttakeSubsystem implements Subsystem {
     private boolean isOn = false;
-    private final MotorEx motor = new MotorEx(UniConstants.OUTTAKE_MOTOR_STRING);
-    private final ServoEx servo = new ServoEx(UniConstants.OUTTAKE_SERVO_STRING);
+    public static final OuttakeSubsystem INSTANCE = new OuttakeSubsystem();
 
-    public static double fullOff = 0.3, off = 0.5, on = 0.82, fullOn = 0.85;
-    private double servoPos = 0.3;
+    public static double pos1 = 1500;
+    public static double pos2 = 2500;
     private double motorPower = 0.8;
     private double targetVel = 1;
     private boolean transitioning = false;
     public static double p = 0.0001, d = 0.000001, f = 0, l = 0;
     private PDFLController mCon = new PDFLController(p,d,f,l);
 
+    private OuttakeSubsystem() {new SetPower(motor, 0); new SetPosition(servo, fullOff);}
 
-    public boolean getTransitioning() {
+    
+    /*public boolean getTransitioning() {
         return transitioning;
     }
 
@@ -103,5 +104,6 @@ public class OuttakeSubsystem implements Subsystem {
     public String debugText() {
         mCon.setPDFL(p,d,f,l);
         return "motorSpeed: " + motorPower + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nMotor Val: " + motor.getVelocity() + "\nTarget Vel: " + targetVel;
-    }
+    */
+   
 }

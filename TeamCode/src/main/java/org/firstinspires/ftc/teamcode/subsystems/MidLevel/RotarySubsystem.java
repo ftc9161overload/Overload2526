@@ -8,14 +8,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
+import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.core.commands.Command;
 
 @Configurable
-// This is basically the same as the intake and outtake because they're all just one motor spinning
 public class RotarySubsystem implements Subsystem {
     private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING);
-
+    public static final RotarySubsystem INSTANCE = new RotarySubsystem();
+    private RotarySubsystem() {}
+    
     private boolean isOn = false;
     private double motorSpeed = 0.2;
     private static double p = 0.6, d = 0, f = 0, l = 0.07;
@@ -68,7 +71,7 @@ public class RotarySubsystem implements Subsystem {
 
     }
 
-    public void previousChamber() {
+    public Command previousChamber = new InstantCommand(() -> {
         if(currentChamber == 1) {
             Chamber(3);
         }
@@ -78,8 +81,9 @@ public class RotarySubsystem implements Subsystem {
         else if (currentChamber == 3) {
             Chamber(2);
         }
-    }
-    public void nextChamber() {
+    });
+    
+    public Command nextChamber = new InstantCommand(() -> {
         if (currentChamber == 1) {
             Chamber(2);
         }
@@ -89,10 +93,22 @@ public class RotarySubsystem implements Subsystem {
         else if (currentChamber == 3) {
             Chamber(1);
         }
-    }
+    });
 
-    public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
+    // public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
 
+    public Command setHalfChamberOn = new InstantCommand(() -> {
+        this.halfChamber = true;
+    });
+
+    public Command setHalfChamberOff = new InstantCommand(() -> {
+        this.halfChamber = false;
+    });
+    
+    public Command toggleHalfChamber = new InstantCommand(() -> {
+        halfChamber = !halfChamber;
+    });
+    
 
     // Runs the motor if isOn is true
     @Override
@@ -117,6 +133,7 @@ public class RotarySubsystem implements Subsystem {
         }
 
     }
+    
     public String debugText() {
         mCon.setPDFL(p,d,f,l);
         return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;

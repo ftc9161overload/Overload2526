@@ -6,16 +6,25 @@ import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 
-import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.core.subsystems.SubsystemGroup;
 @Configurable
-public class LauncherSubsystem implements Subsystem {
-    public OuttakeSubsystem outtakeSubsystem;
-    public RotarySubsystem rotarySubsystem;
+public class LauncherSubsystem extends SubsystemGroup {
+    public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
+    private LauncherSubsystem() {
+        super(
+            OuttakeFlipperSubsystem.INSTANCE,
+            OuttakeWheelSubsystem.INSTANCE,
+            RotarySubsystem.INSTANCE
+        );
+    }
+
+
     private int currentState = 0;
-   // public static double outtakeTarget = 1500;
+    // public static double outtakeTarget = 1500;
     private int chamber = 0;
     private boolean start = false;
     private Timer timer = new Timer();
@@ -24,10 +33,6 @@ public class LauncherSubsystem implements Subsystem {
 
     private int shootCount = 0;
 
-    public LauncherSubsystem(HardwareMap hMap) {
-        outtakeSubsystem = new OuttakeSubsystem();
-        rotarySubsystem = new RotarySubsystem(hMap, UniConstants.ROTARY_MOTOR_STRING);
-    }
 
     public boolean getIsInPosition() {
 //        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
