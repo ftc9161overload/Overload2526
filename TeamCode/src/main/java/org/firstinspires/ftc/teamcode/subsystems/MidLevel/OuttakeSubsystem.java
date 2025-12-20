@@ -25,7 +25,6 @@ public class OuttakeSubsystem implements Subsystem {
     public static double p = 0.0001, d = 0.000001, f = 0, l = 0;
     private PDFLController mCon = new PDFLController(p,d,f,l);
 
-    private OuttakeSubsystem() {new SetPower(motor, 0); new SetPosition(servo, fullOff);}
 
     
     /*public boolean getTransitioning() {

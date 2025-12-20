@@ -7,10 +7,19 @@ import org.firstinspires.ftc.teamcode.Util.Timer;
 
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 
+import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelGroup;
+import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.subsystems.SubsystemGroup;
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.impl.MotorEx;
+
 @Configurable
 public class LauncherSubsystem extends SubsystemGroup {
     public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
@@ -23,37 +32,56 @@ public class LauncherSubsystem extends SubsystemGroup {
     }
 
 
-    private int currentState = 0;
-    // public static double outtakeTarget = 1500;
-    private int chamber = 0;
     private boolean start = false;
-    private Timer timer = new Timer();
-    private boolean reset = true;
     public static int servoTime = 1;
-
-    private int shootCount = 0;
-
 
     public boolean getIsInPosition() {
 //        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
-        if((Math.abs(MathUtil.piWraparound(rotarySubsystem.getPosition() - rotarySubsystem.getTargetPosition()))) > 0.06) {
+        if((Math.abs(MathUtil.piWraparound(RotarySubsystem.INSTANCE.getPosition() - RotarySubsystem.INSTANCE.getTargetPosition()))) > 0.06) {
            return true;
         }
         return false;
     }
 
-    public boolean getStart() {return start;}
-    public void setStart(boolean start) {this.start = start;}
-    public void setReset(boolean reset) {this.reset = reset;}
 
-    public void stateUpdate(int newState) {
-        currentState = newState;
-    }
+    // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
+    private Command setHalf = new InstantCommand(() -> {
+        if(RotarySubsystem.INSTANCE.getHalfChamber()) {
+            OuttakeFlipperSubsystem.INSTANCE.setOff.schedule();
+            RotarySubsystem.INSTANCE.setHalfChamberOff.requires(OuttakeFlipperSubsystem.INSTANCE);
+        }
+    });
 
-    public void setShootCount(int count) {
-        shootCount = count;
-    }
+    // Sets both the outtake wheel and moves the rotary to half chamber
+    private Command setup = new ParallelGroup(
+        OuttakeWheelSubsystem.INSTANCE.setSpeed3,
+            setHalf
+    );
 
+    // Turns the flipper servo on if the rotary is in an exact enough position
+    private Command launch = new InstantCommand(() -> {
+        if(getIsInPosition()) {
+            OuttakeFlipperSubsystem.INSTANCE.setOn.requires();
+        }
+    });
+
+    // Launches an artifact
+    public Command Launch1 = new SequentialGroup(
+
+            setup,
+            new Delay(servoTime),
+            launch,
+            new Delay(servoTime),
+            OuttakeFlipperSubsystem.INSTANCE.setOff.requires(),
+            new Delay(servoTime),
+            RotarySubsystem.INSTANCE.nextChamber.requires(OuttakeFlipperSubsystem.INSTANCE)
+
+    ).named("Launch");
+
+
+    // Previous code
+    // Sets the Outtake Wheel Subsystem to launch at the speed the method is named
+    /*
     public void update() {
         switch(currentState) {
             case 0:
@@ -143,5 +171,5 @@ public class LauncherSubsystem extends SubsystemGroup {
     }
     public String debugText() {
         return "\nCurrent State: " + currentState + "\nlauncher chamber: " + chamber + "\ntime: " + timer.getTimeSeconds();
-    }
+    }*/
 }

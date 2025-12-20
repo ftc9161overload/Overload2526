@@ -55,6 +55,7 @@ public class RotarySubsystem implements Subsystem {
         this.isOn = isOn;
     }
 
+
     private void Chamber(int chamber) {
         if (chamber == 1) {
             targetPosition = chamber1;
