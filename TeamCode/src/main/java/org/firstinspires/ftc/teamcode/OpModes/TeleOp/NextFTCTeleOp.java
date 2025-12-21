@@ -80,7 +80,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         // AUTO LAUNCH 1 ARTIFACT
         Gamepads.gamepad1().dpadUp()
-                .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch1);
+                .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch1());
 
         Gamepads.gamepad1().circle().toggleOnBecomesTrue()
                 .whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn)

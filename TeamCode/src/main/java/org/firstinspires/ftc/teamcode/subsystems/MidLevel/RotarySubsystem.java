@@ -12,14 +12,14 @@ import dev.nextftc.core.commands.Command;
 
 @Configurable
 public class RotarySubsystem implements Subsystem {
-    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).atPosition(0.0).brakeMode();
+    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).zeroed().brakeMode();
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
     public boolean locked = true;
     private RotarySubsystem() {}
 
     private static double p = 0.6, d = 0, f = 0, l = 0.07;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d,f,l);
-    private int currentChamber = 3;
+    private int currentChamber = 1;
     private double currentPosition = 0;
     private double targetPosition = 0;
     private final double ticksPerRotation = (537.7*170)/38;
@@ -86,7 +86,7 @@ public class RotarySubsystem implements Subsystem {
         }
     });
 
-     public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
+    //public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
     public Command setHalfChamberOn = new InstantCommand(() -> {
         this.halfChamber = true;
     });

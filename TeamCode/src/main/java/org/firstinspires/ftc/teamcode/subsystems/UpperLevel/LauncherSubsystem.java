@@ -61,17 +61,19 @@ public class LauncherSubsystem extends SubsystemGroup {
     );
 
     // Launches an artifact
-    public Command Launch1 = new SequentialGroup(
-        setup,
-        new Delay(1),
-        RotarySubsystem.INSTANCE.lock,
-        OuttakeFlipperSubsystem.INSTANCE.setFullOn,
-        new Delay(1),
-        OuttakeFlipperSubsystem.INSTANCE.setFullOff,
-        RotarySubsystem.INSTANCE.unlock,
-        new Delay(1),
-        RotarySubsystem.INSTANCE.nextChamber
-    );
+    public Command Launch1(){
+        return new SequentialGroup(
+                setup,
+                new Delay(1),
+                RotarySubsystem.INSTANCE.lock,
+                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
+                new Delay(1),
+                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
+                new Delay(1),
+                RotarySubsystem.INSTANCE.unlock,
+                RotarySubsystem.INSTANCE.nextChamber
+        );
+    }
 
 
     // Previous code
