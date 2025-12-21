@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
@@ -18,8 +15,7 @@ public class RotarySubsystem implements Subsystem {
     private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING);
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
     private RotarySubsystem() {}
-    
-    private double motorSpeed = 0.2;
+
     private static double p = 0.6, d = 0, f = 0, l = 0.07;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d,f,l);
     private int currentChamber = 1;
@@ -28,13 +24,13 @@ public class RotarySubsystem implements Subsystem {
     private final double ticksPerRotation = (537.7*170)/38;
     private double chamber1 = 2*Math.PI*1/3;
     private double chamber2 = 2*Math.PI*2/3;
-    private double chamber3 = 2*Math.PI;
+    private double chamber3 = 0;
 
-    private boolean halfChamber = false;
+    public boolean halfChamber = false;
     private double chamberOffset = 0;
 
     // Getter method for returning the isOn boolean
-    public boolean getHalfChamber() {return halfChamber;}
+
     public double getPosition() {
         return currentPosition;
     }
@@ -84,8 +80,7 @@ public class RotarySubsystem implements Subsystem {
         }
     });
 
-    // public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
-
+     public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
     public Command setHalfChamberOn = new InstantCommand(() -> {
         this.halfChamber = true;
     });
@@ -95,7 +90,7 @@ public class RotarySubsystem implements Subsystem {
     });
     
     public Command toggleHalfChamber = new InstantCommand(() -> {
-        halfChamber = !halfChamber;
+        this.halfChamber = !halfChamber;
     });
     
 
@@ -124,7 +119,7 @@ public class RotarySubsystem implements Subsystem {
     
     public String debugText() {
         mCon.setPDFL(p,d,f,l);
-        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;
+        return "Target Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;
     }
 
 }
