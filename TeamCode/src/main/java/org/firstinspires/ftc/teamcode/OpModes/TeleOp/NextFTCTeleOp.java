@@ -50,6 +50,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        RotarySubsystem.INSTANCE.locked = false;
         // INTAKE (HOLD TO USE)
         Gamepads.gamepad1().a()
                 .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
