@@ -54,7 +54,7 @@ public class LauncherSubsystem extends SubsystemGroup {
     );
 
     // Turns the flipper servo on if the rotary is in an exact enough position
-    private Command servoOn = new InstantCommand(() -> {
+    private Command launch = new InstantCommand(() -> {
         if(getIsInPosition()) {
             OuttakeFlipperSubsystem.INSTANCE.setOn.requires();
         }
@@ -65,25 +65,13 @@ public class LauncherSubsystem extends SubsystemGroup {
 
             setup,
             new Delay(servoTime),
-            servoOn,
+            launch,
             new Delay(servoTime),
             OuttakeFlipperSubsystem.INSTANCE.setOff.requires(),
             new Delay(servoTime),
             RotarySubsystem.INSTANCE.nextChamber.requires(OuttakeFlipperSubsystem.INSTANCE)
 
     ).named("Launch");
-
-    public Command Launch2 = new SequentialGroup(
-            Launch1,
-            Launch1
-    ).named("Launch2");
-
-    public Command Launch3 = new SequentialGroup(
-            Launch1,
-            Launch1,
-            Launch1,
-            RotarySubsystem.INSTANCE.setHalfChamberOn
-    ).named("Launch3");
 
 
     // Previous code
