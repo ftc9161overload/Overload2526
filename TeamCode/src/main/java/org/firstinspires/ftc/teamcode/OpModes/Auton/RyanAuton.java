@@ -16,7 +16,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @Autonomous(name = "Ryan's Auton", group = "Auton")
 @Configurable
 public class RyanAuton extends NextFTCOpMode {
-
+    /*
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
     private double movementScaler = 1.0;
@@ -84,5 +84,5 @@ public class RyanAuton extends NextFTCOpMode {
         intakeSubsystem.periodic();
         launcherSubsystem.update();
     }
-
+*/
 }

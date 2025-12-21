@@ -31,16 +31,11 @@ public class LauncherSubsystem extends SubsystemGroup {
         );
     }
 
-
-    private boolean start = false;
     public static int servoTime = 1;
 
     public boolean getIsInPosition() {
 //        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
-        if((Math.abs(MathUtil.piWraparound(RotarySubsystem.INSTANCE.getPosition() - RotarySubsystem.INSTANCE.getTargetPosition()))) > 0.06) {
-           return true;
-        }
-        return false;
+        return (Math.abs(MathUtil.piWraparound(RotarySubsystem.INSTANCE.getPosition() - RotarySubsystem.INSTANCE.getTargetPosition()))) > 0.06;
     }
 
 

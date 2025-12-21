@@ -19,7 +19,6 @@ public class RotarySubsystem implements Subsystem {
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
     private RotarySubsystem() {}
     
-    private boolean isOn = false;
     private double motorSpeed = 0.2;
     private static double p = 0.6, d = 0, f = 0, l = 0.07;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d,f,l);
@@ -34,15 +33,7 @@ public class RotarySubsystem implements Subsystem {
     private boolean halfChamber = false;
     private double chamberOffset = 0;
 
-    // Constructor for building a Rotary Subsystem object
-//    public RotarySubsystem(HardwareMap hMap, String motor) {
-//        this.motor = hMap.get(DcMotorEx.class, motor);
-//        this.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        this.motor.setMode(UniConstants.ROTARY_RUN_MODE);
-//    }
-
     // Getter method for returning the isOn boolean
-    public boolean getIsOn() {return isOn;}
     public boolean getHalfChamber() {return halfChamber;}
     public double getPosition() {
         return currentPosition;
@@ -51,9 +42,6 @@ public class RotarySubsystem implements Subsystem {
         return targetPosition;
     }
     // Setter method for setting isOn to an input value
-    public void setIsOn(boolean isOn) {
-        this.isOn = isOn;
-    }
 
 
     private void Chamber(int chamber) {
@@ -121,23 +109,22 @@ public class RotarySubsystem implements Subsystem {
         }
         currentPosition = ((motor.getCurrentPosition() % ticksPerRotation)/ticksPerRotation * 2 * Math.PI);
 
-        if(isOn) {
-            if(targetPosition > currentPosition) {
-                mCon.setTarget(targetPosition + chamberOffset);
-            }
-            else {
-                mCon.setTarget(targetPosition+Math.PI*2 + chamberOffset);
-            }
-
-            mCon.update(currentPosition);
-            motor.setPower(mCon.runPDFL(0.01));
+        if(targetPosition > currentPosition) {
+            mCon.setTarget(targetPosition + chamberOffset);
         }
+        else {
+            mCon.setTarget(targetPosition+Math.PI*2 + chamberOffset);
+        }
+
+        mCon.update(currentPosition);
+        motor.setPower(mCon.runPDFL(0.01));
+
 
     }
     
     public String debugText() {
         mCon.setPDFL(p,d,f,l);
-        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nisOn: " + isOn + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;
+        return "motorSpeed: " + motorSpeed + "\nPDFL: " + mCon.runPDFL(0.1) + "\nCurrent Chamber: " + currentChamber + "\nCurrent Position: " + currentPosition + "\nTarget Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;
     }
 
 }
