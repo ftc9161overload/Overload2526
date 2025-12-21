@@ -35,7 +35,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onInit() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE, RotarySubsystem.INSTANCE, OuttakeFlipperSubsystem.INSTANCE),
+                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -50,21 +50,51 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        // INTAKE (HOLD TO USE)
         Gamepads.gamepad1().a()
                 .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
                 .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
 
-        Gamepads.gamepad1().b().whenBecomesTrue(RotarySubsystem.INSTANCE.toggleHalfChamber);
+        // SET HALF ON THE ROTARY AND MAKES SURE FLIPPER IS NOT IN THE WAY
+        Gamepads.gamepad1().y().toggleOnBecomesTrue()
+                .whenBecomesTrue(LauncherSubsystem.INSTANCE.setHalfOn)
+                .whenBecomesFalse(LauncherSubsystem.INSTANCE.setHalfOff);
+
+        // OUTTAKE WHEEL STUFF
+        Gamepads.gamepad1().x()
+                .whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.turnOff);
+
+        Gamepads.gamepad1().rightTrigger().greaterThan(0.3)
+                .whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.setSpeedHigher);
+
+        Gamepads.gamepad1().leftTrigger().greaterThan(0.3)
+                .whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.setSpeedLower);
+
+        // CHANGE ROTARY POSITION
+        Gamepads.gamepad1().rightBumper()
+                .whenBecomesTrue(RotarySubsystem.INSTANCE.nextChamber);
+
+        Gamepads.gamepad1().leftBumper()
+                .whenBecomesTrue(RotarySubsystem.INSTANCE.previousChamber);
+
+        // AUTO LAUNCH 1 ARTIFACT
+        Gamepads.gamepad1().dpadUp()
+                .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch1);
+
+        Gamepads.gamepad1().circle().toggleOnBecomesTrue()
+                .whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn)
+                .whenBecomesFalse(OuttakeFlipperSubsystem.INSTANCE.setFullOff);
     }
 
     @Override
     public void onUpdate() {
 
         telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
+        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
         telemetry.update();
         timer.reset();
 
-        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
+        //swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
     }
 
 }

@@ -31,7 +31,7 @@ public class LauncherSubsystem extends SubsystemGroup {
         );
     }
 
-    public static int servoTime = 1;
+    public static double servoTime = 2;
 
     public boolean getIsInPosition() {
 //        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
@@ -40,38 +40,33 @@ public class LauncherSubsystem extends SubsystemGroup {
 
 
     // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
-    private Command setHalf = new InstantCommand(() -> {
-        if(RotarySubsystem.INSTANCE.getHalfChamber()) {
-            OuttakeFlipperSubsystem.INSTANCE.setOff.schedule();
-            RotarySubsystem.INSTANCE.setHalfChamberOff.requires(OuttakeFlipperSubsystem.INSTANCE);
+    public Command setHalfOn = new InstantCommand(() -> {
+        if(RotarySubsystem.INSTANCE.halfChamber) {
+            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();
+            RotarySubsystem.INSTANCE.setHalfChamberOff.schedule();
+        }
+    });
+
+    public Command setHalfOff = new InstantCommand(() -> {
+        if(!RotarySubsystem.INSTANCE.halfChamber) {
+            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();
+            RotarySubsystem.INSTANCE.setHalfChamberOn.schedule();
         }
     });
 
     // Sets both the outtake wheel and moves the rotary to half chamber
     private Command setup = new ParallelGroup(
-        OuttakeWheelSubsystem.INSTANCE.setSpeed3,
-            setHalf
+        OuttakeWheelSubsystem.INSTANCE.setSpeed1,
+        setHalfOn
     );
 
-    // Turns the flipper servo on if the rotary is in an exact enough position
-    private Command launch = new InstantCommand(() -> {
-        if(getIsInPosition()) {
-            OuttakeFlipperSubsystem.INSTANCE.setOn.requires();
-        }
-    });
-
     // Launches an artifact
-    public Command Launch1 = new SequentialGroup(
-
-            setup,
-            new Delay(servoTime),
-            launch,
-            new Delay(servoTime),
-            OuttakeFlipperSubsystem.INSTANCE.setOff.requires(),
-            new Delay(servoTime),
-            RotarySubsystem.INSTANCE.nextChamber.requires(OuttakeFlipperSubsystem.INSTANCE)
-
-    ).named("Launch");
+    public Command Launch1 = new InstantCommand(() -> {
+        setup.thenWait(servoTime);
+        OuttakeFlipperSubsystem.INSTANCE.setOn.thenWait(servoTime);
+        OuttakeFlipperSubsystem.INSTANCE.setFullOff.thenWait(servoTime);
+        RotarySubsystem.INSTANCE.nextChamber.requires(OuttakeFlipperSubsystem.INSTANCE);
+    });
 
 
     // Previous code
