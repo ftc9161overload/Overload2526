@@ -55,19 +55,6 @@ public class NextFTCTeleOp extends NextFTCOpMode {
                 .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
 
         Gamepads.gamepad1().b().whenBecomesTrue(RotarySubsystem.INSTANCE.toggleHalfChamber);
-        Gamepads.gamepad1().rightBumper().whenBecomesTrue(RotarySubsystem.INSTANCE.nextChamber);
-        Gamepads.gamepad1().leftBumper().whenBecomesTrue(RotarySubsystem.INSTANCE.previousChamber);
-
-        Gamepads.gamepad1().rightTrigger().greaterThan(0.2).whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.setSpeedHigher);
-        Gamepads.gamepad1().leftTrigger().greaterThan(0.2).whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.setSpeedLower);
-
-        Gamepads.gamepad1().x().whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch1);
-        Gamepads.gamepad1().y().whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch3);
-
-        Gamepads.gamepad1().dpadUp().whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setOn);
-        Gamepads.gamepad1().dpadRight().whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn);
-        Gamepads.gamepad1().dpadDown().whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setOff);
-        Gamepads.gamepad1().dpadLeft().whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOff);
     }
 
     @Override
