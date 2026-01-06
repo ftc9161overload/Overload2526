@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
 
+import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
@@ -12,20 +13,22 @@ import dev.nextftc.core.commands.Command;
 
 @Configurable
 public class RotarySubsystem implements Subsystem {
-    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).zeroed().brakeMode();
+    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode();
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
     public boolean locked = true;
     private RotarySubsystem() {}
 
     private static double p = 0.6, d = 0, f = 0, l = 0.07;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d,f,l);
-    private int currentChamber = 1;
+    private int currentChamber = 3;
     private double currentPosition = 0;
     private double targetPosition = 0;
     private final double ticksPerRotation = (537.7*170)/38;
     private double chamber1 = 2*Math.PI*1/3;
     private double chamber2 = 2*Math.PI*2/3;
     private double chamber3 = 0;
+
+    private double globalOffset = motor.getCurrentPosition();
 
     public boolean halfChamber = false;
     private double chamberOffset = 0;
@@ -108,6 +111,8 @@ public class RotarySubsystem implements Subsystem {
             } else {
                 chamberOffset = 0;
             }
+            chamberOffset = MathUtil.piWraparound(chamberOffset + globalOffset);
+
             currentPosition = ((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI);
 
             if (targetPosition > currentPosition) {
