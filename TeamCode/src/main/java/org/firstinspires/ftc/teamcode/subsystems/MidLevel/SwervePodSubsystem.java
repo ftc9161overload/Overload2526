@@ -8,6 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.core.commands.Command;
+
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -149,6 +154,9 @@ public class SwervePodSubsystem {
         sCon.setPDFL(p,d,f,l);
     }
 
+    public double getAnalogInPos() {
+        return (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
+    }
     public String debugText() {
         setPDFL(p,d,f,l);
         return "Servo: " + sIn.getVoltage() +
@@ -159,6 +167,13 @@ public class SwervePodSubsystem {
                 "\n\n" + sCon.debugText();
     }
 
+    public void setPos(int pos) {
+        setTargetPos = pos;
+    }
+
+    public void setServoPower(double power) {
+        servo.setPower(power);
+    }
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         motor.setZeroPowerBehavior(zeroPowerBehavior);
     }

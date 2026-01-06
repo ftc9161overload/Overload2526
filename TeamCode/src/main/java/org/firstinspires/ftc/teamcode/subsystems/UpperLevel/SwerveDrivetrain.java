@@ -75,6 +75,17 @@ public class SwerveDrivetrain extends Drivetrain {
 
     }
 
+    public void setServoPowZero() {
+        for(SwervePodSubsystem pod : pods) {
+            pod.setServoPower(0);
+        }
+    }
+    public void setPosZero() {
+        for(SwervePodSubsystem pod : pods) {
+            pod.setPos(0);
+        }
+    }
+
 
 
     public void setMotorsToBrake() {
@@ -82,6 +93,10 @@ public class SwerveDrivetrain extends Drivetrain {
             pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         }
 
+    }
+
+    public SwervePodSubsystem[] getSwervePods() {
+        return pods;
     }
 
     public void simpleRunDrive(double x, double y, double rotation) {
