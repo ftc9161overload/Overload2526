@@ -17,9 +17,10 @@ public class OuttakeWheelSubsystem implements Subsystem {
     public static final OuttakeWheelSubsystem INSTANCE = new OuttakeWheelSubsystem();
     private OuttakeWheelSubsystem() {}
 
-    // Diffrent speeds for the wheel to hit.
+    public int targetSpeed = 0;
+
+    // Different speeds for the wheel to hit.
     public int[] targetSpeeds = {1800, 2200, 2600};
-    private int targetSpeed = 0;
     private final PDFLController pdfl = new PDFLController(0.002, 0.0001, 0.05, 0.1);
     
     public Command setSpeed1 = new InstantCommand(() -> {

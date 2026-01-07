@@ -31,14 +31,6 @@ public class LauncherSubsystem extends SubsystemGroup {
         );
     }
 
-    public static double servoTime = 2;
-
-    public boolean getIsInPosition() {
-//        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
-        return (Math.abs(MathUtil.piWraparound(RotarySubsystem.INSTANCE.getPosition() - RotarySubsystem.INSTANCE.getTargetPosition()))) > 0.06;
-    }
-
-
     // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
     public Command setHalfOn = new InstantCommand(() -> {
         if(RotarySubsystem.INSTANCE.halfChamber) {
@@ -55,21 +47,56 @@ public class LauncherSubsystem extends SubsystemGroup {
     });
 
     // Sets both the outtake wheel and moves the rotary to half chamber
-    private Command setup = new ParallelGroup(
-        OuttakeWheelSubsystem.INSTANCE.setSpeed1,
-        setHalfOn
-    );
+    public Command setup = new InstantCommand(() -> {
+        if(!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
+            OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
+            new Delay(0.6);
+        }
+        setHalfOn.schedule();
+        new Delay(0.2);
+    });
 
     // Launches an artifact
     public Command Launch1(){
         return new SequentialGroup(
                 setup,
-                new Delay(1),
                 RotarySubsystem.INSTANCE.lock,
                 OuttakeFlipperSubsystem.INSTANCE.setFullOn,
-                new Delay(1),
+                new Delay(0.7),
                 OuttakeFlipperSubsystem.INSTANCE.setFullOff,
-                new Delay(1),
+                new Delay(0.4),
+                RotarySubsystem.INSTANCE.unlock,
+                RotarySubsystem.INSTANCE.nextChamber
+        );
+    }
+    public Command Launch3() {
+        return new SequentialGroup(
+                setup,
+                RotarySubsystem.INSTANCE.lock,
+                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
+                new Delay(0.7),
+                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
+                new Delay(0.4),
+                RotarySubsystem.INSTANCE.unlock,
+                RotarySubsystem.INSTANCE.nextChamber,
+                new Delay(0.4),
+
+                setup,
+                RotarySubsystem.INSTANCE.lock,
+                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
+                new Delay(0.7),
+                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
+                new Delay(0.4),
+                RotarySubsystem.INSTANCE.unlock,
+                RotarySubsystem.INSTANCE.nextChamber,
+                new Delay(0.4),
+
+                setup,
+                RotarySubsystem.INSTANCE.lock,
+                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
+                new Delay(0.7),
+                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
+                new Delay(0.4),
                 RotarySubsystem.INSTANCE.unlock,
                 RotarySubsystem.INSTANCE.nextChamber
         );

@@ -35,12 +35,13 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onInit() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE),
+                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-
+        OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+
     }
 
     @Override
@@ -81,6 +82,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         // AUTO LAUNCH 1 ARTIFACT
         Gamepads.gamepad1().dpadUp()
                 .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch1());
+
+        // AUTO LAUNCH 3 ARTIFACT
+        Gamepads.gamepad1().dpadDown()
+                .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch3());
 
         Gamepads.gamepad1().circle().toggleOnBecomesTrue()
                 .whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn)
