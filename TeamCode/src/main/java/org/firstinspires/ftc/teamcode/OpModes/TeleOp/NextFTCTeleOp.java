@@ -22,10 +22,14 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
-
+    public NextFTCTeleOp() {
+        addComponents(
+            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
+            BulkReadComponent.INSTANCE,
+            BindingsComponent.INSTANCE
+        );
+    }
     private double movementScaler = 1.0;
-    public static double outtakePreset1 = 1900;
-    public static double outtakePreset2 = 2560;
 
     private Timer timer = new Timer();
 
@@ -34,14 +38,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
         OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
-
+        //RotarySubsystem.INSTANCE.resetOffset();
     }
 
     @Override

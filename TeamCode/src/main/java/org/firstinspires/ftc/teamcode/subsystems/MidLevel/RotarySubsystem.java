@@ -34,8 +34,17 @@ public class RotarySubsystem implements Subsystem {
 
     private double globalOffset;
     public void initialize() {
-        motor.zeroed();
-        globalOffset = motor.getCurrentPosition();
+        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
+        //currentChamber = 0;
+        //currentPosition = 0;
+        //chamberOffset = 0;
+    }
+
+    public void resetOffset() {
+        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
+        currentChamber = 0;
+        currentPosition = 0;
+        chamberOffset = 0;
     }
     // Getter method for returning the isOn boolean
     public double getPosition() {
@@ -110,20 +119,18 @@ public class RotarySubsystem implements Subsystem {
     // Runs the motor if isOn is true
     @Override
     public void periodic() {
-
         if (halfChamber) {
             chamberOffset = Math.PI / 3;
         } else {
             chamberOffset = 0;
         }
-        chamberOffset = MathUtil.piWraparound(chamberOffset + globalOffset);
 
         currentPosition = ((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI);
 
         if (targetPosition > currentPosition) {
-            mCon.setTarget(targetPosition + chamberOffset);
+            mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset + globalOffset));
         } else {
-            mCon.setTarget(targetPosition + Math.PI * 2 + chamberOffset);
+            mCon.setTarget(MathUtil.piWraparound( targetPosition + Math.PI * 2 + chamberOffset + globalOffset));
         }
 
         mCon.update(currentPosition);
@@ -133,7 +140,16 @@ public class RotarySubsystem implements Subsystem {
     
     public String debugText() {
         mCon.setPDFL(p,d,fn,l);
-        return "Current Pos"+ currentPosition + "\nTarget Position: " + targetPosition + "\nCurrent Offset: " + chamberOffset + "\n HalfChamber?: " + halfChamber;
-    }
-
+        return "locked: " + locked +
+                "\np: " + p +
+                "\nd: " + d +
+                "\nf: " + f +
+                "\nl: " + l +
+                "\nfn: " + fn +
+                "\ncurrentChamber: " + currentChamber +
+                "\ncurrentPosition: " + currentPosition +
+                "\ntargetPosition: " + targetPosition +
+                "\nhalfChamber: " + halfChamber +
+                "\nchamberOffset: " + chamberOffset +
+                "\nglobalOffset: " + globalOffset;}
 }
