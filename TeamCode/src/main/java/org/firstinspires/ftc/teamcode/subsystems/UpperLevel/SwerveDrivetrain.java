@@ -12,11 +12,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
 
+import dev.nextftc.core.subsystems.Subsystem;
+
 /* Pedro Pathing Docs:  
 https://pedropathing.com/docs/pathing/custom/drivetrain
 */
 @Configurable
-public class SwerveDrivetrain extends Drivetrain {
+public class SwerveDrivetrain implements Subsystem {
 
     public static int flOffset = 242;
     public static int frOffset = 108;
@@ -49,31 +51,16 @@ public class SwerveDrivetrain extends Drivetrain {
         pods = new SwervePodSubsystem[]{fl, fr, bl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
     }
     
-    @Override
-    public double[] calculateDrive(Vector correctivePower, Vector headingPower, Vector pathingPower, double robotHeading) {
-        
-        return new double[0];
-    }
 
-    @Override
-    public double xVelocity() {
-        return 0;
-    };
 
-    @Override
-    public double yVelocity() {
-        return 0;
-    };
 
-    @Override
-    public void setXVelocity(double ahh) {
 
-    }
 
-    @Override
-    public void setYVelocity(double ahh) {
 
-    }
+
+
+
+
 
     public void setServoPowZero() {
         for(SwervePodSubsystem pod : pods) {
@@ -118,37 +105,21 @@ public class SwerveDrivetrain extends Drivetrain {
             pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         }
     }
-    @Override
-    public void runDrive(double[] drivePowers) {
+    
 
-    }
 
-    @Override
-    public void updateConstants() {
-
-    }
-
-    @Override
-    public void breakFollowing() {
-
-    }
-
-    @Override
     public void startTeleopDrive() {
 
     }
 
-    @Override
+
     public void startTeleopDrive(boolean brakeMode) {
 
     }
 
-    @Override
-    public double getVoltage() {
-        return 0;
-    }
 
-    @Override
+
+
     public String debugString() {
         String returnStr = "";
         for (SwervePodSubsystem swerve : pods) {
