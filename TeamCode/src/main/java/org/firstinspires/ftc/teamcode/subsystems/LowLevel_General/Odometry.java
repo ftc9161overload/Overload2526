@@ -26,7 +26,11 @@ public class Odometry implements Subsystem {
 
     @Override
     public void initialize() {
+        pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint");
         pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+    }
+
+    public void initReal() {
         pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint");
     }
 

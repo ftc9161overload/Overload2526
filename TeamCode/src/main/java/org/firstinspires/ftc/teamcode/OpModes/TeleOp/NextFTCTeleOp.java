@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
+import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
@@ -30,6 +31,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         );
     }
     private double movementScaler = 1.0;
+    public static double outtakePreset1 = 1900;
+    public static double outtakePreset2 = 2560;
 
     private Timer timer = new Timer();
 
@@ -38,8 +41,16 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onInit() {
+        addComponents(
+                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
+                BulkReadComponent.INSTANCE,
+                BindingsComponent.INSTANCE
+        );
         OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+
+        Odometry.INSTANCE.initReal();
+
         //RotarySubsystem.INSTANCE.resetOffset();
     }
 
@@ -94,8 +105,12 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
+        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x,gamepad2.left_stick_y,gamepad2.right_stick_x);
+
         telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
+        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
         telemetry.update();
         timer.reset();
 

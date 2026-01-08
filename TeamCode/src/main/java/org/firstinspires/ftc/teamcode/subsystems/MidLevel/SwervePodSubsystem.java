@@ -29,10 +29,11 @@ public class SwervePodSubsystem {
     private double mPow;
     private double servoOffset, currentPos, targetPos, flippedTargetPos;
     private double setTargetPos = 0;
-    private double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.07;
+    private double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.05;
     private Timer flipTimer = new Timer();
     private double flipCooldownSeconds = 0.2; // tweakable
-    private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
+    private PDFLControllerRadial sCon = new PDFLControllerRadial(p,d,f,l);
+    private boolean reverseServo = false;
 
     private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
 
@@ -53,6 +54,18 @@ public class SwervePodSubsystem {
         this.servoOffset = offset/360*2*Math.PI;
     }
     public void setServoOffsetRad(double offset) {this.servoOffset = offset;}
+    public void setServoReverse(boolean set) { reverseServo = set;}
+
+    public void setServoMKII() {
+        p = 0.6; d = 0.015; f = 0; l = .1;
+        sCon.setPDFL(p,d,f,l);
+        errorMin = 0.05;
+    }
+    public void setServoMKI() {
+        p = 0.8; d = 0.01; f = 0; l = .1;
+        sCon.setPDFL(p,d,f,l);
+        errorMin = 0.05;
+    }
 
 
     public double getRotationOffset() {return posOffset;}
@@ -79,7 +92,7 @@ public class SwervePodSubsystem {
                 }
 
                 sCon.update(currentPos);
-                servo.setPower(-sCon.runPDFL(errorMin));
+                servo.setPower((reverseServo) ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin) );
 
                 motor.setPower(drive.magnitude()*movementScaler);
                 break;
@@ -111,7 +124,8 @@ public class SwervePodSubsystem {
                 }
 
                 sCon.update(currentPos);
-                servo.setPower(-sCon.runPDFL(errorMin));
+                servo.setPower((reverseServo) ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin) );
+
 
                 // MUST compute diff from FINAL chosen target!
                 double diffFinal = Math.abs(MathUtil.piWraparound(setTargetPos - currentPos));
@@ -164,7 +178,7 @@ public class SwervePodSubsystem {
                 "\ntargetPos: " + targetPos +
                 "\nPDFL: "  + sCon.runPDFL(0.05) +
                 "\n Offset: " + servoOffset +
-                "\n\n" + sCon.debugText();
+                "\n" + sCon.debugText();
     }
 
     public void setPos(int pos) {

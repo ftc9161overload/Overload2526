@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
-@TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
+@TeleOp(name = "SwervePodServoAlign", group = "TeleOp")
 @Configurable
 public class SwervePodServoAlign extends OpMode {
     private static SwerveDrivetrain swerveDrivetrain;

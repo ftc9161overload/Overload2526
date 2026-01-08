@@ -29,10 +29,10 @@ public class AlignPods extends OpMode {
             SwerveDrivetrain.brOffset = (int) pods[3].getAnalogInPos();
         }
 
-        telemetry.addData("FL currentPos: ", pods[0].getAnalogInPos());
-        telemetry.addData("FR currentPos: ", pods[1].getAnalogInPos());
-        telemetry.addData("BL currentPos: ", pods[2].getAnalogInPos());
-        telemetry.addData("FR currentPos: ", pods[3].getAnalogInPos());
+        telemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos()));
+        telemetry.addData("FR currentPos: ", Math.toDegrees(pods[1].getAnalogInPos()));
+        telemetry.addData("BL currentPos: ", Math.toDegrees(pods[2].getAnalogInPos()));
+        telemetry.addData("FR currentPos: ", Math.toDegrees(pods[3].getAnalogInPos()));
 
         telemetry.addData("current FL: ", SwerveDrivetrain.flOffset);
         telemetry.addData("current FR: ", SwerveDrivetrain.frOffset);
