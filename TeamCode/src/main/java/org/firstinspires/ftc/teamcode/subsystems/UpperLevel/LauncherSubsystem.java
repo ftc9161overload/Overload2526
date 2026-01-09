@@ -58,8 +58,8 @@ public class LauncherSubsystem extends SubsystemGroup {
                             OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
                         }
                     })
-                .setIsDone(() -> OuttakeWheelSubsystem.INSTANCE.withinRange())
-                .setRequirements(this);
+                .setIsDone(OuttakeWheelSubsystem.INSTANCE::withinRange);
+//                .setRequirements(this);
     }
 
 
@@ -80,7 +80,9 @@ public class LauncherSubsystem extends SubsystemGroup {
     public Command Launch3() {
         return new SequentialGroup(
                 Launch1(),
+                new Delay(0.5),
                 Launch1(),
+                new Delay(0.5),
                 Launch1()
         );
     }

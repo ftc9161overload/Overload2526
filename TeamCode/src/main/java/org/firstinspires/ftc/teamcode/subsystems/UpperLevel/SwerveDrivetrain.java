@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
+import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
 
 import dev.nextftc.core.subsystems.Subsystem;
@@ -28,7 +29,6 @@ public class SwerveDrivetrain implements Subsystem {
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
 
-    private GoBildaPinpointDriver ppDriver;
 
     public SwerveDrivetrain(HardwareMap hMap) {
         SwervePodSubsystem fr = new SwervePodSubsystem( -156.0,  -156.0, UniConstants.DRIVE_FRONT_RIGHT_SERVO_STRING, UniConstants.DRIVE_FRONT_RIGHT_STRING, UniConstants.DRIVE_FRONT_RIGHT_ANALOG_INPUT, hMap); // Front Right
@@ -46,11 +46,7 @@ public class SwerveDrivetrain implements Subsystem {
         bl.setServoOffsetDeg(blOffset);
         br.setServoOffsetDeg(brOffset);
 
-        ppDriver = hMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        ppDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        ppDriver.setOffsets(-182,182, DistanceUnit.MM);
-        ppDriver.resetPosAndIMU();
 
 
         pods = new SwervePodSubsystem[]{fl, fr, bl, br}; // Array of the pods so we can loop through in a for each and run functions on all of them :thumbs-up:
@@ -91,12 +87,17 @@ public class SwerveDrivetrain implements Subsystem {
         return pods;
     }
 
+    public void runDrive(Vector2D drive, Vector2D rotational) {
+        for (SwervePodSubsystem pod : pods) {
+            pod.update(drive,rotational);
+        }
+    }
+
     public void simpleRunDrive(double x, double y, double rotation) {
         for (SwervePodSubsystem pod : pods) {
             pod.update(x, y, rotation);
         }
 
-        ppDriver.update();
     }
 
     public void simpleRunDrive(double x, double y, double rotation, double movementScaler) {
@@ -132,7 +133,7 @@ public class SwerveDrivetrain implements Subsystem {
             returnStr += "\n\n";
         }
 
-        returnStr += "X Pos: " + ppDriver.getPosX(DistanceUnit.INCH) + "\nY Pos: " + ppDriver.getPosY(DistanceUnit.INCH) + "\nHeading: " + ppDriver.getHeading(AngleUnit.DEGREES);
+
 
         return returnStr;
     }

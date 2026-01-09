@@ -19,6 +19,7 @@ public class PDFLController {
     public double dir;
 
     private boolean atTarget = false;
+    private double errorPower = 1;
 
     /**
      * Constructor for PDFLController.
@@ -59,7 +60,7 @@ public class PDFLController {
      */
     public void update(double position) {
         oldError = error;
-        error = target-position;
+        error = (target-position) != 0 ? Math.abs(Math.pow(target-position,errorPower))*(target-position)/Math.abs(target-position) : 0;
 
         oldTime = time;
         time = System.nanoTime();
@@ -133,6 +134,10 @@ public class PDFLController {
     public double getL() {return l;}
 
     public double getTarget() {return target;}
+
+    public void setErrorPower(double power) {
+        errorPower = power;
+    }
 
 
 }

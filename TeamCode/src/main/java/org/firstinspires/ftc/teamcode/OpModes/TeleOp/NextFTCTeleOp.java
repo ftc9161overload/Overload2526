@@ -4,7 +4,9 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
+import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
@@ -13,6 +15,8 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
+
+import java.util.OptionalDouble;
 
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -25,7 +29,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class NextFTCTeleOp extends NextFTCOpMode {
     public NextFTCTeleOp() {
         addComponents(
-            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
+            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
             BulkReadComponent.INSTANCE,
             BindingsComponent.INSTANCE
         );
@@ -105,12 +109,17 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
+        Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
+
+        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x,gamepad2.left_stick_y), new Vector2D(-gamepad2.right_stick_x,0));
+
+//        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
         telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+//        telemetry.addData("Outtake", OuttakeWheelSubsystem.INSTANCE.debugString());
+//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 //        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-//        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
         telemetry.update();
         timer.reset();
 
