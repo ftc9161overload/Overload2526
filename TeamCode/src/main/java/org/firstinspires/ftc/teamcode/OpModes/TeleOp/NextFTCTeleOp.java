@@ -105,12 +105,12 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x,gamepad2.left_stick_y,gamepad2.right_stick_x);
+        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
         telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
-        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+//        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
+//        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
         telemetry.update();
         timer.reset();
 

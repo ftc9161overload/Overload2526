@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.SubsystemGroup;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -31,6 +32,9 @@ public class LauncherSubsystem extends SubsystemGroup {
         );
     }
 
+
+
+
     // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
     public Command setHalfOn = new InstantCommand(() -> {
         if(RotarySubsystem.INSTANCE.halfChamber) {
@@ -47,20 +51,24 @@ public class LauncherSubsystem extends SubsystemGroup {
     });
 
     // Sets both the outtake wheel and moves the rotary to half chamber
-    public Command setup = new InstantCommand(() -> {
-        if(!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
-            OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
-            new Delay(0.6);
-        }
-        setHalfOn.schedule();
-        new Delay(0.2);
-    });
+    public Command setup() {
+        return new LambdaCommand(("Setup"))
+                .setStart(() -> {
+                        if (!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
+                            OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
+                        }
+                    })
+                .setIsDone(() -> OuttakeWheelSubsystem.INSTANCE.withinRange())
+                .setRequirements(this);
+    }
+
 
     // Launches an artifact
     public Command Launch1(){
         return new SequentialGroup(
-                setup,
+                setup(),
                 RotarySubsystem.INSTANCE.lock,
+                RotarySubsystem.INSTANCE.withinRange(),
                 OuttakeFlipperSubsystem.INSTANCE.setFullOn,
                 new Delay(0.7),
                 OuttakeFlipperSubsystem.INSTANCE.setFullOff,
@@ -71,34 +79,9 @@ public class LauncherSubsystem extends SubsystemGroup {
     }
     public Command Launch3() {
         return new SequentialGroup(
-                setup,
-                RotarySubsystem.INSTANCE.lock,
-                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
-                new Delay(0.7),
-                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
-                new Delay(0.4),
-                RotarySubsystem.INSTANCE.unlock,
-                RotarySubsystem.INSTANCE.nextChamber,
-                new Delay(0.4),
-
-                setup,
-                RotarySubsystem.INSTANCE.lock,
-                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
-                new Delay(0.7),
-                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
-                new Delay(0.4),
-                RotarySubsystem.INSTANCE.unlock,
-                RotarySubsystem.INSTANCE.nextChamber,
-                new Delay(0.4),
-
-                setup,
-                RotarySubsystem.INSTANCE.lock,
-                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
-                new Delay(0.7),
-                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
-                new Delay(0.4),
-                RotarySubsystem.INSTANCE.unlock,
-                RotarySubsystem.INSTANCE.nextChamber
+                Launch1(),
+                Launch1(),
+                Launch1()
         );
     }
 

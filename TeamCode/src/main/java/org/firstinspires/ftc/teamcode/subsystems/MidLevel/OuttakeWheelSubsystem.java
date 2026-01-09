@@ -15,9 +15,15 @@ public class OuttakeWheelSubsystem implements Subsystem {
     private final MotorEx motor = new MotorEx(UniConstants.OUTTAKE_MOTOR_STRING);
     
     public static final OuttakeWheelSubsystem INSTANCE = new OuttakeWheelSubsystem();
+
+    private double currentSpeed = 0;
     private OuttakeWheelSubsystem() {}
 
     public int targetSpeed = 0;
+
+    public boolean withinRange() {
+        return (Math.abs(targetSpeed - currentSpeed) < 40);
+    }
 
     // Different speeds for the wheel to hit.
     public int[] targetSpeeds = {1800, 2200, 2600};
@@ -49,7 +55,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
     
     public void periodic() {
 
-        double currentSpeed = motor.getVelocity();
+        currentSpeed = motor.getVelocity();
         pdfl.setTarget(targetSpeed);
         pdfl.update(currentSpeed);
         double power = pdfl.runPDFL(50);

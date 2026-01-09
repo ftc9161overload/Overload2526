@@ -1,24 +1,26 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.core.commands.Command;
 
 @Configurable
 public class RotarySubsystem implements Subsystem {
-    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode();
+    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode().zeroed();
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
     public boolean locked = true;
     private RotarySubsystem() {}
 
-    private static double p = 0.85, d = 0, f = 0, l = 0.12;
+    private static double p = 0.85, d = 0.01, f = 0, l = 0.12;
     private double fn = f;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
     private int currentChamber = 3;
@@ -32,20 +34,22 @@ public class RotarySubsystem implements Subsystem {
     public boolean halfChamber = false;
     private double chamberOffset = 0;
 
-    private double globalOffset;
+//    private double globalOffset;
     public void initialize() {
-        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
+        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
         //currentChamber = 0;
         //currentPosition = 0;
         //chamberOffset = 0;
     }
 
-    public void resetOffset() {
-        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
-        currentChamber = 0;
-        currentPosition = 0;
-        chamberOffset = 0;
-    }
+//    public void resetOffset() {
+////        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
+//        currentChamber = 0;
+//        currentPosition = 0;
+//        chamberOffset = 0;
+//    }
     // Getter method for returning the isOn boolean
     public double getPosition() {
         return currentPosition;
@@ -55,9 +59,13 @@ public class RotarySubsystem implements Subsystem {
     }
     // Setter method for setting isOn to an input value
 
+
+    public Command withinRange() {
+        return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> Math.abs(currentPosition-targetPosition) > 0.01);
+    }
     public Command lock = new InstantCommand(()->{
         this.locked = true;
-        fn = 0.2;
+        fn = 0.0;
     });
     public Command unlock = new InstantCommand(()->{
         this.locked = false;
@@ -128,13 +136,13 @@ public class RotarySubsystem implements Subsystem {
         currentPosition = ((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI);
 
         if (targetPosition > currentPosition) {
-            mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset + globalOffset));
+            mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset));
         } else {
-            mCon.setTarget(MathUtil.piWraparound( targetPosition + Math.PI * 2 + chamberOffset + globalOffset));
+            mCon.setTarget(MathUtil.piWraparound( targetPosition + Math.PI * 2 + chamberOffset));
         }
 
         mCon.update(currentPosition);
-        motor.setPower(mCon.runPDFL(0.01));
+        motor.setPower(mCon.runPDFL(0.009));
 
     }
     
@@ -150,6 +158,6 @@ public class RotarySubsystem implements Subsystem {
                 "\ncurrentPosition: " + currentPosition +
                 "\ntargetPosition: " + targetPosition +
                 "\nhalfChamber: " + halfChamber +
-                "\nchamberOffset: " + chamberOffset +
-                "\nglobalOffset: " + globalOffset;}
+                "\nchamberOffset: " + chamberOffset
+               ;}
 }
