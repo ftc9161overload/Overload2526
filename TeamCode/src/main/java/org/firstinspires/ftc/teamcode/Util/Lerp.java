@@ -17,6 +17,7 @@ public class Lerp {
     public double targetNum;
     public double time;
     public Timer timer = new Timer();
+    public double oldTime;
 
     /**
      * Constructor for Lerp.
@@ -70,5 +71,12 @@ public class Lerp {
         t = applyEase(t);
         currentNum = startNum + (targetNum - startNum) * t;
         return currentNum;
+    }
+
+    public double constantLerp(double value, double target, double maxStep) {
+        oldTime = time;
+        time = timer.getTimeSeconds();
+
+        return Math.min(maxStep * oldTime-time,value - target);
     }
 }
