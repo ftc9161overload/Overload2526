@@ -24,7 +24,7 @@ import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "NextFTC TeleOp", group = "TeleOp")
+@TeleOp(name = "TeleOp", group = "TeleOp")
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
     public NextFTCTeleOp() {
@@ -71,6 +71,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
                 .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
                 .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
 
+        Gamepads.gamepad2().a()
+                .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
+                .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
+
         // SET HALF ON THE ROTARY AND MAKES SURE FLIPPER IS NOT IN THE WAY
         Gamepads.gamepad1().y().toggleOnBecomesTrue()
                 .whenBecomesTrue(LauncherSubsystem.INSTANCE.setHalfOn)
@@ -101,6 +105,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         Gamepads.gamepad1().dpadDown()
                 .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch3());
 
+        // MANUEL CONTROL OF FLIPPER
         Gamepads.gamepad1().circle().toggleOnBecomesTrue()
                 .whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn)
                 .whenBecomesFalse(OuttakeFlipperSubsystem.INSTANCE.setFullOff);
