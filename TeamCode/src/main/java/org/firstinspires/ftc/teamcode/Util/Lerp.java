@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Util;
 
+/**
+ * This is a Lerp class intended for use in Project Overload.
+ * @ author Ryan Hajj - 9161 Overlaod
+ */
 public class Lerp {
 
     public enum Ease {
