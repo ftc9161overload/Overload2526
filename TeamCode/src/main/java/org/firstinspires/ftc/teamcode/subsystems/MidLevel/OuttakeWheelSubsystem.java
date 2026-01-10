@@ -29,7 +29,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
 
     // Different speeds for the wheel to hit.
     public int[] targetSpeeds = {1800, 2200, 2600};
-    private  PDFLController pdfl = new PDFLController(0.0000005, 0.000000001, 0.0, 0.0001);
+//    private  PDFLController pdfl = new PDFLController(0.0000005, 0.000000001, 0.0, 0.0001);
 
     public Command setSpeed1 = new InstantCommand(() -> {
         targetSpeed = targetSpeeds[0];
@@ -56,14 +56,14 @@ public class OuttakeWheelSubsystem implements Subsystem {
     });
 
     public void initialize() {
-        pdfl.setErrorPower(1.4);
+        //pdfl.setErrorPower(1.4);
     }
     
     public void periodic() {
 
         currentSpeed = motor.getVelocity();
-        pdfl.setTarget(targetSpeed);
-        pdfl.update(currentSpeed);
+//        pdfl.setTarget(targetSpeed);
+//        pdfl.update(currentSpeed);
         power = targetSpeed*0.000394113007885;//Math.min(pdfl.runPDFL(20),.1);
 
         // clamp power to valid motor range
@@ -79,9 +79,9 @@ public class OuttakeWheelSubsystem implements Subsystem {
         String reutrnStr =
                 "\nOuttake vel: " + currentSpeed +
                 "\nOuttake target: " + targetSpeed +
-                "\nOuttake PDFL: " + pdfl.runPDFL(20) +
-                "\nOuttake Power: " + power +
-                "\nPDFL: " + pdfl.debugString();
+//                "\nOuttake PDFL: " + pdfl.runPDFL(20) +
+                "\nOuttake Power: " + power;
+//                "\nPDFL: " + pdfl.debugString();
 
 
         return reutrnStr;
