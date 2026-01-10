@@ -17,6 +17,7 @@ import dev.nextftc.core.commands.Command;
 public class RotarySubsystem implements Subsystem {
     private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode().zeroed();
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
+    private final MotorEx Encoder = new MotorEx("RoEn");
     public boolean locked = true;
     private RotarySubsystem() {}
 
@@ -27,13 +28,19 @@ public class RotarySubsystem implements Subsystem {
     private int currentChamber = 3;
     private double currentPosition = 0;
     private double targetPosition = 0;
-    private final double ticksPerRotation = (537.7*170)/38;
+    private final double ticksPerRotation = 8192 * 170/32;//(537.7*170)/38;
     private double chamber1 = 2*Math.PI*1/3;
     private double chamber2 = 2*Math.PI*2/3;
     private double chamber3 = 0;
 
     public boolean halfChamber = false;
     private double chamberOffset = 0;
+
+    public void reset() {
+        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
 
 //    private double globalOffset;
     public void initialize() {
@@ -66,7 +73,7 @@ public class RotarySubsystem implements Subsystem {
         return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> Math.abs(currentPosition-targetPosition) < 0.01);
     }
     public Boolean withinRangeBool() {
-        return Math.abs(currentPosition-targetPosition) < 0.01;
+        return Math.abs(MathUtil.piWraparound(currentChamber-targetPosition)) < 0.02;
     }
     public Command lock = new InstantCommand(()->{
         this.locked = true;
@@ -138,7 +145,7 @@ public class RotarySubsystem implements Subsystem {
             chamberOffset = 0;
         }
 
-        currentPosition = ((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI);
+        currentPosition = ((Encoder.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI);
 
         if (targetPosition > currentPosition) {
             mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset));

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 import com.bylazar.configurables.annotations.Configurable;
 
 import org.firstinspires.ftc.teamcode.Util.Lerp;
+import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.Command;
@@ -25,7 +26,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
     public int targetSpeed = 0;
 
     public boolean withinRangeBool() {
-        return (Math.abs(targetSpeed - currentSpeed) < 40);
+        return (Math.abs(targetSpeed - currentSpeed) < 60);
     }
     public Command withinRange() {
         return new LambdaCommand(("flywheel within range?"))
@@ -36,7 +37,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
     public int[] targetSpeeds = {1800, 2200, 2600};
 
     public Lerp lerp = new Lerp(0,0,0);
-//    private  PDFLController pdfl = new PDFLController(0.0000005, 0.000000001, 0.0, 0.0001);
+    private PDFLController pdfl = new PDFLController(0.01, 0, 0.0, 0.000);
 
     public Command setSpeed1 = new InstantCommand(() -> {
         targetSpeed = targetSpeeds[0];
@@ -50,12 +51,12 @@ public class OuttakeWheelSubsystem implements Subsystem {
 
     public Command setSpeedHigher = new InstantCommand(() -> {
         targetSpeed += 200;
-        targetSpeed = Math.min(Math.max(targetSpeed, 1600),2800);
+        targetSpeed = Math.min(Math.max(targetSpeed, 1600),2600);
     });
 
     public Command setSpeedLower = new InstantCommand(() -> {
         targetSpeed -= 200;
-        targetSpeed = Math.min(Math.max(targetSpeed, 1600),2800);
+        targetSpeed = Math.min(Math.max(targetSpeed, 1600),2600);
     });
 
     public Command turnOff = new InstantCommand(() -> {
@@ -69,16 +70,16 @@ public class OuttakeWheelSubsystem implements Subsystem {
     public void periodic() {
 
         currentSpeed = motor.getVelocity();
-//        pdfl.setTarget(targetSpeed);
-//        pdfl.update(currentSpeed);
-        power += lerp.constantLerp(power,targetSpeed*0.000394113007885,1);//Math.min(pdfl.runPDFL(20),.1);
+        pdfl.setTarget(targetSpeed);
+        pdfl.update(currentSpeed);
+        power += lerp.constantLerp(power,targetSpeed*0.00039411,1);//Math.min(pdfl.runPDFL(20),.1);
 
         // clamp power to valid motor range
         if (Double.isNaN(power)) {
             power = 0;
         }
         power = Math.max(0.0, Math.min(1.0, power));
-        motor.setPower(power);
+        motor.setPower(power+pdfl.runPDFL(10));
 
     }
 

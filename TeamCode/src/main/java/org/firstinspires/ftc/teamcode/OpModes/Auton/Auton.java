@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -14,13 +15,15 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@Autonomous(name = "CloseAuton", group = "Auton")
 @Configurable
 public class Auton extends NextFTCOpMode {
     public Auton() {
@@ -39,6 +42,14 @@ public class Auton extends NextFTCOpMode {
     private static LauncherSubsystem launcherSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
 
+
+    private Command autonCommand = new SequentialGroup(
+            Follower.INSTANCE.setLinear(-30,0),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            LauncherSubsystem.INSTANCE.Launch3()
+    );
+
     @Override
     public void onInit() {
         addComponents(
@@ -56,6 +67,8 @@ public class Auton extends NextFTCOpMode {
         Odometry.INSTANCE.reset.schedule();
 
         Odometry.INSTANCE.initReal();
+        Odometry.INSTANCE.reset.schedule();
+        RotarySubsystem.INSTANCE.reset();
 
         //RotarySubsystem.INSTANCE.resetOffset();
     }
@@ -69,6 +82,7 @@ public class Auton extends NextFTCOpMode {
     public void onStartButtonPressed() {
         RotarySubsystem.INSTANCE.locked = false;
         // INTAKE (HOLD TO USE)
+        autonCommand.schedule();
 
     }
 
@@ -85,14 +99,14 @@ public class Auton extends NextFTCOpMode {
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
 //        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-////        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
-////        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
+//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 ////        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
         telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
 ////        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
 ////        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-//        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
-//        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
+        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
         telemetry.update();
 //        timer.reset();
 

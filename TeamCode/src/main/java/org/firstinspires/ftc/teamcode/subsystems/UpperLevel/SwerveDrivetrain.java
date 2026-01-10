@@ -21,9 +21,9 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 @Configurable
 public class SwerveDrivetrain implements Subsystem {
 
-    public static int flOffset = -30+90;
-    public static int frOffset = -35+90;
-    public static int blOffset = 69-45;
+    public static int flOffset = -60+10+90;
+    public static int frOffset = -2+15+90;
+    public static int blOffset = 122+180+90;
     public static int brOffset = 255;
 
     //private constants SwerveDrivetrainConstants();

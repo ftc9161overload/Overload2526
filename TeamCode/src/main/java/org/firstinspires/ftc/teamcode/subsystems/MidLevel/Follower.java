@@ -19,7 +19,7 @@ public class Follower implements Subsystem {
 
     private boolean linearFollwer = false, headingFollower = false;
 
-    private PDFLController xCon = new PDFLController(0,0,0,0.3), headingCon = new PDFLController(0,0,0,0.3);
+    private PDFLController xCon = new PDFLController(0.06,0,0,0.35), headingCon = new PDFLController(0.03,0,0,0.35);
     private double xErrorMin = 0.5, headingErrorMin = 0.1;
 
 

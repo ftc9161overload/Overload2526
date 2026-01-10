@@ -20,7 +20,7 @@ import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "TeleOp", group = "Gameday")
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
     public NextFTCTeleOp() {
@@ -30,6 +30,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
             BindingsComponent.INSTANCE
         );
     }
+
+    private boolean slowmode = false;
     private double movementScaler = 1.0;
     public static double outtakePreset1 = 1900;
     public static double outtakePreset2 = 2560;
@@ -50,6 +52,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
         Odometry.INSTANCE.initReal();
+
+        RotarySubsystem.INSTANCE.reset();
 
         //RotarySubsystem.INSTANCE.resetOffset();
     }
@@ -105,6 +109,12 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         Gamepads.gamepad1().circle().toggleOnBecomesTrue()
                 .whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn)
                 .whenBecomesFalse(OuttakeFlipperSubsystem.INSTANCE.setFullOff);
+        Gamepads.gamepad2().square()
+                .whenBecomesTrue(Odometry.INSTANCE.reset);
+        Gamepads.gamepad2().rightBumper()
+                .whenBecomesTrue(() -> slowmode = true);
+        Gamepads.gamepad2().leftBumper()
+                .whenBecomesTrue(()-> slowmode = false);
     }
 
     @Override
@@ -112,19 +122,19 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
 
-        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x,gamepad2.left_stick_y), new Vector2D(-gamepad2.right_stick_x,0));
+        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x * (slowmode ? 0.5 : 1),gamepad2.left_stick_y* (slowmode ? 0.5 : 1)), new Vector2D(-gamepad2.right_stick_x* (slowmode ? 0.5 : 1),0));
 
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
         telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
 //        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
-//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 //        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+//        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
 //        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
 //        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
-        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+//        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
+//        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
         telemetry.update();
         timer.reset();
 
