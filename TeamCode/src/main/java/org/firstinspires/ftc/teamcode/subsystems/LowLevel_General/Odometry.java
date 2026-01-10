@@ -44,7 +44,7 @@ public class Odometry implements Subsystem {
 
     public double getX() {return pinpointDriver.getPosX(DistanceUnit.INCH);}
     public double getY() {return pinpointDriver.getPosY(DistanceUnit.INCH);}
-    public double getHeading() { return pinpointDriver.getHeading(AngleUnit.DEGREES);}
+    public double getHeading() { return pinpointDriver.getHeading(AngleUnit.RADIANS);}
 
 
 

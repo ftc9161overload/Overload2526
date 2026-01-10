@@ -19,8 +19,8 @@ public class Follower implements Subsystem {
 
     private boolean linearFollwer = false, headingFollower = false;
 
-    private PDFLController xCon = new PDFLController(0,0,0,0), yCon = new PDFLController(0,0,0,0), headingCon = new PDFLController(0,0,0,0);
-    private double xErrorMin = 0, yErrorMin = 0, headingErrorMin = 0;
+    private PDFLController xCon = new PDFLController(0,0,0,0.3), headingCon = new PDFLController(0,0,0,0.3);
+    private double xErrorMin = 0.5, headingErrorMin = 0.1;
 
 
     public Command withinRangeLinear(double Range) {
@@ -65,9 +65,8 @@ public class Follower implements Subsystem {
 
 
     public Vector2D getLinear() {
-        xCon.update(xPos);
-        yCon.update(yPos);
-        return new Vector2D(xCon.runPDFL(xErrorMin), yCon.runPDFL(yErrorMin));
+        xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
+        return new Vector2D(xCon.runPDFL(xErrorMin),0).rotate(Math.atan2(xTarget-xPos,yTarget-yPos));
     }
 
     public Vector2D getHeading() {
@@ -76,7 +75,7 @@ public class Follower implements Subsystem {
     }
 
     public Vector2D teleOpLinear(double x, double y ) {
-        return new Vector2D(x,y).rotate(heading);
+        return new Vector2D(x,y).rotate(-heading);
     }
 
 

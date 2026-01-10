@@ -63,7 +63,10 @@ public class RotarySubsystem implements Subsystem {
 
 
     public Command withinRange() {
-        return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> Math.abs(currentPosition-targetPosition) > 0.01);
+        return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> Math.abs(currentPosition-targetPosition) < 0.01);
+    }
+    public Boolean withinRangeBool() {
+        return Math.abs(currentPosition-targetPosition) < 0.01;
     }
     public Command lock = new InstantCommand(()->{
         this.locked = true;

@@ -1,25 +1,16 @@
 package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.Util.MathUtil;
-import org.firstinspires.ftc.teamcode.Util.Timer;
-
-import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 
 import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.SubsystemGroup;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
-import dev.nextftc.core.subsystems.Subsystem;
-import dev.nextftc.hardware.impl.MotorEx;
 
 @Configurable
 public class LauncherSubsystem extends SubsystemGroup {
@@ -52,14 +43,14 @@ public class LauncherSubsystem extends SubsystemGroup {
 
     // Sets both the outtake wheel and moves the rotary to half chamber
     public Command setup() {
-        return new LambdaCommand(("Setup"))
-                .setStart(() -> {
-                        if (!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
-                            OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
-                        }
-                    })
-                .setIsDone(OuttakeWheelSubsystem.INSTANCE::withinRange);
-//                .setRequirements(this);
+        return new InstantCommand(() -> {
+
+            if (!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
+                OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
+            }
+        });
+
+
     }
 
 
@@ -67,6 +58,7 @@ public class LauncherSubsystem extends SubsystemGroup {
     public Command Launch1(){
         return new SequentialGroup(
                 setup(),
+                OuttakeWheelSubsystem.INSTANCE.withinRange(),
                 RotarySubsystem.INSTANCE.lock,
                 RotarySubsystem.INSTANCE.withinRange(),
                 OuttakeFlipperSubsystem.INSTANCE.setFullOn,

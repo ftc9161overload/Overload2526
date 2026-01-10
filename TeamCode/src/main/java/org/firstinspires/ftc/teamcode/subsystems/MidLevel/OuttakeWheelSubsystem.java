@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
 
-import org.firstinspires.ftc.teamcode.Util.PDFLController;
+import org.firstinspires.ftc.teamcode.Util.Lerp;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
 
@@ -23,12 +24,18 @@ public class OuttakeWheelSubsystem implements Subsystem {
 
     public int targetSpeed = 0;
 
-    public boolean withinRange() {
+    public boolean withinRangeBool() {
         return (Math.abs(targetSpeed - currentSpeed) < 40);
+    }
+    public Command withinRange() {
+        return new LambdaCommand(("flywheel within range?"))
+                .setIsDone(() -> withinRangeBool());
     }
 
     // Different speeds for the wheel to hit.
     public int[] targetSpeeds = {1800, 2200, 2600};
+
+    public Lerp lerp = new Lerp(0,0,0);
 //    private  PDFLController pdfl = new PDFLController(0.0000005, 0.000000001, 0.0, 0.0001);
 
     public Command setSpeed1 = new InstantCommand(() -> {
@@ -64,7 +71,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
         currentSpeed = motor.getVelocity();
 //        pdfl.setTarget(targetSpeed);
 //        pdfl.update(currentSpeed);
-        power = targetSpeed*0.000394113007885;//Math.min(pdfl.runPDFL(20),.1);
+        power += lerp.constantLerp(power,targetSpeed*0.000394113007885,1);//Math.min(pdfl.runPDFL(20),.1);
 
         // clamp power to valid motor range
         if (Double.isNaN(power)) {
@@ -80,8 +87,10 @@ public class OuttakeWheelSubsystem implements Subsystem {
                 "\nOuttake vel: " + currentSpeed +
                 "\nOuttake target: " + targetSpeed +
 //                "\nOuttake PDFL: " + pdfl.runPDFL(20) +
-                "\nOuttake Power: " + power;
+                "\nOuttake Power: " + power +
+                "\n lerp out: " + lerp.constantLerp(power,targetSpeed*0.000394113007885,1) +
 //                "\nPDFL: " + pdfl.debugString();
+                "";
 
 
         return reutrnStr;

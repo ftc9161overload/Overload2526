@@ -81,6 +81,6 @@ public class Lerp {
         oldTime = time;
         time = timer.getTimeSeconds();
 
-        return Math.min(maxStep * oldTime-time,value - target);
+        return Math.min(maxStep * (-oldTime+time)*(Math.signum(target-value)),target-value);
     }
 }

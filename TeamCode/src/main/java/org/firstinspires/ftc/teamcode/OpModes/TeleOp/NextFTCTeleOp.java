@@ -12,11 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.Util.UniConstants;
-
-import java.util.OptionalDouble;
 
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -121,10 +117,14 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
         telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
+//        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
 //        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 //        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
         telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+//        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
+//        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
+        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
+        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
         telemetry.update();
         timer.reset();
 
