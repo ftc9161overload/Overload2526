@@ -39,6 +39,11 @@ public class Lerp {
         this.ease = easeType;
     }
 
+    /**
+     * Sets new Target and resets Timer.
+     * @param targetNum The target number to reach at the end of the time param
+     * @param time The length of time (in seconds) to perform
+     */
     public void setNewTarget(double targetNum, double time) {
         timer.reset();
         this.startNum = currentNum;   // start from wherever we are
