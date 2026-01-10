@@ -45,7 +45,7 @@ public class PDFLController {
 
 
 
-        if (Math.abs(error) <= errorMin) {
+        if (Math.abs(error) <= Math.pow(errorMin,errorPower)) {
             atTarget = true;
             return f;
         }
@@ -60,7 +60,7 @@ public class PDFLController {
      */
     public void update(double position) {
         oldError = error;
-        error = (target-position) != 0 ? Math.abs(Math.pow(target-position,errorPower))*(target-position)/Math.abs(target-position) : 0;
+        error = Math.pow(Math.abs(target-position),errorPower) * Math.signum(target-position);
 
         oldTime = time;
         time = System.nanoTime();
@@ -137,6 +137,11 @@ public class PDFLController {
 
     public void setErrorPower(double power) {
         errorPower = power;
+    }
+
+    public String debugString() {
+        return "Error: " + error +
+                "\nTarget" + target;
     }
 
 

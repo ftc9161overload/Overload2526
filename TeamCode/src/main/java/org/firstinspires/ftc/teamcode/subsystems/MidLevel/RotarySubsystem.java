@@ -20,6 +20,7 @@ public class RotarySubsystem implements Subsystem {
     public boolean locked = true;
     private RotarySubsystem() {}
 
+
     private static double p = 0.85, d = 0.01, f = 0, l = 0.12;
     private double fn = f;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
@@ -36,6 +37,7 @@ public class RotarySubsystem implements Subsystem {
 
 //    private double globalOffset;
     public void initialize() {
+        mCon.setPDFL(p,d,fn,l);
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
