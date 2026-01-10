@@ -32,7 +32,7 @@ public class Camera implements Subsystem {
 
     private Timer timer = new Timer();
 
-    public BetterVisionTM() {}
+//    public BetterVisionTM() {}
 
 
 
