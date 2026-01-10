@@ -18,7 +18,17 @@ public class Lerp {
         this.time = time;
     }
 
-    public double getNum(){
-        return currentNum + (targetNum - currentNum) * (timer.getTimeSeconds() / time);
+    public void reset() {
+        timer.reset();
+    }
+
+    public void setNewTarget(double targetNum, double time) {
+        timer.reset();
+        this.targetNum = targetNum;
+        this.time = time;
+    }
+
+    public double getNum() {
+        return currentNum + (targetNum - currentNum) * Math.min(Math.max(timer.getTimeSeconds() / time, 0), 1);
     }
 }
