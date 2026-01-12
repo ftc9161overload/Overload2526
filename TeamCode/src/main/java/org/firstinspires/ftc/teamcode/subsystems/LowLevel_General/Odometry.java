@@ -15,13 +15,9 @@ import dev.nextftc.hardware.impl.MotorEx;
 
 public class Odometry implements Subsystem {
 
-
-
     private GoBildaPinpointDriver pinpointDriver;
 
     public static final Odometry INSTANCE = new Odometry();
-
-
     private Odometry() {}
 
     @Override
@@ -37,6 +33,17 @@ public class Odometry implements Subsystem {
     public Command reset = new InstantCommand(() -> {
         pinpointDriver.resetPosAndIMU();
     });
+
+    /**
+    * Resets and then Sets Position of the Odometry class for an "Offset" so that the pos read by the robot is accurate
+    * @param x (INCHES) The 'x' pos of the robot relative to the center
+    * @param y (INCHES) The 'y' pos of the robot relative to the center
+    * @param dir (RADIANS) The 'heading' of the robot relative to the center going outward
+    */
+    public void setPos(double x, double y, double dir){
+        pinpointDriver.resetPosAndIMU();
+        pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.RADIANS, dir));
+    }
 
     public Pose2D getPos() {
         return pinpointDriver.getPosition();

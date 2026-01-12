@@ -30,6 +30,16 @@ public class Follower implements Subsystem {
         return new LambdaCommand("Follower within range?").setIsDone(() -> Math.abs(heading - headingTarget) < Range);
     }
 
+    /**
+     * Waits until the Pos and Heading of the robot are within the Range Tolerance for their respective target values
+     * @param RangeH The Range (Or Tolerance) for the Headings' Position
+     * @param RangeP The Range (Or Tolerance) for the Robots' Position (Includes both X and Y)
+     * @return ONLY AFTER it is within the range on bot the Pos and and the Heading Direction will it return.
+     */
+    public Command withinRange(double RangeH, double RangeP) {
+        return new LambdaCommand("Follower within range?").setIsDone(() -> ((Math.abs(heading - headingTarget) < RangeH) && (Math.abs(Math.hypot(xPos-xTarget,yPos-yTarget)) < RangeP)) );
+    }
+
     public void update(double xPos, double yPos, double heading) {
         this.xPos = xPos;
         this.yPos = yPos;
