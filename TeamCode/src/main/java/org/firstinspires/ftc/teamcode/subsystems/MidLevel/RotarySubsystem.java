@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -33,7 +34,9 @@ public class RotarySubsystem implements Subsystem {
     private double targetPosition = 0;
     private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
 
-    private NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
+    private ColorSensor[] colorSensors = new ColorSensor[3];
+    //private ColorRangeSensor thingy;
+
     private final int[] GreenColor = {0, 107, 102};
     private final int[] PurpleColor = {71, 35, 126};
     private final int colorTolerance = 10; // + or - tolerance is accounted for
@@ -78,9 +81,10 @@ public class RotarySubsystem implements Subsystem {
         mCon.setPDFL(p,d,fn,l);
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        colorSensors[0] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "colorSensor1");
-        colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "colorSensor2");
-        colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "colorSensor3");
+        colorSensors[0] = ActiveOpMode.hardwareMap().get(ColorSensor.class, "cs1");
+        colorSensors[1] = ActiveOpMode.hardwareMap().get(ColorSensor.class, "cs2");
+        colorSensors[2] = ActiveOpMode.hardwareMap().get(ColorSensor.class, "cs3");
+        //thingy = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, "cs1");
     }
 
     public double getPosition() {
@@ -187,10 +191,10 @@ public class RotarySubsystem implements Subsystem {
         return Math.abs(a - b) <= tol;
     }
 
-    private Ball classify(NormalizedRGBA c, double tol) {
-        int r = (int)(c.red * 255);
-        int g = (int)(c.green * 255);
-        int b = (int)(c.blue * 255);
+    private Ball classify(ColorSensor c, double tol) {
+        int r = (c.red() * 255);
+        int g = (c.green() * 255);
+        int b = (c.blue() * 255);
 
         if (close(r, GreenColor[0], tol) &&
                 close(g, GreenColor[1], tol) &&
@@ -207,7 +211,7 @@ public class RotarySubsystem implements Subsystem {
 
     private void updateChamberColor() {
         for (int i = 0; i < 3; i++) {
-            NormalizedRGBA c = colorSensors[i].getNormalizedColors();
+            ColorSensor c = colorSensors[i];
             CHAMBERS[i].ball = classify(c, colorTolerance);
         }
         shouldUpdateColors = false;
@@ -233,19 +237,55 @@ public class RotarySubsystem implements Subsystem {
             updateChamberColor();
         }
     }
-    
+
     public String debugText() {
-        //mCon.setPDFL(p,d,fn,l);
-        return "locked: " + locked +
-                "\np: " + p +
-                "\nd: " + d +
-                "\nf: " + f +
-                "\nl: " + l +
-                "\nfn: " + fn +
-                "\ncurrentChamber: " + currentChamber +
-                "\ncurrentPosition: " + currentPosition +
-                "\ntargetPosition: " + targetPosition +
-                "\nhalfChamber: " + halfChamber +
-                "\nchamberOffset: " + chamberOffset
-               ;}
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("locked: ").append(locked);
+        sb.append("\np: ").append(p);
+        sb.append("\nd: ").append(d);
+        sb.append("\nf: ").append(f);
+        sb.append("\nl: ").append(l);
+        sb.append("\nfn: ").append(fn);
+
+        sb.append("\ncurrentChamber: ").append(currentChamber);
+        sb.append("\ntargetPosition: ").append(targetPosition);
+        sb.append("\ncurrentPosition: ").append(currentPosition);
+
+        sb.append("\nhalfChamber: ").append(halfChamber);
+        sb.append("\nchamberOffset: ").append(chamberOffset);
+
+        sb.append("\nticksPerRotation: ").append(ticksPerRotation);
+        sb.append("\nshouldUpdateColors: ").append(shouldUpdateColors);
+
+        // show each chamber's angle + ball state
+        sb.append("\n\n=== Chamber States ===");
+        for (int i = 0; i < 3; i++) {
+            Chamber ch = CHAMBERS[i];
+            sb.append("\nChamber ").append(i+1)
+                    .append(" | angle: ").append(ch.angle)
+                    .append(" | ball: ").append(ch.ball);
+        }
+
+        // show raw RGB from each sensor
+        sb.append("\n\n=== Sensor Colors ===");
+        for (int i = 0; i < 3; i++) {
+            ColorSensor c = colorSensors[i] != null ? colorSensors[i] : null;
+            if (c == null) {
+                sb.append("\nSensor ").append(i+1).append(": NULL");
+            } else {
+                sb.append("\nSensor ").append(i+1)
+                        .append(" | R: ").append((int)(c.red()))
+                        .append(" G: ").append((int)(c.green()))
+                        .append(" B: ").append((int)(c.blue()));
+            }
+        }
+
+        // controller internals (if available)
+        sb.append("\n\n=== Controller ===");
+        sb.append("\ncontroller target: ").append(mCon.getTarget());
+
+        return sb.toString();
+    }
+
 }
