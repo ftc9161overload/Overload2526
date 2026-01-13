@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
@@ -25,13 +26,30 @@ public class RotarySubsystem implements Subsystem {
     private static double p = 0.85, d = 0.01, f = 0, l = 0.12;
     private double fn = f;
     private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
-    private int currentChamber = 3;
+    private int currentChamber = 1;
     private double currentPosition = 0;
     private double targetPosition = 0;
-    private final double ticksPerRotation = 8192 * 170/32;//(537.7*170)/38;
-    private double chamber1 = 2*Math.PI*1/3;
-    private double chamber2 = 2*Math.PI*2/3;
-    private double chamber3 = 0;
+    private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
+//    private double chamber1 = 2*Math.PI*1/3;
+//    private double chamber2 = 2*Math.PI*2/3;
+//    private double chamber3 = 0;
+
+    private final double[] chamberAngles = {
+            0,
+            2*Math.PI * 1/3,
+            2*Math.PI * 2/3
+    };
+
+    /**
+    * KEY:
+     * 0 - NOTHING  |
+     * 1 - PURPLE  |
+     * 2 - GREEN
+    */
+    private int[] colorInPos = {
+            0, 0, 0
+    };
+
 
     public boolean halfChamber = false;
     private double chamberOffset = 0;
@@ -42,32 +60,18 @@ public class RotarySubsystem implements Subsystem {
 
     }
 
-//    private double globalOffset;
     public void initialize() {
         mCon.setPDFL(p,d,fn,l);
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
-        //currentChamber = 0;
-        //currentPosition = 0;
-        //chamberOffset = 0;
     }
 
-//    public void resetOffset() {
-////        globalOffset = MathUtil.piWraparound(((motor.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI));
-//        currentChamber = 0;
-//        currentPosition = 0;
-//        chamberOffset = 0;
-//    }
-    // Getter method for returning the isOn boolean
     public double getPosition() {
         return currentPosition;
     }
     public double getTargetPosition() {
         return targetPosition;
     }
-    // Setter method for setting isOn to an input value
-
 
     public Command withinRange() {
         return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> Math.abs(currentPosition-targetPosition) < 0.01);
@@ -78,22 +82,24 @@ public class RotarySubsystem implements Subsystem {
     public Command lock = new InstantCommand(()->{
         this.locked = true;
         fn = 0.0;
+        mCon.setPDFL(p,d,fn,l);
     });
     public Command unlock = new InstantCommand(()->{
         this.locked = false;
         fn = f;
+        mCon.setPDFL(p,d,fn,l);
     });
     private void Chamber(int chamber) {
         if (chamber == 1) {
-            targetPosition = chamber1;
+            targetPosition = chamberAngles[0];
             currentChamber = 1;
         }
         else if(chamber == 2) {
-            targetPosition = chamber2;
+            targetPosition = chamberAngles[1];
             currentChamber = 2;
         }
         else if(chamber == 3) {
-            targetPosition = chamber3;
+            targetPosition = chamberAngles[2];
             currentChamber = 3;
         }
 
@@ -123,7 +129,6 @@ public class RotarySubsystem implements Subsystem {
         }
     });
 
-    //public void setHalfChamber(boolean halfChamber) {this.halfChamber = halfChamber;}
     public Command setHalfChamberOn = new InstantCommand(() -> {
         this.halfChamber = true;
     });
@@ -136,7 +141,6 @@ public class RotarySubsystem implements Subsystem {
         this.halfChamber = !halfChamber;
     });
 
-    // Runs the motor if isOn is true
     @Override
     public void periodic() {
         if (halfChamber) {
@@ -145,13 +149,9 @@ public class RotarySubsystem implements Subsystem {
             chamberOffset = 0;
         }
 
-        currentPosition = ((Encoder.getCurrentPosition() % ticksPerRotation) / ticksPerRotation * 2 * Math.PI);
+        currentPosition = MathUtil.piWraparound((Encoder.getCurrentPosition() / ticksPerRotation) * 2*Math.PI);
 
-        if (targetPosition > currentPosition) {
-            mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset));
-        } else {
-            mCon.setTarget(MathUtil.piWraparound( targetPosition + Math.PI * 2 + chamberOffset));
-        }
+        mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset));
 
         mCon.update(currentPosition);
         motor.setPower(mCon.runPDFL(0.009));
@@ -159,7 +159,7 @@ public class RotarySubsystem implements Subsystem {
     }
     
     public String debugText() {
-        mCon.setPDFL(p,d,fn,l);
+        //mCon.setPDFL(p,d,fn,l);
         return "locked: " + locked +
                 "\np: " + p +
                 "\nd: " + d +
