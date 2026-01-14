@@ -2,15 +2,18 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
-import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 
+import com.bylazar.field.FieldManager;
+import com.bylazar.field.PanelsField;
+
 public class Follower implements Subsystem {
 
+    private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
     public static final Follower INSTANCE = new Follower();
 
 
@@ -22,6 +25,9 @@ public class Follower implements Subsystem {
     private PDFLController xCon = new PDFLController(0.06,0,0,0.35), headingCon = new PDFLController(0.03,0,0,0.35);
     private double xErrorMin = 0.5, headingErrorMin = 0.1;
 
+    public void initialize(){
+        panelsField.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
+    }
 
     public Command withinRangeLinear(double Range) {
         return new LambdaCommand("Follower within range?").setIsDone(() -> Math.abs(Math.hypot(xPos-xTarget,yPos-yTarget)) < Range);
@@ -103,5 +109,11 @@ public class Follower implements Subsystem {
         return new Vector2D(x,y).rotate(-heading);
     }
 
+    public void periodic(){
+        panelsField.moveCursor(xPos, yPos);
+        panelsField.setCursorHeading(heading);
+        panelsField.line(xTarget, yTarget);
+        panelsField.update();
+    }
 
 }
