@@ -46,6 +46,21 @@ public class Follower implements Subsystem {
         this.heading = heading;
     }
 
+    /**
+     *
+     * @param xTarget
+     * @param yTarget
+     * @param headingTarget
+     * @return
+     */
+    public Command set(double xTarget, double yTarget, double headingTarget) {
+        return new InstantCommand(() -> {
+            this.xTarget =  xTarget;
+            this.yTarget = yTarget;
+            this.headingTarget = headingTarget;
+        });
+    }
+
     public Command setLinear(double xTarget, double yTarget) {
         return new InstantCommand(() -> {
            this.xTarget =  xTarget;
