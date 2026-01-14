@@ -34,12 +34,12 @@ public class RotarySubsystem implements Subsystem {
     private double targetPosition = 0;
     private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
 
-    private ColorSensor[] colorSensors = new ColorSensor[3];
+    private NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
     //private ColorRangeSensor thingy;
 
-    private final int[] GreenColor = {0, 107, 102};
-    private final int[] PurpleColor = {71, 35, 126};
-    private final int colorTolerance = 10; // + or - tolerance is accounted for
+    private final double[] GreenColor = {0.009, 0.04, 0.028};
+    private final double[] PurpleColor = {0.007, 0.009, 0.014};
+    private final double colorTolerance = 0.001; // + or - tolerance is accounted for
     private boolean shouldUpdateColors = true;
     // The following is an Enum for each chamber.
     public enum Ball {
@@ -81,9 +81,9 @@ public class RotarySubsystem implements Subsystem {
         mCon.setPDFL(p,d,fn,l);
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        colorSensors[0] = ActiveOpMode.hardwareMap().get(ColorSensor.class, "cs1");
-        colorSensors[1] = ActiveOpMode.hardwareMap().get(ColorSensor.class, "cs2");
-        colorSensors[2] = ActiveOpMode.hardwareMap().get(ColorSensor.class, "cs3");
+        colorSensors[0] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs1");
+        colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs2");
+        colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs3");
         //thingy = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, "cs1");
     }
 
@@ -191,10 +191,10 @@ public class RotarySubsystem implements Subsystem {
         return Math.abs(a - b) <= tol;
     }
 
-    private Ball classify(ColorSensor c, double tol) {
-        int r = (c.red() * 255);
-        int g = (c.green() * 255);
-        int b = (c.blue() * 255);
+    private Ball classify(NormalizedColorSensor c, double tol) {
+        double r = (c.getNormalizedColors().red * 255);
+        double g = (c.getNormalizedColors().green * 255);
+        double b = (c.getNormalizedColors().blue * 255);
 
         if (close(r, GreenColor[0], tol) &&
                 close(g, GreenColor[1], tol) &&
@@ -211,7 +211,7 @@ public class RotarySubsystem implements Subsystem {
 
     private void updateChamberColor() {
         for (int i = 0; i < 3; i++) {
-            ColorSensor c = colorSensors[i];
+            NormalizedColorSensor c = colorSensors[i];
             CHAMBERS[i].ball = classify(c, colorTolerance);
         }
         shouldUpdateColors = false;
@@ -270,14 +270,14 @@ public class RotarySubsystem implements Subsystem {
         // show raw RGB from each sensor
         sb.append("\n\n=== Sensor Colors ===");
         for (int i = 0; i < 3; i++) {
-            ColorSensor c = colorSensors[i] != null ? colorSensors[i] : null;
+            NormalizedColorSensor c = colorSensors[i] != null ? colorSensors[i] : null;
             if (c == null) {
                 sb.append("\nSensor ").append(i+1).append(": NULL");
             } else {
                 sb.append("\nSensor ").append(i+1)
-                        .append(" | R: ").append((int)(c.red()))
-                        .append(" G: ").append((int)(c.green()))
-                        .append(" B: ").append((int)(c.blue()));
+                        .append(" | R: ").append((c.getNormalizedColors().red))
+                        .append(" G: ").append((c.getNormalizedColors().green))
+                        .append(" B: ").append((c.getNormalizedColors().blue));
             }
         }
 
