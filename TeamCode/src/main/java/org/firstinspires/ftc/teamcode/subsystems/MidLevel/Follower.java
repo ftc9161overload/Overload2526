@@ -80,6 +80,10 @@ public class Follower implements Subsystem {
         });
     }
 
+    public void turnToGoal(){
+        heading = new Vector2D((8 - xPos),(136 - yPos)).angle();
+    }
+
     public Command turnOnLinear = new InstantCommand(() -> {
         linearFollwer = true;
     });
