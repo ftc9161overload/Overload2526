@@ -19,10 +19,10 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "CloseAuton", group = "Auton")
+@Autonomous(name = "CloseBlueAuton", group = "Auton")
 @Configurable
-public class Auton2 extends NextFTCOpMode {
-    public Auton2() {
+public class AutonBlueClose extends NextFTCOpMode {
+    public AutonBlueClose() {
         addComponents(
             new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
             BulkReadComponent.INSTANCE,
@@ -47,6 +47,7 @@ public class Auton2 extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
+            LauncherSubsystem.INSTANCE.setHalfOff,
 
             Follower.INSTANCE.setLinear(-7, -19),
             Follower.INSTANCE.setHeading(180),
@@ -62,6 +63,7 @@ public class Auton2 extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
+            LauncherSubsystem.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -43),
             Follower.INSTANCE.setHeading(180),
@@ -77,6 +79,7 @@ public class Auton2 extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
+            LauncherSubsystem.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -67),
             Follower.INSTANCE.setHeading(180),
@@ -90,7 +93,10 @@ public class Auton2 extends NextFTCOpMode {
             Follower.INSTANCE.setLinear(34, 67),
             Follower.INSTANCE.setHeading(180),
             Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2)
+            Follower.INSTANCE.withinRangeHeading(.2),
+            LauncherSubsystem.INSTANCE.Launch3(),
+
+            IntakeSubsystem.INSTANCE.stop
 
     );
 
