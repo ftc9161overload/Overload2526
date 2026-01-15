@@ -2,15 +2,15 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
+import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
@@ -32,9 +32,13 @@ public class RotarySubsystem implements Subsystem {
     private int currentChamber = 1;
     private double currentPosition = 0;
     private double targetPosition = 0;
+
+    private boolean findWall = false, findEdge = false;
+
     private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
 
     private NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
+    private ColorRangeSensor distSensor;
     //private ColorRangeSensor thingy;
 
     private final double[] GreenColor = {0.009, 0.04, 0.028};
@@ -69,7 +73,8 @@ public class RotarySubsystem implements Subsystem {
     };
 
     public boolean halfChamber = false;
-    private double chamberOffset = 0;
+    private double halfOffset = 0;
+    private double offset = 0;
 
     public void reset() {
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -84,7 +89,7 @@ public class RotarySubsystem implements Subsystem {
         colorSensors[0] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs1");
         colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs2");
         colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs3");
-        //thingy = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, "cs1");
+        distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, "cs2");
     }
 
     public double getPosition() {
@@ -105,6 +110,40 @@ public class RotarySubsystem implements Subsystem {
         fn = 0.0;
         mCon.setPDFL(p,d,fn,l);
     });
+
+
+
+    private Command findWall() {
+        return new LambdaCommand(("Homing Rotary: Finding Wall"))
+                .setStart(() -> findWall = true)
+                .setIsDone(() ->
+                        distSensor.getDistance(DistanceUnit.INCH) < 0.1)
+                .setStop((interrupted) ->{
+                    findWall = false;
+                });
+    }
+    private Command findEdge() {
+        return new LambdaCommand(("Homing Rotary: Finding edge"))
+                .setStart(() -> findEdge = false)
+                .setIsDone(() -> distSensor.getDistance(DistanceUnit.INCH) > 0.2)
+                .setStop((interrupted) ->{
+                    findEdge = false;
+                });
+
+    }
+
+    private Command finishHoming = new InstantCommand(() -> {
+        offset = currentPosition;
+    });
+
+    public SequentialGroup home = new SequentialGroup(
+            findWall(),
+            findEdge(),
+            finishHoming
+
+    );
+
+
     public Command unlock = new InstantCommand(()->{
         this.locked = false;
         fn = f;
@@ -220,18 +259,24 @@ public class RotarySubsystem implements Subsystem {
     @Override
     public void periodic() {
         if (halfChamber) {
-            chamberOffset = Math.PI / 3;
+            halfOffset = Math.PI / 3;
         } else {
-            chamberOffset = 0;
+            halfOffset = 0;
         }
 
         currentPosition = MathUtil.piWraparound((Encoder.getCurrentPosition() / ticksPerRotation) * 2*Math.PI);
 
-        mCon.setTarget(MathUtil.piWraparound( targetPosition + chamberOffset));
+        mCon.setTarget(MathUtil.piWraparound( targetPosition + halfOffset + offset));
 
         mCon.update(currentPosition);
         double power = mCon.runPDFL(0.009);
         motor.setPower(power);
+
+        if (findWall) {
+            motor.setPower(-0.1);
+        } else if (findEdge) {
+            motor.setPower(0.05);
+        }
 
         if (shouldUpdateColors && power <= 0.04 && !halfChamber){
             updateChamberColor();
@@ -253,7 +298,7 @@ public class RotarySubsystem implements Subsystem {
         sb.append("\ncurrentPosition: ").append(currentPosition);
 
         sb.append("\nhalfChamber: ").append(halfChamber);
-        sb.append("\nchamberOffset: ").append(chamberOffset);
+        sb.append("\nchamberOffset: ").append(halfOffset);
 
         sb.append("\nticksPerRotation: ").append(ticksPerRotation);
         sb.append("\nshouldUpdateColors: ").append(shouldUpdateColors);
