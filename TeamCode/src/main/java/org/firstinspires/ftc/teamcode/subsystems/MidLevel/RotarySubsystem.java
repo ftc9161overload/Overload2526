@@ -129,7 +129,6 @@ public class RotarySubsystem implements Subsystem {
                 .setStop((interrupted) ->{
                     findEdge = false;
                 });
-
     }
 
     private Command finishHoming = new InstantCommand(() -> {
