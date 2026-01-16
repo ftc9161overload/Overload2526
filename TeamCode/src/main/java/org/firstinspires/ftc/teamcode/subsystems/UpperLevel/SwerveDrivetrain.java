@@ -21,10 +21,10 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 @Configurable
 public class SwerveDrivetrain implements Subsystem {
 
-    public static int flOffset = -60+10+90;
-    public static int frOffset = -2+15+90;
-    public static int blOffset = 122+180+90;
-    public static int brOffset = 255;
+    public static int flOffset = 110;
+    public static int frOffset = 3;
+    public static int blOffset = 81;
+    public static int brOffset = 85;
 
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
@@ -39,6 +39,11 @@ public class SwerveDrivetrain implements Subsystem {
 
         bl.setServoReverse(true);
         bl.setServoMKII();
+//        fr.setServoMKII();
+        fr.setServoReverse(true);
+//        br.setServoReverse(true);
+
+        fl.setPDFL(0.4,0.007,0,.1);
 
 
         fl.setServoOffsetDeg(flOffset);
@@ -59,10 +64,23 @@ public class SwerveDrivetrain implements Subsystem {
 
 
 
+    public void cross() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.cross();
+        }
+    }
+    public void uncross() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.unCross();
+        }
+    }
 
 
-
-
+    public void setPDFLs(double p, double d, double f, double l) {
+        for (SwervePodSubsystem pod : pods) {
+            pod.setPDFL(p,d,f,l);
+        }
+    }
     public void setServoPowZero() {
         for(SwervePodSubsystem pod : pods) {
             pod.setServoPower(0);
@@ -71,6 +89,12 @@ public class SwerveDrivetrain implements Subsystem {
     public void setPosZero() {
         for(SwervePodSubsystem pod : pods) {
             pod.setPos(0);
+        }
+    }
+
+    public void setPos(double pos) {
+        for (SwervePodSubsystem pod : pods) {
+            pod.setPos(pos);
         }
     }
 
@@ -90,6 +114,12 @@ public class SwerveDrivetrain implements Subsystem {
     public void runDrive(Vector2D drive, Vector2D rotational) {
         for (SwervePodSubsystem pod : pods) {
             pod.update(drive,rotational);
+        }
+    }
+
+    public void updatePods() {
+        for (SwervePodSubsystem pod : pods) {
+            pod.update();
         }
     }
 

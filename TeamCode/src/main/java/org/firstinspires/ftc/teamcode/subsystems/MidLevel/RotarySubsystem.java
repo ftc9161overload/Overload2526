@@ -39,6 +39,7 @@ public class RotarySubsystem implements Subsystem {
 
     private NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
     private ColorRangeSensor distSensor;
+    private double distSensorOutput;
     //private ColorRangeSensor thingy;
 
     private final double[] GreenColor = {0.009, 0.04, 0.028};
@@ -115,17 +116,23 @@ public class RotarySubsystem implements Subsystem {
 
     private Command findWall() {
         return new LambdaCommand(("Homing Rotary: Finding Wall"))
-                .setStart(() -> findWall = true)
+                .setStart(() ->  {
+                    findWall = true;
+                    distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
+                })
                 .setIsDone(() ->
-                        distSensor.getDistance(DistanceUnit.INCH) < 0.1)
+                        distSensorOutput < 0.3)
                 .setStop((interrupted) ->{
                     findWall = false;
                 });
     }
     private Command findEdge() {
         return new LambdaCommand(("Homing Rotary: Finding edge"))
-                .setStart(() -> findEdge = false)
-                .setIsDone(() -> distSensor.getDistance(DistanceUnit.INCH) > 0.2)
+                .setStart(() -> {
+                    findEdge = true;
+                    distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
+                })
+                .setIsDone(() -> distSensorOutput > 0.5)
                 .setStop((interrupted) ->{
                     findEdge = false;
                 });
@@ -269,12 +276,17 @@ public class RotarySubsystem implements Subsystem {
 
         mCon.update(currentPosition);
         double power = mCon.runPDFL(0.009);
-        motor.setPower(power);
+
 
         if (findWall) {
-            motor.setPower(-0.1);
+            motor.setPower(-0.3);
+            distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
         } else if (findEdge) {
-            motor.setPower(0.05);
+            motor.setPower(0.1);
+            distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
+
+        } else {
+            motor.setPower(power);
         }
 
         if (shouldUpdateColors && power <= 0.04 && !halfChamber){
@@ -298,6 +310,7 @@ public class RotarySubsystem implements Subsystem {
 
         sb.append("\nhalfChamber: ").append(halfChamber);
         sb.append("\nchamberOffset: ").append(halfOffset);
+        sb.append("\nOffset: ").append(offset);
 
         sb.append("\nticksPerRotation: ").append(ticksPerRotation);
         sb.append("\nshouldUpdateColors: ").append(shouldUpdateColors);
@@ -324,6 +337,9 @@ public class RotarySubsystem implements Subsystem {
                         .append(" B: ").append((c.getNormalizedColors().blue));
             }
         }
+
+        sb.append("\n\n=== Sensor Distance ===");
+        sb.append("\nDist: ").append(distSensorOutput);
 
         // controller internals (if available)
         sb.append("\n\n=== Controller ===");
