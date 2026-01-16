@@ -70,7 +70,14 @@ public class AutonTemplate extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-
+        /*
+        if (gamepad1.a) {
+            Robot.color = Robot.teamColor.RED;
+            paths = new Short9BallPaths(follower(), Robot.color);
+        } else if (gamepad1.b) {
+            Robot.color = Robot.teamColor.BLUE;
+            paths = new Short9BallPaths(follower(), Robot.color);
+        }*/
     }
 
     @Override
