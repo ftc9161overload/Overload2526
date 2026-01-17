@@ -65,6 +65,7 @@ public class AutonTemplate extends NextFTCOpMode {
         Odometry.INSTANCE.initReal();
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
+        RotarySubsystem.INSTANCE.home.schedule();
 
         // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
         Odometry.INSTANCE.setPos(0,0, 0);

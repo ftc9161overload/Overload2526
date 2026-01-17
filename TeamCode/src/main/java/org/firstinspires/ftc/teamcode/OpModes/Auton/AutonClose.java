@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.JoinedTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -20,19 +21,25 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "Far Red Auton", group = "Auton")
+@Autonomous(name = "Close Auton", group = "Auton")
 @Configurable
-public class AutonRedFar extends NextFTCOpMode {
-    public AutonRedFar() {
+public class AutonClose extends NextFTCOpMode {
+    JoinedTelemetry joinedTelemetry;
+    public AutonClose() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
+            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+            BulkReadComponent.INSTANCE,
+            BindingsComponent.INSTANCE
         );
     }
+    private double movementScaler = 1.0;
+    public static double outtakePreset1 = 1900;
+    public static double outtakePreset2 = 2560;
 
-    private static SwerveDrivetrain swerveDrivetrain;
     private Timer timer = new Timer();
+
+    private static LauncherSubsystem launcherSubsystem;
+    private static SwerveDrivetrain swerveDrivetrain;
 
     private Command t = new InstantCommand(() -> {
         timer.reset();
@@ -46,36 +53,48 @@ public class AutonRedFar extends NextFTCOpMode {
             RotarySubsystem.INSTANCE.nextChamber
     );
 
-    // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
+    // Should score in the blue goal
     private Command autonCommand = new SequentialGroup(
-            OuttakeWheelSubsystem.INSTANCE.setSpeed3,
-            Follower.INSTANCE.set(0,7, 75),
+            OuttakeWheelSubsystem.INSTANCE.setSpeed1,
+            Follower.INSTANCE.setLinear(23,-22),
+            Follower.INSTANCE.setHeading(140),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
-            IntakeSubsystem.INSTANCE.run,
 
-            Follower.INSTANCE.set(0, 21, 0),
-            Follower.INSTANCE.setLinear(40, 0),
+            Follower.INSTANCE.setLinear(0, -19),
+            Follower.INSTANCE.setHeading(180),
+
+            Follower.INSTANCE.setLinear(-34, 0),
             rotate,
-            Follower.INSTANCE.set(-40, -21, 75),
+
+            Follower.INSTANCE.setLinear(34, 19),
+            Follower.INSTANCE.setHeading(140),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.set(0, 45, 0),
-            Follower.INSTANCE.setLinear(40, 0),
+            Follower.INSTANCE.setLinear(0, -43),
+            Follower.INSTANCE.setHeading(180),
+
+            Follower.INSTANCE.setLinear(-34, 0),
             rotate,
-            Follower.INSTANCE.set(-40, -45, 75),
+
+            Follower.INSTANCE.setLinear(34, 43),
+            Follower.INSTANCE.setHeading(140),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.set(0, 69, 0),
-            Follower.INSTANCE.setLinear(40, 0),
+            Follower.INSTANCE.setLinear(0, -67),
+            Follower.INSTANCE.setHeading(180),
+
+            Follower.INSTANCE.setLinear(-34, 0),
             rotate,
-            Follower.INSTANCE.set(-40, -69, 75),
+
+            Follower.INSTANCE.setLinear(34, 67),
+            Follower.INSTANCE.setHeading(180),
             LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
+
             IntakeSubsystem.INSTANCE.stop
 
     );
@@ -99,14 +118,22 @@ public class AutonRedFar extends NextFTCOpMode {
         Odometry.INSTANCE.initReal();
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
+        RotarySubsystem.INSTANCE.home.schedule();
 
-        // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
-        Odometry.INSTANCE.setPos(88,8, 90);
+        //RotarySubsystem.INSTANCE.resetOffset();
+        Odometry.INSTANCE.setPos(22,125, 145);
     }
 
     @Override
     public void onWaitForStart() {
-
+        if (gamepad2.a) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
+        } else if (gamepad2.y) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
+        }
+        joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
+        joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
+        joinedTelemetry.update();
     }
 
     @Override
@@ -117,7 +144,6 @@ public class AutonRedFar extends NextFTCOpMode {
 
     }
 
-    // FOLLOWS THE AUTON SEQUENTIAL GROUP UP ABOVE
     @Override
     public void onUpdate() {
 

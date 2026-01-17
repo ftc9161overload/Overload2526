@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.JoinedTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
@@ -18,10 +19,11 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "Far Blue Auton", group = "Auton")
+@Autonomous(name = "Far Auton", group = "Auton")
 @Configurable
-public class AutonBlueFar extends NextFTCOpMode {
-    public AutonBlueFar() {
+public class AutonFar extends NextFTCOpMode {
+    JoinedTelemetry joinedTelemetry;
+    public AutonFar() {
         addComponents(
                 new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -61,6 +63,7 @@ public class AutonBlueFar extends NextFTCOpMode {
         Odometry.INSTANCE.initReal();
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
+        RotarySubsystem.INSTANCE.home.schedule();
 
         // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
         Odometry.INSTANCE.setPos(64,8, 90);
@@ -68,7 +71,14 @@ public class AutonBlueFar extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-
+        if (gamepad2.a) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
+        } else if (gamepad2.y) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
+        }
+        joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
+        joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
+        joinedTelemetry.update();
     }
 
     @Override
