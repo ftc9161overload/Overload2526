@@ -20,24 +20,19 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "Close Blue Auton", group = "Auton")
+@Autonomous(name = "Far Red Auton", group = "Auton")
 @Configurable
-public class AutonBlueClose extends NextFTCOpMode {
-    public AutonBlueClose() {
+public class AutonRedFar extends NextFTCOpMode {
+    public AutonRedFar() {
         addComponents(
-            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
-            BulkReadComponent.INSTANCE,
-            BindingsComponent.INSTANCE
+                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+                BulkReadComponent.INSTANCE,
+                BindingsComponent.INSTANCE
         );
     }
-    private double movementScaler = 1.0;
-    public static double outtakePreset1 = 1900;
-    public static double outtakePreset2 = 2560;
 
-    private Timer timer = new Timer();
-
-    private static LauncherSubsystem launcherSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
+    private Timer timer = new Timer();
 
     private Command t = new InstantCommand(() -> {
         timer.reset();
@@ -51,48 +46,36 @@ public class AutonBlueClose extends NextFTCOpMode {
             RotarySubsystem.INSTANCE.nextChamber
     );
 
-    // Should score in the blue goal
+    // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
     private Command autonCommand = new SequentialGroup(
-            OuttakeWheelSubsystem.INSTANCE.setSpeed1,
-            Follower.INSTANCE.setLinear(23,-22),
-            Follower.INSTANCE.setHeading(140),
+            OuttakeWheelSubsystem.INSTANCE.setSpeed3,
+            Follower.INSTANCE.set(0,7, 75),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
+            IntakeSubsystem.INSTANCE.run,
 
-            Follower.INSTANCE.setLinear(0, -19),
-            Follower.INSTANCE.setHeading(180),
-
-            Follower.INSTANCE.setLinear(-34, 0),
+            Follower.INSTANCE.set(0, 21, 0),
+            Follower.INSTANCE.setLinear(40, 0),
             rotate,
-
-            Follower.INSTANCE.setLinear(34, 19),
-            Follower.INSTANCE.setHeading(140),
+            Follower.INSTANCE.set(-40, -21, 75),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.setLinear(0, -43),
-            Follower.INSTANCE.setHeading(180),
-
-            Follower.INSTANCE.setLinear(-34, 0),
+            Follower.INSTANCE.set(0, 45, 0),
+            Follower.INSTANCE.setLinear(40, 0),
             rotate,
-
-            Follower.INSTANCE.setLinear(34, 43),
-            Follower.INSTANCE.setHeading(140),
+            Follower.INSTANCE.set(-40, -45, 75),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.setLinear(0, -67),
-            Follower.INSTANCE.setHeading(180),
-
-            Follower.INSTANCE.setLinear(-34, 0),
+            Follower.INSTANCE.set(0, 69, 0),
+            Follower.INSTANCE.setLinear(40, 0),
             rotate,
-
-            Follower.INSTANCE.setLinear(34, 67),
-            Follower.INSTANCE.setHeading(180),
+            Follower.INSTANCE.set(-40, -69, 75),
             LauncherSubsystem.INSTANCE.Launch3(),
-
+            LauncherSubsystem.INSTANCE.setHalfOn,
             IntakeSubsystem.INSTANCE.stop
 
     );
@@ -117,8 +100,8 @@ public class AutonBlueClose extends NextFTCOpMode {
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
 
-        //RotarySubsystem.INSTANCE.resetOffset();
-        Odometry.INSTANCE.setPos(22,125, 145);
+        // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
+        Odometry.INSTANCE.setPos(88,8, 90);
     }
 
     @Override
@@ -134,6 +117,7 @@ public class AutonBlueClose extends NextFTCOpMode {
 
     }
 
+    // FOLLOWS THE AUTON SEQUENTIAL GROUP UP ABOVE
     @Override
     public void onUpdate() {
 
