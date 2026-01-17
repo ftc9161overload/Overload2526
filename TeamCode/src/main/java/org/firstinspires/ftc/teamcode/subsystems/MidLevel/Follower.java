@@ -114,6 +114,9 @@ public class Follower implements Subsystem {
 
     public void turnToGoal(){
         headingTarget = new Vector2D((goal[0] - xPos),(goal[1] - yPos)).angle();
+        if (teamcolor == TEAMCOLOR.RED) {
+            headingTarget = flipXAngle(headingTarget);
+        }
     }
 
     public Command turnOnLinear = new InstantCommand(() -> {
