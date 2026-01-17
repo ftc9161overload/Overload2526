@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
+import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 
 import dev.nextftc.core.commands.Command;
@@ -25,6 +26,8 @@ public class Follower implements Subsystem {
     private double[] goal = {8, 136};
     private boolean linearFollwer = false, headingFollower = false;
 
+    private boolean fieldCentric = true;
+
     public enum TEAMCOLOR {
         RED,
         BLUE;
@@ -40,7 +43,8 @@ public class Follower implements Subsystem {
     }
     public TEAMCOLOR teamcolor = TEAMCOLOR.BLUE;
 
-    private PDFLController xCon = new PDFLController(0.06,0,0,0.35), headingCon = new PDFLController(0.03,0,0,0.35);
+    private PDFLController xCon = new PDFLController(0.06,0,0,0.35);
+    private PDFLControllerRadial headingCon = new PDFLControllerRadial(0.03,0,0,0.35);
     private double xErrorMin = 0.5, headingErrorMin = 0.1;
 
     public void initialize(){
@@ -72,6 +76,9 @@ public class Follower implements Subsystem {
         double y = Math.sin(angle);
         return new Vector2D(-x, y).angle();
     }
+
+    public Command turnOnFieldCentric = new InstantCommand(() -> fieldCentric = true);
+    public Command turnOffFieldCentric = new InstantCommand(() -> fieldCentric = false);
 
     /**
      * Sets target coordinates and heading, flipping x and heading for RED team.
@@ -147,7 +154,11 @@ public class Follower implements Subsystem {
             xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
             return new Vector2D(xCon.runPDFL(xErrorMin),0).rotate(Math.atan2(xTarget-xPos,yTarget-yPos));
         } else {
-            return new Vector2D(x, y).rotate(-heading);
+            if (fieldCentric) {
+                return new Vector2D(x, y).rotate(-heading);
+            } else {
+                return new Vector2D(x, y);
+            }
         }
     }
 
@@ -156,6 +167,7 @@ public class Follower implements Subsystem {
             headingCon.update(heading);
             return new Vector2D(headingCon.runPDFL(headingErrorMin),0);
         } else {
+
             return new Vector2D(rotational, 0);
         }
     }
