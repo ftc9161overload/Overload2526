@@ -81,7 +81,7 @@ public class Follower implements Subsystem {
             if (teamcolor == TEAMCOLOR.RED) {
                 this.xTarget = flipX(xTarget);
                 this.yTarget = yTarget;
-                this.headingTarget = Math.PI - headingTarget;
+                this.headingTarget = flipXAngle(headingTarget);
             } else {
                 this.xTarget = xTarget;
                 this.yTarget = yTarget;
@@ -105,7 +105,7 @@ public class Follower implements Subsystem {
     public Command setHeading(double headingTarget) {
         return new InstantCommand(() -> {
             if (teamcolor == TEAMCOLOR.RED) {
-                this.headingTarget = Math.PI - headingTarget;
+                this.headingTarget = flipXAngle(headingTarget);
             } else {
                 this.headingTarget = headingTarget;
             }
@@ -114,6 +114,9 @@ public class Follower implements Subsystem {
 
     public void turnToGoal(){
         headingTarget = new Vector2D((goal[0] - xPos),(goal[1] - yPos)).angle();
+        if (teamcolor == TEAMCOLOR.RED) {
+            headingTarget = flipXAngle(headingTarget);
+        }
     }
 
     public Command turnOnLinear = new InstantCommand(() -> {
