@@ -22,9 +22,9 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 public class SwerveDrivetrain implements Subsystem {
 
     public static int blOffset = 125;
-    public static int brOffset = 111;
+    public static int brOffset = 21;
     public static int flOffset = -20;
-    public static int frOffset = -48;
+    public static int frOffset = -3;
 
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
