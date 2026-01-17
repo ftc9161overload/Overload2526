@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.Util;
  * the running of a PDF Controller, with an added lower limit, L, to prevent undercorrection
  * due to friction inherent in systems.
  *
- * @ author Asher Childress - 9161 Overlaod
+ * @ author Asher Childress - 9161 Overload
  */
 
 public class PDFLControllerRadial {

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Util;
 
 /**
  * This is a Lerp class intended for use in Project Overload.
- * @Author Ryan Hajj - 9161 Overlaod
+ * @Author Ryan Hajj - 9161 Overload
  */
 public class Lerp {
 

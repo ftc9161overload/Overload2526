@@ -21,10 +21,10 @@ https://pedropathing.com/docs/pathing/custom/drivetrain
 @Configurable
 public class SwerveDrivetrain implements Subsystem {
 
-    public static int flOffset = 110;
-    public static int frOffset = 3;
-    public static int blOffset = 81;
-    public static int brOffset = 85;
+    public static int flOffset = -13-90;
+    public static int frOffset = 142-45;
+    public static int blOffset = -155-45;
+    public static int brOffset = -138-45;
 
     //private constants SwerveDrivetrainConstants();
     private SwervePodSubsystem[] pods;
@@ -39,11 +39,13 @@ public class SwerveDrivetrain implements Subsystem {
 
         bl.setServoReverse(true);
         bl.setServoMKII();
-//        fr.setServoMKII();
+        fr.setServoMKII();
         fr.setServoReverse(true);
+//        br.setServoMKII();
+        br.setPDFL(.3,.005,0,.1);
 //        br.setServoReverse(true);
 
-        fl.setPDFL(0.4,0.007,0,.1);
+//        fl.setPDFL(0.4,0.007,0,.1);
 
 
         fl.setServoOffsetDeg(flOffset);

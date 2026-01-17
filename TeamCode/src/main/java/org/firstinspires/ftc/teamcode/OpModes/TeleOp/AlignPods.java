@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -15,10 +17,13 @@ public class AlignPods extends OpMode {
     public static boolean runPDFL = false;
     public static double target = 0;
 
+    private JoinedTelemetry joinedTelemetry;
+
     @Override
     public void init() {
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
         pods = swerveDrivetrain.getSwervePods();
+        joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
     }
 
     @Override
@@ -38,19 +43,21 @@ public class AlignPods extends OpMode {
         if (runPDFL) {
             swerveDrivetrain.setPos(target);
         } else {
-            swerveDrivetrain.setPosZero();
-            swerveDrivetrain.setServoPowZero();
+//            swerveDrivetrain.setPosZero();
+//            swerveDrivetrain.setServoPowZero();
         }
 
-        telemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos()));
-        telemetry.addData("FR currentPos: ", Math.toDegrees(pods[1].getAnalogInPos()));
-        telemetry.addData("BL currentPos: ", Math.toDegrees(pods[2].getAnalogInPos()));
-        telemetry.addData("FR currentPos: ", Math.toDegrees(pods[3].getAnalogInPos()));
+        joinedTelemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos()));
+        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[1].getAnalogInPos()));
+        joinedTelemetry.addData("BL currentPos: ", Math.toDegrees(pods[2].getAnalogInPos()));
+        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[3].getAnalogInPos()));
 
-        telemetry.addData("current FL: ", SwerveDrivetrain.flOffset);
-        telemetry.addData("current FR: ", SwerveDrivetrain.frOffset);
-        telemetry.addData("current BL: ", SwerveDrivetrain.blOffset);
-        telemetry.addData("current BR: ", SwerveDrivetrain.brOffset);
-        telemetry.update();
+        joinedTelemetry.addData("current FL: ", SwerveDrivetrain.flOffset);
+        joinedTelemetry.addData("current FR: ", SwerveDrivetrain.frOffset);
+        joinedTelemetry.addData("current BL: ", SwerveDrivetrain.blOffset);
+        joinedTelemetry.addData("current BR: ", SwerveDrivetrain.brOffset);
+
+        joinedTelemetry.addLine(swerveDrivetrain.debugString());
+        joinedTelemetry.update();
     }
 }

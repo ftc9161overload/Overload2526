@@ -29,7 +29,7 @@ public class SwervePodSubsystem {
     private double mPow;
     private double servoOffset, currentPos, targetPos, flippedTargetPos;
     private double setTargetPos = 0;
-    private double p = .4, d = 0.01, f = 0, l = 0.1, errorMin = 0.05;
+    private double p = .6, d = 0.01, f = 0, l = 0.1, errorMin = 0.1;
     private Timer flipTimer = new Timer();
     private double flipCooldownSeconds = 0.2; // tweakable
     private PDFLControllerRadial sCon = new PDFLControllerRadial(p,d,f,l);
@@ -59,7 +59,7 @@ public class SwervePodSubsystem {
     public void setServoReverse(boolean set) { reverseServo = set;}
 
     public void setServoMKII() {
-        p = 0.6; d = 0.015; f = 0; l = .1;
+        p = 0.3; d = 0.01; f = 0; l = .1;
         sCon.setPDFL(p,d,f,l);
         errorMin = 0.05;
     }
