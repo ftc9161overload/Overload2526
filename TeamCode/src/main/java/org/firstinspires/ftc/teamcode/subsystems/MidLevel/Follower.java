@@ -140,7 +140,7 @@ public class Follower implements Subsystem {
     });
 
     public Vector2D getLinear() {
-        xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
+        xCon.update(Math.hypot(xPos,yPos));
         return new Vector2D(xCon.runPDFL(xErrorMin),0).rotate(Math.atan2(xTarget-xPos,yTarget-yPos));
     }
 
@@ -173,6 +173,8 @@ public class Follower implements Subsystem {
     }
 
     public void periodic(){
+        headingCon.setTarget(headingTarget);
+        xCon.setTarget(Math.hypot(xTarget,yTarget));
         panelsField.moveCursor(xPos, yPos);
         panelsField.setCursorHeading(heading);
         panelsField.line(xTarget, yTarget);
