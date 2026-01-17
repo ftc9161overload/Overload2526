@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
+import androidx.annotation.NonNull;
+
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 
@@ -25,7 +27,16 @@ public class Follower implements Subsystem {
 
     public enum TEAMCOLOR {
         RED,
-        BLUE
+        BLUE;
+
+        @NonNull
+        public String toString(){
+            if (this == RED){
+                return "RED";
+            } else {
+                return "BLUE";
+            }
+        }
     }
     public TEAMCOLOR teamcolor = TEAMCOLOR.BLUE;
 

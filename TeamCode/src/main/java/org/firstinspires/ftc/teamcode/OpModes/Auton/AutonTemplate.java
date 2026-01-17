@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.JoinedTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -26,6 +27,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @Autonomous(name = "AutonTemplate", group = "Auton")
 @Configurable
 public class AutonTemplate extends NextFTCOpMode {
+    JoinedTelemetry joinedTelemetry;
     public AutonTemplate() {
         addComponents(
                 new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
@@ -70,14 +72,14 @@ public class AutonTemplate extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        /*
-        if (gamepad1.a) {
-            Robot.color = Robot.teamColor.RED;
-            paths = new Short9BallPaths(follower(), Robot.color);
-        } else if (gamepad1.b) {
-            Robot.color = Robot.teamColor.BLUE;
-            paths = new Short9BallPaths(follower(), Robot.color);
-        }*/
+        if (gamepad2.a) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
+        } else if (gamepad2.y) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
+        }
+        joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
+        joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
+        joinedTelemetry.update();
     }
 
     @Override

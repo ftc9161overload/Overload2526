@@ -28,10 +28,7 @@ public class RotarySubsystem implements Subsystem {
     public boolean locked = true;
     private RotarySubsystem() {}
 
-    private static final double p = 0.85;
-    private static final double d = 0.01;
-    private static final double f = 0;
-    private static final double l = 0.12;
+    private static double p = 0.85, d = 0.01, f = 0, l = 0.12;
     private double fn = f;
     private final PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
     private int currentChamber = 1;
@@ -106,10 +103,10 @@ public class RotarySubsystem implements Subsystem {
     }
 
     public Command withinRange() {
-        return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> Math.abs(currentPosition-targetPosition) < 0.01);
+        return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> withinRangeBool());
     }
     public Boolean withinRangeBool() {
-        return Math.abs(MathUtil.piWraparound(currentChamber-targetPosition)) < 0.02;
+        return Math.abs(MathUtil.piWraparound(currentPosition-targetPosition-offset)) < 0.02;
     }
     public Command lock = new InstantCommand(()->{
         this.locked = true;
@@ -143,8 +140,8 @@ public class RotarySubsystem implements Subsystem {
                 });
     }
 
-    private final Command finishHoming = new InstantCommand(() -> {
-        offset = currentPosition;
+    private Command finishHoming = new InstantCommand(() -> {
+        offset = currentPosition + 0.16;
     });
 
     public SequentialGroup home = new SequentialGroup(
@@ -259,7 +256,6 @@ public class RotarySubsystem implements Subsystem {
         return Ball.NULL;
     }
 
-
     private void updateChamberColor() {
         for (int i = 0; i < 3; i++) {
             NormalizedColorSensor c = colorSensors[i];
@@ -285,10 +281,10 @@ public class RotarySubsystem implements Subsystem {
 
 
         if (findWall) {
-            motor.setPower(-0.3);
+            motor.setPower(-0.5);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
         } else if (findEdge) {
-            motor.setPower(0.1);
+            motor.setPower(0.2);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
 
         } else {

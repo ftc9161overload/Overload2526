@@ -47,8 +47,8 @@ public class AlignPods extends NextFTCOpMode {
         if (runPDFL) {
             swerveDrivetrain.setPos(target);
         } else {
-            swerveDrivetrain.setPosZero();
-            swerveDrivetrain.setServoPowZero();
+//            swerveDrivetrain.setPosZero();
+//            swerveDrivetrain.setServoPowZero();
         }
 
         joinedTelemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos()));

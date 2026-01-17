@@ -70,6 +70,14 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
+        if (gamepad2.a) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
+        } else if (gamepad2.y) {
+            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
+        }
+        joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
+        joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
+
         joinedTelemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
 //        joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
 //        joinedTelemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
