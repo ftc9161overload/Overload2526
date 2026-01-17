@@ -158,7 +158,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
 
-        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x * (slowmode ? 0.5 : 1),gamepad2.left_stick_y* (slowmode ? 0.5 : 1)), new Vector2D(-gamepad2.right_stick_x* (slowmode ? 0.5 : 1),0));
+        swerveDrivetrain.runDrive(Follower.INSTANCE.getTeleOpLinear(-gamepad2.left_stick_x * (slowmode ? 0.5 : 1),gamepad2.left_stick_y* (slowmode ? 0.5 : 1)), new Vector2D(-gamepad2.right_stick_x* (slowmode ? 0.5 : 1),0));
 
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 

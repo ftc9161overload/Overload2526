@@ -139,8 +139,22 @@ public class Follower implements Subsystem {
         return new Vector2D(headingCon.runPDFL(headingErrorMin),0);
     }
 
-    public Vector2D teleOpLinear(double x, double y ) {
-        return new Vector2D(x,y).rotate(-heading);
+    public Vector2D getTeleOpLinear(double x, double y ) {
+        if(linearFollwer) {
+            xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
+            return new Vector2D(xCon.runPDFL(xErrorMin),0).rotate(Math.atan2(xTarget-xPos,yTarget-yPos));
+        } else {
+            return new Vector2D(x, y).rotate(-heading);
+        }
+    }
+
+    public Vector2D getTeleOpHeading(double rotational) {
+        if(headingFollower) {
+            headingCon.update(heading);
+            return new Vector2D(headingCon.runPDFL(headingErrorMin),0);
+        } else {
+            return new Vector2D(rotational, 0);
+        }
     }
 
     public void periodic(){
