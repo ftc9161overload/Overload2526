@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 import com.bylazar.configurables.annotations.Configurable;
 
+
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
@@ -22,9 +23,6 @@ public class LauncherSubsystem extends SubsystemGroup {
             RotarySubsystem.INSTANCE
         );
     }
-
-
-
 
     // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
     public Command setHalfOn = new InstantCommand(() -> {

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
+import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -20,15 +21,19 @@ import dev.nextftc.core.commands.Command;
 
 @Configurable
 public class RotarySubsystem implements Subsystem {
+    private Timer timer;
     private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode().zeroed();
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
     private final MotorEx Encoder = new MotorEx("RoEn");
     public boolean locked = true;
     private RotarySubsystem() {}
 
-    private static double p = 0.85, d = 0.01, f = 0, l = 0.12;
+    private static final double p = 0.85;
+    private static final double d = 0.01;
+    private static final double f = 0;
+    private static final double l = 0.12;
     private double fn = f;
-    private PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
+    private final PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
     private int currentChamber = 1;
     private double currentPosition = 0;
     private double targetPosition = 0;
@@ -37,7 +42,7 @@ public class RotarySubsystem implements Subsystem {
 
     private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
 
-    private NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
+    private final NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
     private ColorRangeSensor distSensor;
     //private ColorRangeSensor thingy;
 
@@ -131,7 +136,7 @@ public class RotarySubsystem implements Subsystem {
                 });
     }
 
-    private Command finishHoming = new InstantCommand(() -> {
+    private final Command finishHoming = new InstantCommand(() -> {
         offset = currentPosition;
     });
 
@@ -246,6 +251,7 @@ public class RotarySubsystem implements Subsystem {
 
         return Ball.NULL;
     }
+
 
     private void updateChamberColor() {
         for (int i = 0; i < 3; i++) {
