@@ -93,6 +93,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        RotarySubsystem.INSTANCE.startRotary.schedule();
         RotarySubsystem.INSTANCE.locked = false;
         // INTAKE (HOLD TO USE)
         Gamepads.gamepad1().a()
@@ -146,10 +147,10 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         // Crossing/uncrossing the swerves
 
-        Gamepads.gamepad2().x()
-                .toggleOnBecomesTrue()
-                .whenBecomesTrue(() -> swerveDrivetrain.cross())
-                .whenBecomesFalse(() -> swerveDrivetrain.uncross());
+//        Gamepads.gamepad2().x()
+//                .toggleOnBecomesTrue()
+//                .whenBecomesTrue(() -> swerveDrivetrain.cross())
+//                .whenBecomesFalse(() -> swerveDrivetrain.uncross());
 
     }
 

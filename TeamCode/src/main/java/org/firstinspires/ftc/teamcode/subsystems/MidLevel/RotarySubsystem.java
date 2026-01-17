@@ -35,7 +35,7 @@ public class RotarySubsystem implements Subsystem {
     private double currentPosition = 0;
     private double targetPosition = 0;
 
-    private boolean findWall = false, findEdge = false;
+    private boolean findWall = false, findEdge = false, homingDone = false;
 
     private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
 
@@ -140,8 +140,13 @@ public class RotarySubsystem implements Subsystem {
                 });
     }
 
-    private Command finishHoming = new InstantCommand(() -> {
+    private final Command finishHoming = new InstantCommand(() -> {
         offset = currentPosition + 0.16;
+        homingDone = true;
+    });
+
+    public final Command startRotary = new InstantCommand(() -> {
+        homingDone = false;
     });
 
     public SequentialGroup home = new SequentialGroup(
@@ -287,7 +292,10 @@ public class RotarySubsystem implements Subsystem {
             motor.setPower(0.2);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
 
-        } else {
+        } else if (homingDone) {
+            motor.setPower(0);
+        }
+        else {
             motor.setPower(power);
         }
 

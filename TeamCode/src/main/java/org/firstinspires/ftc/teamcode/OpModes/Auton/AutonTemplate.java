@@ -85,6 +85,7 @@ public class AutonTemplate extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        RotarySubsystem.INSTANCE.startRotary.schedule();
         RotarySubsystem.INSTANCE.locked = false;
         // INTAKE (HOLD TO USE)
         autonCommand.schedule();

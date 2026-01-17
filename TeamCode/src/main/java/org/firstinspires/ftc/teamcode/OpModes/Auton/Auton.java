@@ -70,6 +70,8 @@ public class Auton extends NextFTCOpMode {
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
 
+        RotarySubsystem.INSTANCE.home.schedule();
+
         //RotarySubsystem.INSTANCE.resetOffset();
     }
 
@@ -80,6 +82,7 @@ public class Auton extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        RotarySubsystem.INSTANCE.startRotary.schedule();
         RotarySubsystem.INSTANCE.locked = false;
         // INTAKE (HOLD TO USE)
         autonCommand.schedule();
