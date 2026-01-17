@@ -64,7 +64,7 @@ public class PDFLControllerRadial {
         oldTime = time;
         time = System.nanoTime();
 
-        dError = (error-oldError) /((time-oldTime)/ Math.pow(10.0,9));
+        dError = MathUtil.piWraparound(error-oldError) /((time-oldTime)/ Math.pow(10.0,9));
     }
 
     public boolean atSetTarget(){

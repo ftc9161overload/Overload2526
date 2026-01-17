@@ -8,26 +8,30 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
+import dev.nextftc.ftc.NextFTCOpMode;
+
 @Configurable
 @TeleOp(name = "AlignPods", group = "TeleOp")
-public class AlignPods extends OpMode {
+public class AlignPods extends NextFTCOpMode {
     private static SwerveDrivetrain swerveDrivetrain;
     SwervePodSubsystem[] pods;
     public static double p = 0,d = 0,f = 0,l = 0;
     public static boolean runPDFL = false;
     public static double target = 0;
 
-    private JoinedTelemetry joinedTelemetry;
+    JoinedTelemetry joinedTelemetry;
+
+
 
     @Override
-    public void init() {
+    public void onInit() {
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
         pods = swerveDrivetrain.getSwervePods();
         joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
     }
 
     @Override
-    public void loop() {
+    public void onUpdate() {
 //        swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x);
 
 
