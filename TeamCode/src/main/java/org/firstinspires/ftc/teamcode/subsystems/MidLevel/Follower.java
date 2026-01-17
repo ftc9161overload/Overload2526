@@ -74,7 +74,7 @@ public class Follower implements Subsystem {
     private double flipXAngle(double angle) {
         double x = Math.cos(angle);
         double y = Math.sin(angle);
-        return new Vector2D(-x, y).angle();
+        return new Vector2D(x, -y).angle();
     }
 
     public Command turnOnFieldCentric = new InstantCommand(() -> fieldCentric = true);
@@ -150,26 +150,25 @@ public class Follower implements Subsystem {
     }
 
     public Vector2D getTeleOpLinear(double x, double y ) {
-        if(linearFollwer) {
-            xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
-            return new Vector2D(xCon.runPDFL(xErrorMin),0).rotate(Math.atan2(xTarget-xPos,yTarget-yPos));
-        } else {
+//        if(linearFollwer) {
+//            xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
+//            return new Vector2D(xCon.runPDFL(xErrorMin),0).rotate(Math.atan2(xTarget-xPos,yTarget-yPos));
+//        } else {
             if (fieldCentric) {
                 return new Vector2D(x, y).rotate(-heading);
             } else {
                 return new Vector2D(x, y);
             }
-        }
     }
 
     public Vector2D getTeleOpHeading(double rotational) {
-        if(headingFollower) {
-            headingCon.update(heading);
-            return new Vector2D(headingCon.runPDFL(headingErrorMin),0);
-        } else {
+//        if(headingFollower) {
+//            headingCon.update(heading);
+//            return new Vector2D(headingCon.runPDFL(headingErrorMin),0);
+//        } else {
 
             return new Vector2D(rotational, 0);
-        }
+//        }
     }
 
     public void periodic(){
@@ -180,4 +179,34 @@ public class Follower implements Subsystem {
         panelsField.line(xTarget, yTarget);
         panelsField.update();
     }
+
+    public String debugText() {
+        double linearError = Math.hypot(xPos - xTarget, yPos - yTarget);
+        double headingError = headingTarget - heading;
+
+        return String.format(
+                "Follower Debug\n" +
+                        "Pos: (%.2f, %.2f)\n" +
+                        "Target: (%.2f, %.2f)\n" +
+                        "Heading: %.2f rad\n" +
+                        "Heading Target: %.2f rad\n" +
+                        "Linear Err: %.2f\n" +
+                        "Heading Err: %.2f\n" +
+                        "Linear Follower: %b\n" +
+                        "Heading Follower: %b\n" +
+                        "Field Centric: %b\n" +
+                        "Team: %s",
+                xPos, yPos,
+                xTarget, yTarget,
+                heading,
+                headingTarget,
+                linearError,
+                headingError,
+                linearFollwer,
+                headingFollower,
+                fieldCentric,
+                teamcolor.toString()
+        );
+    }
+
 }

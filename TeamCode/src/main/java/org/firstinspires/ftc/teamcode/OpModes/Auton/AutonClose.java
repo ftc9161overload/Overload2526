@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -57,42 +58,42 @@ public class AutonClose extends NextFTCOpMode {
     private Command autonCommand = new SequentialGroup(
             OuttakeWheelSubsystem.INSTANCE.setSpeed1,
             Follower.INSTANCE.setLinear(23,-22),
-            Follower.INSTANCE.setHeading(140),
+            Follower.INSTANCE.setHeading(Math.toRadians(140)),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -19),
-            Follower.INSTANCE.setHeading(180),
+            Follower.INSTANCE.setHeading(Math.toRadians(180)),
 
             Follower.INSTANCE.setLinear(-34, 0),
             rotate,
 
             Follower.INSTANCE.setLinear(34, 19),
-            Follower.INSTANCE.setHeading(140),
+            Follower.INSTANCE.setHeading(Math.toRadians(140)),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -43),
-            Follower.INSTANCE.setHeading(180),
+            Follower.INSTANCE.setHeading(Math.toRadians(180)),
 
             Follower.INSTANCE.setLinear(-34, 0),
             rotate,
 
             Follower.INSTANCE.setLinear(34, 43),
-            Follower.INSTANCE.setHeading(140),
+            Follower.INSTANCE.setHeading(Math.toRadians(140)),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -67),
-            Follower.INSTANCE.setHeading(180),
+            Follower.INSTANCE.setHeading(Math.toRadians(180)),
 
             Follower.INSTANCE.setLinear(-34, 0),
             rotate,
 
             Follower.INSTANCE.setLinear(34, 67),
-            Follower.INSTANCE.setHeading(180),
+            Follower.INSTANCE.setHeading(Math.toRadians(180)),
             LauncherSubsystem.INSTANCE.Launch3(),
 
             IntakeSubsystem.INSTANCE.stop
@@ -101,6 +102,8 @@ public class AutonClose extends NextFTCOpMode {
 
     @Override
     public void onInit() {
+
+        joinedTelemetry = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), telemetry);
         addComponents(
                 new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -121,7 +124,7 @@ public class AutonClose extends NextFTCOpMode {
         RotarySubsystem.INSTANCE.home.schedule();
 
         //RotarySubsystem.INSTANCE.resetOffset();
-        Odometry.INSTANCE.setPos(22,125, 145);
+        Odometry.INSTANCE.setPos(22,125, Math.toRadians(144));
     }
 
     @Override
@@ -158,14 +161,15 @@ public class AutonClose extends NextFTCOpMode {
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
 //        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
+//        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
 //        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 ////        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+//        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
 ////        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
 ////        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
-        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+//        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
+//        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+        telemetry.addData("Follower", Follower.INSTANCE.debugText());
         telemetry.update();
 //        timer.reset();
 

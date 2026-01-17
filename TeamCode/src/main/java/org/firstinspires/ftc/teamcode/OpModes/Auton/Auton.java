@@ -44,7 +44,7 @@ public class Auton extends NextFTCOpMode {
 
 
     private Command autonCommand = new SequentialGroup(
-            Follower.INSTANCE.setLinear(-30,0),
+            Follower.INSTANCE.setLinear(30,0),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3()
@@ -82,6 +82,9 @@ public class Auton extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        Follower.INSTANCE.turnOffHeading.schedule();
+        Follower.INSTANCE.turnOffLinear.schedule();
+
         RotarySubsystem.INSTANCE.startRotary.schedule();
         RotarySubsystem.INSTANCE.locked = false;
         // INTAKE (HOLD TO USE)

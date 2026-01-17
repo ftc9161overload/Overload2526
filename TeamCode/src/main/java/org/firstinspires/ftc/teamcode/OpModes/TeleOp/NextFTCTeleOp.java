@@ -145,6 +145,11 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         Gamepads.gamepad2().leftBumper()
                 .whenBecomesTrue(()-> slowmode = false);
 
+
+        Gamepads.gamepad2().y().toggleOnBecomesTrue().
+                whenBecomesTrue(Follower.INSTANCE.turnOffFieldCentric)
+                .whenBecomesFalse(Follower.INSTANCE.turnOnFieldCentric);
+
         // Crossing/uncrossing the swerves
 
 //        Gamepads.gamepad2().x()
