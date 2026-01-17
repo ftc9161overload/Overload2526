@@ -20,7 +20,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "FarRedAuton", group = "Auton")
+@Autonomous(name = "Far Red Auton", group = "Auton")
 @Configurable
 public class AutonRedFar extends NextFTCOpMode {
     public AutonRedFar() {

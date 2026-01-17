@@ -20,7 +20,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "CloseBlueAuton", group = "Auton")
+@Autonomous(name = "Close Blue Auton", group = "Auton")
 @Configurable
 public class AutonBlueClose extends NextFTCOpMode {
     public AutonBlueClose() {
