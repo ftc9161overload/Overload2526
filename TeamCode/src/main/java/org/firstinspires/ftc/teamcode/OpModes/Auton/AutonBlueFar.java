@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.OpModes.Auton;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
@@ -14,13 +13,12 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "FarBlueAuton", group = "Auton")
+@Autonomous(name = "Far Blue Auton", group = "Auton")
 @Configurable
 public class AutonBlueFar extends NextFTCOpMode {
     public AutonBlueFar() {
@@ -32,51 +30,15 @@ public class AutonBlueFar extends NextFTCOpMode {
     }
 
     private static SwerveDrivetrain swerveDrivetrain;
-    private Timer timer = new Timer();
-
-    private Command t = new InstantCommand(() -> {
-        timer.reset();
-        boolean b = timer.hasElapsedSeconds(0.5);
-    });
-
-    private Command rotate = new SequentialGroup(
-            t,
-            RotarySubsystem.INSTANCE.nextChamber,
-            t,
-            RotarySubsystem.INSTANCE.nextChamber
-    );
 
     // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
     private Command autonCommand = new SequentialGroup(
-            OuttakeWheelSubsystem.INSTANCE.setSpeed3,
-            Follower.INSTANCE.set(0,7, 110),
+            Follower.INSTANCE.setLinear(0,7),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             LauncherSubsystem.INSTANCE.Launch3(),
             LauncherSubsystem.INSTANCE.setHalfOn,
-            IntakeSubsystem.INSTANCE.run,
-
-            Follower.INSTANCE.set(0, 21, 180),
-            Follower.INSTANCE.setLinear(-40, 0),
-            rotate,
-            Follower.INSTANCE.set(40, -21, 110),
-            LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
-
-            Follower.INSTANCE.set(0, 45, 180),
-            Follower.INSTANCE.setLinear(-40, 0),
-            rotate,
-            Follower.INSTANCE.set(40, -45, 110),
-            LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
-
-            Follower.INSTANCE.set(0, 69, 180),
-            Follower.INSTANCE.setLinear(-40, 0),
-            rotate,
-            Follower.INSTANCE.set(40, -69, 110),
-            LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
-            IntakeSubsystem.INSTANCE.stop
+            IntakeSubsystem.INSTANCE.run
 
     );
 

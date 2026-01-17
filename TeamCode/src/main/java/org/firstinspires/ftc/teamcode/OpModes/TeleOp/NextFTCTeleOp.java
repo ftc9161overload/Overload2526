@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -31,6 +33,8 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         );
     }
 
+    JoinedTelemetry joinedTelemetry;
+
     private boolean slowmode = false;
     private double movementScaler = 1.0;
     public static double outtakePreset1 = 1900;
@@ -43,6 +47,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
     @Override
     public void onInit() {
+
+        joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+
         addComponents(
                 new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -54,13 +61,26 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         Odometry.INSTANCE.initReal();
 
         RotarySubsystem.INSTANCE.reset();
+        RotarySubsystem.INSTANCE.home.schedule();
 
         //RotarySubsystem.INSTANCE.resetOffset();
     }
 
+
+
     @Override
     public void onWaitForStart() {
-
+        joinedTelemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
+//        joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
+//        joinedTelemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+        joinedTelemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
+//        joinedTelemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+//        joinedTelemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
+//        joinedTelemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
+//        joinedTelemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
+//        joinedTelemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+        joinedTelemetry.update();
+        timer.reset();
     }
 
     @Override
@@ -115,6 +135,14 @@ public class NextFTCTeleOp extends NextFTCOpMode {
                 .whenBecomesTrue(() -> slowmode = true);
         Gamepads.gamepad2().leftBumper()
                 .whenBecomesTrue(()-> slowmode = false);
+
+        // Crossing/uncrossing the swerves
+
+        Gamepads.gamepad2().x()
+                .toggleOnBecomesTrue()
+                .whenBecomesTrue(() -> swerveDrivetrain.cross())
+                .whenBecomesFalse(() -> swerveDrivetrain.uncross());
+
     }
 
     @Override
@@ -126,16 +154,16 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
-        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-//        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
-        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
-//        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-//        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
-//        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
-//        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-//        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
-//        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
-        telemetry.update();
+        joinedTelemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
+//        joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
+//        joinedTelemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
+//        joinedTelemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
+//        joinedTelemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
+//        joinedTelemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
+//        joinedTelemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
+//        joinedTelemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
+//        joinedTelemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+        joinedTelemetry.update();
         timer.reset();
 
         //swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);

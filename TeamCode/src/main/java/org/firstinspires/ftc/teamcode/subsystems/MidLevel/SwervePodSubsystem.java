@@ -29,11 +29,13 @@ public class SwervePodSubsystem {
     private double mPow;
     private double servoOffset, currentPos, targetPos, flippedTargetPos;
     private double setTargetPos = 0;
-    private double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.05;
+    private double p = .4, d = 0.01, f = 0, l = 0.1, errorMin = 0.05;
     private Timer flipTimer = new Timer();
     private double flipCooldownSeconds = 0.2; // tweakable
     private PDFLControllerRadial sCon = new PDFLControllerRadial(p,d,f,l);
     private boolean reverseServo = false;
+
+    private boolean crossMode = false;
 
     private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
 
@@ -74,10 +76,38 @@ public class SwervePodSubsystem {
         return translational.add(rotational.rotate(posOffset + Math.PI/2));
     }
 
+    public void update() {
+        currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
+
+        double diffTargetPos = Math.abs(MathUtil.piWraparound(targetPos-currentPos));
+        double diffFlippedTargetPos = Math.abs(MathUtil.piWraparound(flippedTargetPos-currentPos));
+
+
+        if (motor.getVelocity() < UniConstants.servoMovementDeadzone) {
+
+            if (diffFlippedTargetPos < diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
+                // Flipping is faster
+                setTargetPos = flippedTargetPos;
+                motorDirection = -1;
+                flipTimer.reset();
+            } else if (diffFlippedTargetPos >= diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
+                // Normal path is faster
+                setTargetPos = targetPos;
+                motorDirection = 1;
+                flipTimer.reset();
+            }
+        }
+
+        sCon.setTarget(setTargetPos);
+
+        sCon.update(currentPos);
+        servo.setPower((reverseServo) ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin) );
+    }
+
     public void update(Vector2D drive) {
         currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
-        targetPos = (drive.angle() + servoOffset) % (2 * Math.PI) - Math.PI;
-        flippedTargetPos = MathUtil.piWraparound(targetPos + Math.PI);
+        targetPos = crossMode ? MathUtil.piWraparound(posOffset) : MathUtil.piWraparound( drive.angle() + servoOffset) ;
+        flippedTargetPos = crossMode ? MathUtil.piWraparound(posOffset + Math.PI) : MathUtil.piWraparound(targetPos + Math.PI);
 
         double diffTargetPos = Math.abs(MathUtil.piWraparound(targetPos-currentPos));
         double diffFlippedTargetPos = Math.abs(MathUtil.piWraparound(flippedTargetPos-currentPos));
@@ -137,6 +167,10 @@ public class SwervePodSubsystem {
                     motor.setPower(0);
                 }
 
+                if (crossMode) {
+                    motor.setPower(0);
+                }
+
                 break;
         }
     }
@@ -181,7 +215,7 @@ public class SwervePodSubsystem {
                 "\n" + sCon.debugText();
     }
 
-    public void setPos(int pos) {
+    public void setPos(double pos) {
         setTargetPos = pos;
     }
 
@@ -198,4 +232,6 @@ public class SwervePodSubsystem {
         motor.setDirection(direction);
     }
 
+    public void cross() { crossMode = true;}
+    public void unCross() {crossMode = false;}
 }

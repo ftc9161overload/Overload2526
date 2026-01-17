@@ -16,11 +16,18 @@ public class Follower implements Subsystem {
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
     public static final Follower INSTANCE = new Follower();
 
+    private static final double FIELD_WIDTH = 144; // Adjust to actual field width
 
     private double xPos, yPos, heading;
     private double xTarget, yTarget, headingTarget;
-
+    private double[] goal = {8, 136};
     private boolean linearFollwer = false, headingFollower = false;
+
+    public enum TEAMCOLOR {
+        RED,
+        BLUE
+    }
+    public TEAMCOLOR teamcolor = TEAMCOLOR.BLUE;
 
     private PDFLController xCon = new PDFLController(0.06,0,0,0.35), headingCon = new PDFLController(0.03,0,0,0.35);
     private double xErrorMin = 0.5, headingErrorMin = 0.1;
@@ -36,12 +43,6 @@ public class Follower implements Subsystem {
         return new LambdaCommand("Follower within range?").setIsDone(() -> Math.abs(heading - headingTarget) < Range);
     }
 
-    /**
-     * Waits until the Pos and Heading of the robot are within the Range Tolerance for their respective target values
-     * @param RangeH The Range (Or Tolerance) for the Headings' Position
-     * @param RangeP The Range (Or Tolerance) for the Robots' Position (Includes both X and Y)
-     * @return ONLY AFTER it is within the range on bot the Pos and and the Heading Direction will it return.
-     */
     public Command withinRange(double RangeH, double RangeP) {
         return new LambdaCommand("Follower within range?").setIsDone(() -> ((Math.abs(heading - headingTarget) < RangeH) && (Math.abs(Math.hypot(xPos-xTarget,yPos-yTarget)) < RangeP)) );
     }
@@ -52,36 +53,56 @@ public class Follower implements Subsystem {
         this.heading = heading;
     }
 
+    private double flipX(double x) {
+        return FIELD_WIDTH - x;
+    }
+    private double flipXAngle(double angle) {
+        double x = Math.cos(angle);
+        double y = Math.sin(angle);
+        return new Vector2D(-x, y).angle();
+    }
+
     /**
-     *
-     * @param xTarget
-     * @param yTarget
-     * @param headingTarget
-     * @return
+     * Sets target coordinates and heading, flipping x and heading for RED team.
      */
     public Command set(double xTarget, double yTarget, double headingTarget) {
         return new InstantCommand(() -> {
-            this.xTarget =  xTarget;
-            this.yTarget = yTarget;
-            this.headingTarget = headingTarget;
+            if (teamcolor == TEAMCOLOR.RED) {
+                this.xTarget = flipX(xTarget);
+                this.yTarget = yTarget;
+                this.headingTarget = Math.PI - headingTarget;
+            } else {
+                this.xTarget = xTarget;
+                this.yTarget = yTarget;
+                this.headingTarget = headingTarget;
+            }
         });
     }
 
     public Command setLinear(double xTarget, double yTarget) {
         return new InstantCommand(() -> {
-           this.xTarget =  xTarget;
-           this.yTarget = yTarget;
+            if (teamcolor == TEAMCOLOR.RED) {
+                this.xTarget = flipX(xTarget);
+                this.yTarget = yTarget;
+            } else {
+                this.xTarget = xTarget;
+                this.yTarget = yTarget;
+            }
         });
     }
 
     public Command setHeading(double headingTarget) {
         return new InstantCommand(() -> {
-            this.headingTarget = headingTarget;
+            if (teamcolor == TEAMCOLOR.RED) {
+                this.headingTarget = Math.PI - headingTarget;
+            } else {
+                this.headingTarget = headingTarget;
+            }
         });
     }
 
     public void turnToGoal(){
-        heading = new Vector2D((8 - xPos),(136 - yPos)).angle();
+        headingTarget = new Vector2D((goal[0] - xPos),(goal[1] - yPos)).angle();
     }
 
     public Command turnOnLinear = new InstantCommand(() -> {
@@ -96,8 +117,6 @@ public class Follower implements Subsystem {
     public Command turnOffHeading = new InstantCommand(() -> {
         headingFollower = false;
     });
-
-
 
     public Vector2D getLinear() {
         xCon.update(Math.hypot(xPos-xTarget,yPos-yTarget));
@@ -119,5 +138,4 @@ public class Follower implements Subsystem {
         panelsField.line(xTarget, yTarget);
         panelsField.update();
     }
-
 }
