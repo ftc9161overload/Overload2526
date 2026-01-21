@@ -28,6 +28,7 @@ public class Odometry implements Subsystem {
 
     public void initReal() {
         pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
     }
 
     public Command reset = new InstantCommand(() -> {
@@ -41,7 +42,7 @@ public class Odometry implements Subsystem {
     * @param dir (RADIANS) The 'heading' of the robot relative to the center going outward
     */
     public void setPos(double x, double y, double dir){
-        pinpointDriver.resetPosAndIMU();
+        //pinpointDriver.resetPosAndIMU();
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.RADIANS, dir));
     }
 
