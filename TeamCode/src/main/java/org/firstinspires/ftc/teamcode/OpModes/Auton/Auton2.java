@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
-import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
@@ -20,14 +17,13 @@ import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "CloseAuton", group = "Auton")
+@Autonomous(name = "CloseAuton2", group = "Auton")
 @Configurable
-public class Auton extends NextFTCOpMode {
-    public Auton() {
+public class Auton2 extends NextFTCOpMode {
+    public Auton2() {
         addComponents(
             new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
             BulkReadComponent.INSTANCE,
@@ -45,8 +41,15 @@ public class Auton extends NextFTCOpMode {
 
 
     private Command autonCommand = new SequentialGroup(
-            Follower.INSTANCE.setLinear(30,0),
-//            Follower.INSTANCE.withinRangeLinear(4),
+            Follower.INSTANCE.setLinear(20,20),
+            new Delay(4),
+            Follower.INSTANCE.setLinear(20,20),
+            new Delay(4),
+            Follower.INSTANCE.setLinear(20,20),
+            new Delay(2),
+
+            Follower.INSTANCE.setHeading(3/4 * Math.PI)
+,//            Follower.INSTANCE.withinRangeLinear(4),
 //            Follower.INSTANCE.withinRangeHeading(.4),
             new Delay(2),
             LauncherSubsystem.INSTANCE.Launch3()
@@ -84,8 +87,8 @@ public class Auton extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-        Follower.INSTANCE.turnOffHeading.schedule();
-        Follower.INSTANCE.turnOffLinear.schedule();
+//        Follower.INSTANCE.turnOffHeading.schedule();
+//        Follower.INSTANCE.turnOffLinear.schedule();
 
         RotarySubsystem.INSTANCE.startRotary.schedule();
         RotarySubsystem.INSTANCE.locked = false;
