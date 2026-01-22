@@ -42,15 +42,17 @@ public class AutonClose extends NextFTCOpMode {
     private static LauncherSubsystem launcherSubsystem;
     private static SwerveDrivetrain swerveDrivetrain;
 
-    private Command t = new InstantCommand(() -> {
+    // Time Delay
+    private Command time = new InstantCommand(() -> {
         timer.reset();
         boolean b = timer.hasElapsedSeconds(0.5);
     });
 
+    // Rotates the rotary to collect balls
     private Command rotate = new SequentialGroup(
-            t,
+            time,
             RotarySubsystem.INSTANCE.nextChamber,
-            t,
+            time,
             RotarySubsystem.INSTANCE.nextChamber
     );
 
@@ -122,6 +124,7 @@ public class AutonClose extends NextFTCOpMode {
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
         RotarySubsystem.INSTANCE.home.schedule();
+        joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
         //RotarySubsystem.INSTANCE.resetOffset();
         Odometry.INSTANCE.setPos(22,125, Math.toRadians(144));

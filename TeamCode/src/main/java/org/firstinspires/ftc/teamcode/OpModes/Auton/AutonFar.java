@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -37,22 +38,22 @@ public class AutonFar extends NextFTCOpMode {
     private Timer timer = new Timer();
 
 
-    // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
-    private Command t = new InstantCommand(() -> {
+    private Command time = new InstantCommand(() -> {
         timer.reset();
         boolean b = timer.hasElapsedSeconds(0.5);
     });
 
+    // Time Delay
     private Command rotate = new SequentialGroup(
-            t,
+            time,
             RotarySubsystem.INSTANCE.nextChamber,
-            t,
+            time,
             RotarySubsystem.INSTANCE.nextChamber
     );
 
     // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
     private Command autonCommand = new SequentialGroup(
-            OuttakeWheelSubsystem.INSTANCE.setSpeed3,
+            //OuttakeWheelSubsystem.INSTANCE.setSpeed3,
             Follower.INSTANCE.set(64,15, Math.toRadians(75)),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
@@ -104,9 +105,10 @@ public class AutonFar extends NextFTCOpMode {
         Odometry.INSTANCE.reset.schedule();
         RotarySubsystem.INSTANCE.reset();
         RotarySubsystem.INSTANCE.home.schedule();
+        joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
         // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
-        Odometry.INSTANCE.setPos(64,8, 90);
+        Odometry.INSTANCE.setPos(64,8, Math.toRadians(90));
     }
 
     @Override

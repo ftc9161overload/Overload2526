@@ -36,8 +36,8 @@ public class Follower implements Subsystem {
     }
     public TEAMCOLOR teamcolor = TEAMCOLOR.BLUE;
 
-    private PDFLController xCon = new PDFLController(0.06,0,0,0.35);
-    private PDFLControllerRadial headingCon = new PDFLControllerRadial(0.03,0,0,0.35);
+    private PDFLController xCon = new PDFLController(0.0,0,0,0.35);
+    private PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0,0,0,0.35);
 
     private double xErrorMin = 0.5;
     private double headingErrorMin = 0.1;

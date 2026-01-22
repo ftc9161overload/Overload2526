@@ -63,6 +63,9 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         RotarySubsystem.INSTANCE.reset();
         RotarySubsystem.INSTANCE.home.schedule();
 
+        Follower.INSTANCE.turnOffLinear.schedule();
+        Follower.INSTANCE.turnOffHeading.schedule();
+
         //RotarySubsystem.INSTANCE.resetOffset();
     }
 
