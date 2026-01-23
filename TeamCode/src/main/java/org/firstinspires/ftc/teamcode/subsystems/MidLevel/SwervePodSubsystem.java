@@ -43,6 +43,14 @@ public class SwervePodSubsystem {
     
     AnalogInput sIn;
 
+    /**
+     * Constructor for the SwervePodSubsystem class
+     * @param x The x offset of the swervePod
+     * @param y The y offset of the swervePod
+     * @param servo The servo used in the swervePod
+     * @param analogInput The name of the analogInput used
+     * @param hMap The hardware map that's used
+     */
     public SwervePodSubsystem(double x, double y, String servo, String motor, String analogInput, HardwareMap hMap) {
         this.x = x;
         this.y = y;

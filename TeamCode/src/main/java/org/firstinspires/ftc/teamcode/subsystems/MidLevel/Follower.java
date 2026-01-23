@@ -46,18 +46,27 @@ public class Follower implements Subsystem {
         panelsField.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
     }
 
+
     private double normAngle(double a) {
         while (a > Math.PI) a -= 2*Math.PI;
         while (a < -Math.PI) a += 2*Math.PI;
         return a;
     }
 
+    /**
+     * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param range The range of the linear path your going
+     */
     public Command withinRangeLinear(double range) {
         return new LambdaCommand("Follower linear range").setIsDone(() ->
                 Math.hypot(xPos - xTarget, yPos - yTarget) < range
         );
     }
 
+    /**
+     * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param range The range of the heading set
+     */
     public Command withinRangeHeading(double range) {
         return new LambdaCommand("Follower heading range").setIsDone(() ->
                 Math.abs(normAngle(heading - headingTarget)) < range
@@ -70,12 +79,18 @@ public class Follower implements Subsystem {
                         Math.hypot(xPos - xTarget, yPos - yTarget) < rangeP
         );
     }
-
+    /**
+     * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param xPos The x that you are at
+     * @param yPos The y that you are at
+     * @param heading The heading that you are at
+     */
     public void update(double xPos, double yPos, double heading) {
         this.xPos = xPos;
         this.yPos = yPos;
         this.heading = heading;
     }
+
 
     private double flipX(double x) {
         return FIELD_WIDTH - x;
@@ -92,6 +107,9 @@ public class Follower implements Subsystem {
 
     /**
      * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param xTarget The x that you want to get to
+     * @param yTarget The y that you want to get to
+     * @param headingTarget The heading that you want to get to
      */
     public Command set(double xTarget, double yTarget, double headingTarget) {
         return new InstantCommand(() -> {
@@ -107,6 +125,11 @@ public class Follower implements Subsystem {
         });
     }
 
+    /**
+     * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param xTarget The x that you want to get to
+     * @param yTarget The y that you want to get to
+     */
     public Command setLinear(double xTarget, double yTarget) {
         return new InstantCommand(() -> {
             if (teamcolor == TEAMCOLOR.RED) {
@@ -119,6 +142,10 @@ public class Follower implements Subsystem {
         });
     }
 
+    /**
+     * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param headingTarget The heading that you want to get to
+     */
     public Command setHeading(double headingTarget) {
         return new InstantCommand(() -> {
             if (teamcolor == TEAMCOLOR.RED) {

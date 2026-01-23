@@ -162,6 +162,10 @@ public class RotarySubsystem implements Subsystem {
         fn = f;
         mCon.setPDFL(p,d,fn,l);
     });
+    /**
+     * Sets target coordinates and heading, flipping x and heading for RED team.
+     * @param chamber The chamber that the robot accesses to launch
+     */
     private void Chamber(int chamber) {
         if (chamber == 1) {
             targetPosition = Chamber.ONE.angle;
