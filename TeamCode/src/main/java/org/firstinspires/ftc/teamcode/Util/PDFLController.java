@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.Util;
  * the running of a PDF Controller, with an added lower limit, L, to prevent undercorrection
  * due to friction inherent in systems.
  *
- * @ author Asher Childress - 9161 Overlaod
+ * @ author Asher Childress - 9161 Overload
  */
 
 public class PDFLController {
@@ -19,6 +19,7 @@ public class PDFLController {
     public double dir;
 
     private boolean atTarget = false;
+    private double errorPower = 1;
 
     /**
      * Constructor for PDFLController.
@@ -44,7 +45,7 @@ public class PDFLController {
 
 
 
-        if (Math.abs(error) <= errorMin) {
+        if (Math.abs(error) <= Math.pow(errorMin,errorPower)) {
             atTarget = true;
             return f;
         }
@@ -59,7 +60,7 @@ public class PDFLController {
      */
     public void update(double position) {
         oldError = error;
-        error = target-position;
+        error = Math.pow(Math.abs(target-position),errorPower) * Math.signum(target-position);
 
         oldTime = time;
         time = System.nanoTime();
@@ -133,6 +134,15 @@ public class PDFLController {
     public double getL() {return l;}
 
     public double getTarget() {return target;}
+
+    public void setErrorPower(double power) {
+        errorPower = power;
+    }
+
+    public String debugString() {
+        return "Error: " + error +
+                "\nTarget" + target;
+    }
 
 
 }

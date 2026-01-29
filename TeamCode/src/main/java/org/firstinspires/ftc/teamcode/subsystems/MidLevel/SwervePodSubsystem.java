@@ -8,6 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.core.commands.Command;
+
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Timer;
@@ -24,10 +29,13 @@ public class SwervePodSubsystem {
     private double mPow;
     private double servoOffset, currentPos, targetPos, flippedTargetPos;
     private double setTargetPos = 0;
-    private double p = .8, d = 0.01, f = 0, l = 0.1, errorMin = 0.07;
+    private double p = .4, d = 0.01, f = 0, l = 0.1, errorMin = 0.1;
     private Timer flipTimer = new Timer();
     private double flipCooldownSeconds = 0.2; // tweakable
-    private PDFLControllerRadial sCon = new PDFLControllerRadial(0.5, 0.0, 0.0, 0.1);
+    private PDFLControllerRadial sCon = new PDFLControllerRadial(p,d,f,l);
+    private boolean reverseServo = false;
+
+    private boolean crossMode = false;
 
     private UniConstants.swerveDriveType driveMode = UniConstants.swerveDriveType.TURN_GO;
 
@@ -35,6 +43,14 @@ public class SwervePodSubsystem {
     
     AnalogInput sIn;
 
+    /**
+     * Constructor for the SwervePodSubsystem class
+     * @param x The x offset of the swervePod
+     * @param y The y offset of the swervePod
+     * @param servo The servo used in the swervePod
+     * @param analogInput The name of the analogInput used
+     * @param hMap The hardware map that's used
+     */
     public SwervePodSubsystem(double x, double y, String servo, String motor, String analogInput, HardwareMap hMap) {
         this.x = x;
         this.y = y;
@@ -48,6 +64,18 @@ public class SwervePodSubsystem {
         this.servoOffset = offset/360*2*Math.PI;
     }
     public void setServoOffsetRad(double offset) {this.servoOffset = offset;}
+    public void setServoReverse(boolean set) { reverseServo = set;}
+
+    public void setServoMKII() {
+        p = 0.3; d = 0.01; f = 0; l = .1;
+        sCon.setPDFL(p,d,f,l);
+        errorMin = 0.05;
+    }
+    public void setServoMKI() {
+        p = 0.8; d = 0.01; f = 0; l = .1;
+        sCon.setPDFL(p,d,f,l);
+        errorMin = 0.05;
+    }
 
 
     public double getRotationOffset() {return posOffset;}
@@ -56,10 +84,38 @@ public class SwervePodSubsystem {
         return translational.add(rotational.rotate(posOffset + Math.PI/2));
     }
 
+    public void update() {
+        currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
+
+        double diffTargetPos = Math.abs(MathUtil.piWraparound(targetPos-currentPos));
+        double diffFlippedTargetPos = Math.abs(MathUtil.piWraparound(flippedTargetPos-currentPos));
+
+
+        if (motor.getVelocity() < UniConstants.servoMovementDeadzone) {
+
+            if (diffFlippedTargetPos < diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
+                // Flipping is faster
+                setTargetPos = flippedTargetPos;
+                motorDirection = -1;
+                flipTimer.reset();
+            } else if (diffFlippedTargetPos >= diffTargetPos && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
+                // Normal path is faster
+                setTargetPos = targetPos;
+                motorDirection = 1;
+                flipTimer.reset();
+            }
+        }
+
+        sCon.setTarget(setTargetPos);
+
+        sCon.update(currentPos);
+        servo.setPower((reverseServo) ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin) );
+    }
+
     public void update(Vector2D drive) {
         currentPos = (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
-        targetPos = (drive.angle() + servoOffset) % (2 * Math.PI) - Math.PI;
-        flippedTargetPos = MathUtil.piWraparound(targetPos + Math.PI);
+        targetPos = crossMode ? MathUtil.piWraparound(posOffset) : MathUtil.piWraparound( drive.angle() + servoOffset) ;
+        flippedTargetPos = crossMode ? MathUtil.piWraparound(posOffset + Math.PI) : MathUtil.piWraparound(targetPos + Math.PI);
 
         double diffTargetPos = Math.abs(MathUtil.piWraparound(targetPos-currentPos));
         double diffFlippedTargetPos = Math.abs(MathUtil.piWraparound(flippedTargetPos-currentPos));
@@ -74,7 +130,7 @@ public class SwervePodSubsystem {
                 }
 
                 sCon.update(currentPos);
-                servo.setPower(-sCon.runPDFL(errorMin));
+                servo.setPower((reverseServo) ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin) );
 
                 motor.setPower(drive.magnitude()*movementScaler);
                 break;
@@ -106,7 +162,8 @@ public class SwervePodSubsystem {
                 }
 
                 sCon.update(currentPos);
-                servo.setPower(-sCon.runPDFL(errorMin));
+                servo.setPower((reverseServo) ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin) );
+
 
                 // MUST compute diff from FINAL chosen target!
                 double diffFinal = Math.abs(MathUtil.piWraparound(setTargetPos - currentPos));
@@ -115,6 +172,10 @@ public class SwervePodSubsystem {
                 if (diffFinal <= UniConstants.radialDeadzone) {
                     motor.setPower(motorDirection * drive.magnitude() * movementScaler);
                 } else {
+                    motor.setPower(0);
+                }
+
+                if (crossMode) {
                     motor.setPower(0);
                 }
 
@@ -149,6 +210,9 @@ public class SwervePodSubsystem {
         sCon.setPDFL(p,d,f,l);
     }
 
+    public double getAnalogInPos() {
+        return (sIn.getVoltage() / 3.3 * 2 * Math.PI) - Math.PI;
+    }
     public String debugText() {
         setPDFL(p,d,f,l);
         return "Servo: " + sIn.getVoltage() +
@@ -156,9 +220,16 @@ public class SwervePodSubsystem {
                 "\ntargetPos: " + targetPos +
                 "\nPDFL: "  + sCon.runPDFL(0.05) +
                 "\n Offset: " + servoOffset +
-                "\n\n" + sCon.debugText();
+                "\n" + sCon.debugText();
     }
 
+    public void setPos(double pos) {
+        setTargetPos = pos;
+    }
+
+    public void setServoPower(double power) {
+        servo.setPower(power);
+    }
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         motor.setZeroPowerBehavior(zeroPowerBehavior);
     }
@@ -169,4 +240,6 @@ public class SwervePodSubsystem {
         motor.setDirection(direction);
     }
 
+    public void cross() { crossMode = true;}
+    public void unCross() {crossMode = false;}
 }

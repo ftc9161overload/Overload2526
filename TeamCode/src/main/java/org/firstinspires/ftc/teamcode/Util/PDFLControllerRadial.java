@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.Util;
  * the running of a PDF Controller, with an added lower limit, L, to prevent undercorrection
  * due to friction inherent in systems.
  *
- * @ author Asher Childress - 9161 Overlaod
+ * @ author Asher Childress - 9161 Overload
  */
 
 public class PDFLControllerRadial {
@@ -64,7 +64,7 @@ public class PDFLControllerRadial {
         oldTime = time;
         time = System.nanoTime();
 
-        dError = (error-oldError) /((time-oldTime)/ Math.pow(10.0,9));
+        dError = MathUtil.piWraparound(error-oldError) /((time-oldTime)/ Math.pow(10.0,9));
     }
 
     public boolean atSetTarget(){

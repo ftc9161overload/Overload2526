@@ -1,54 +1,86 @@
 package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.Util.MathUtil;
-import org.firstinspires.ftc.teamcode.Util.Timer;
 
-import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
 
-import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.SequentialGroup;
+import dev.nextftc.core.commands.utility.LambdaCommand;
+import dev.nextftc.core.subsystems.SubsystemGroup;
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.InstantCommand;
+
 @Configurable
-public class LauncherSubsystem implements Subsystem {
-    public OuttakeSubsystem outtakeSubsystem;
-    public RotarySubsystem rotarySubsystem;
-    private int currentState = 0;
-   // public static double outtakeTarget = 1500;
-    private int chamber = 0;
-    private boolean start = false;
-    private Timer timer = new Timer();
-    private boolean reset = true;
-    public static int servoTime = 1;
-
-    private int shootCount = 0;
-
-    public LauncherSubsystem(HardwareMap hMap) {
-        outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING, hMap);
-        rotarySubsystem = new RotarySubsystem(hMap, UniConstants.ROTARY_MOTOR_STRING);
+public class LauncherSubsystem extends SubsystemGroup {
+    public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
+    private LauncherSubsystem() {
+        super(
+            OuttakeFlipperSubsystem.INSTANCE,
+            OuttakeWheelSubsystem.INSTANCE,
+            RotarySubsystem.INSTANCE
+        );
     }
 
-    public boolean getIsInPosition() {
-//        if((rotarySubsystem.getPosition() > rotarySubsystem.getTargetPosition() - 0.1) && (rotarySubsystem.getPosition() < rotarySubsystem.getTargetPosition() + 0.1)) {
-        if((Math.abs(MathUtil.piWraparound(rotarySubsystem.getPosition() - rotarySubsystem.getTargetPosition()))) > 0.06) {
-           return true;
+    // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
+    public Command setHalfOn = new InstantCommand(() -> {
+        if(RotarySubsystem.INSTANCE.halfChamber) {
+            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();
+            RotarySubsystem.INSTANCE.setHalfChamberOff.schedule();
         }
-        return false;
+    });
+
+    public Command setHalfOff = new InstantCommand(() -> {
+        if(!RotarySubsystem.INSTANCE.halfChamber) {
+            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();
+            RotarySubsystem.INSTANCE.setHalfChamberOn.schedule();
+        }
+    });
+
+    // Sets both the outtake wheel and moves the rotary to half chamber
+    public Command setup() {
+        return new InstantCommand(() -> {
+
+            if (!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
+                OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
+            }
+        });
+
+
     }
 
-    public boolean getStart() {return start;}
-    public void setStart(boolean start) {this.start = start;}
-    public void setReset(boolean reset) {this.reset = reset;}
 
-    public void stateUpdate(int newState) {
-        currentState = newState;
+    // Launches an artifact
+    public Command Launch1(){
+        return new SequentialGroup(
+                setup(),
+                OuttakeWheelSubsystem.INSTANCE.withinRange(),
+                RotarySubsystem.INSTANCE.lock,
+                RotarySubsystem.INSTANCE.withinRange(),
+                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
+                new Delay(0.7),
+                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
+                new Delay(0.4),
+                RotarySubsystem.INSTANCE.unlock,
+                RotarySubsystem.INSTANCE.nextChamber
+        );
+    }
+    public Command Launch3() {
+        return new SequentialGroup(
+                Launch1(),
+                new Delay(0.5),
+                Launch1(),
+                new Delay(0.5),
+                Launch1()
+        );
     }
 
-    public void setShootCount(int count) {
-        shootCount = count;
-    }
 
+    // Previous code
+    // Sets the Outtake Wheel Subsystem to launch at the speed the method is named
+    /*
     public void update() {
         switch(currentState) {
             case 0:
@@ -138,5 +170,5 @@ public class LauncherSubsystem implements Subsystem {
     }
     public String debugText() {
         return "\nCurrent State: " + currentState + "\nlauncher chamber: " + chamber + "\ntime: " + timer.getTimeSeconds();
-    }
+    }*/
 }

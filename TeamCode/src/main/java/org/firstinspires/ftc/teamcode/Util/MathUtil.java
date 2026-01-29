@@ -4,13 +4,7 @@ import java.util.ArrayList;
 
 public class MathUtil {
     public static double piWraparound(double angle) {
-        angle %= (2 * Math.PI);
-        if (angle <= -Math.PI) {
-            angle += 2 * Math.PI;
-        } else if (angle > Math.PI) {
-            angle -= 2 * Math.PI;
-        }
-        return angle;
+        return Math.atan2(Math.sin(angle),Math.cos(angle));
 
 
     }
@@ -44,4 +38,6 @@ public class MathUtil {
     public static double angleDiff(double from, double to) {
         return piWraparound(to - from);
     }
+
+
 }

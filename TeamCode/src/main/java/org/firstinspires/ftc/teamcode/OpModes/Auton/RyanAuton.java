@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.OpModes.Auton;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
@@ -17,7 +16,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @Autonomous(name = "Ryan's Auton", group = "Auton")
 @Configurable
 public class RyanAuton extends NextFTCOpMode {
-
+    /*
     //public static double outtakePower = 10;
     public static double servoPos = 0.3; // 0.3 off, 0.8 on
     private double movementScaler = 1.0;
@@ -39,8 +38,8 @@ public class RyanAuton extends NextFTCOpMode {
     public void onInit() {
         launcherSubsystem = new LauncherSubsystem(hardwareMap);
         launcherSubsystem.rotarySubsystem = new RotarySubsystem(hardwareMap, UniConstants.ROTARY_MOTOR_STRING);
-        intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
-        launcherSubsystem.outtakeSubsystem = new OuttakeSubsystem(UniConstants.OUTTAKE_MOTOR_STRING, UniConstants.OUTTAKE_SERVO_STRING,hardwareMap);
+        //intakeSubsystem = new IntakeSubsystem(UniConstants.INTAKE_MOTOR_STRING, hardwareMap);
+        launcherSubsystem.outtakeSubsystem = new OuttakeSubsystem();
         swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
 
 
@@ -85,5 +84,5 @@ public class RyanAuton extends NextFTCOpMode {
         intakeSubsystem.periodic();
         launcherSubsystem.update();
     }
-
+*/
 }
