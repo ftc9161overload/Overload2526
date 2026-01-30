@@ -56,7 +56,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
                 BindingsComponent.INSTANCE
         );
         OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
-        swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+        swerveDrivetrain = new SwerveDrivetrain();
 
         Odometry.INSTANCE.initReal();
 

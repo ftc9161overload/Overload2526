@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.OpModes.TeleOp;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
@@ -25,7 +24,7 @@ public class AlignPods extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+        swerveDrivetrain = new SwerveDrivetrain();
         pods = swerveDrivetrain.getSwervePods();
         joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
     }

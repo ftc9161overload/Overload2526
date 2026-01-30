@@ -13,7 +13,7 @@ public class SwervePodServoAlign extends OpMode {
 
     @Override
     public void init() {
-        swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+        swerveDrivetrain = new SwerveDrivetrain();
     }
 
     @Override
@@ -21,7 +21,7 @@ public class SwervePodServoAlign extends OpMode {
         swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x);
 
         if (gamepad2.aWasPressed()){
-            swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+            swerveDrivetrain = new SwerveDrivetrain();
         }
 
         telemetry.addData("FL", SwerveDrivetrain.flOffset);

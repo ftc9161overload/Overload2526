@@ -112,7 +112,7 @@ public class AutonClose extends NextFTCOpMode {
                 BindingsComponent.INSTANCE
         );
         OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
-        swerveDrivetrain = new SwerveDrivetrain(hardwareMap);
+        swerveDrivetrain = new SwerveDrivetrain();
 
         Follower.INSTANCE.turnOnLinear.schedule();
         Follower.INSTANCE.turnOnHeading.schedule();
