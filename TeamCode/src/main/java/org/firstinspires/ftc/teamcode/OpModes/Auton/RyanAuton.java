@@ -3,14 +3,6 @@ package org.firstinspires.ftc.teamcode.OpModes.Auton;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Util.Timer;
-import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
-
 import dev.nextftc.ftc.NextFTCOpMode;
 
 @Autonomous(name = "Ryan's Auton", group = "Auton")

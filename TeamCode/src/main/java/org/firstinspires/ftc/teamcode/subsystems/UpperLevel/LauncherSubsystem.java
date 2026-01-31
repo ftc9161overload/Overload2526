@@ -14,66 +14,136 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
 
 @Configurable
+/**
+ * LauncherSubsystem coordinates the rotary carousel, flywheel, and flipper
+ * to launch game elements. Manages the complete launch sequence including
+ * spin-up, chamber positioning, and element ejection.
+ */
 public class LauncherSubsystem extends SubsystemGroup {
+
+    // ========== SINGLETON PATTERN ==========
+
+    /** Singleton instance for easy access across OpModes */
     public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
+
+    // ========== TIMING CONSTANTS ==========
+
+    /** Time to wait for flipper to fully extend and launch element (seconds) */
+    private static final double FLIP_DURATION = 0.7;
+
+    /** Time to wait for flipper to retract before next action (seconds) */
+    private static final double RETRACT_DURATION = 0.4;
+
+    /** Delay between consecutive launches in multi-launch sequence (seconds) */
+    private static final double LAUNCH_DELAY = 0.5;
+
+    // ========== CONSTRUCTOR ==========
+
+    /**
+     * Private constructor enforces singleton pattern.
+     * Registers all child subsystems with the SubsystemGroup.
+     */
     private LauncherSubsystem() {
         super(
-            OuttakeFlipperSubsystem.INSTANCE,
-            OuttakeWheelSubsystem.INSTANCE,
-            RotarySubsystem.INSTANCE
+                OuttakeFlipperSubsystem.INSTANCE,  // Controls flipper mechanism
+                OuttakeWheelSubsystem.INSTANCE,     // Controls flywheel speed
+                RotarySubsystem.INSTANCE            // Controls chamber rotation
         );
     }
 
-    // Sets the rotary to half if it's not already, and it can only do that if the flipper is down
-    public Command setHalfOn = new InstantCommand(() -> {
-        if(RotarySubsystem.INSTANCE.halfChamber) {
-            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();
-            RotarySubsystem.INSTANCE.setHalfChamberOff.schedule();
-        }
-    });
+    // ========== HALF CHAMBER TOGGLE COMMANDS ==========
 
+    /**
+     * Disables half-chamber mode if currently enabled.
+     * Returns flipper to safe position and aligns rotary to full chamber.
+     * Used to transition from loading position to launch position.
+     */
     public Command setHalfOff = new InstantCommand(() -> {
-        if(!RotarySubsystem.INSTANCE.halfChamber) {
-            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();
-            RotarySubsystem.INSTANCE.setHalfChamberOn.schedule();
+        // Only execute if currently in half-chamber mode
+        if (RotarySubsystem.INSTANCE.halfChamber) {
+            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();  // Retract flipper
+            RotarySubsystem.INSTANCE.setHalfChamberOff.schedule();   // Align to chamber
         }
     });
 
-    // Sets both the outtake wheel and moves the rotary to half chamber
+    /**
+     * Enables half-chamber mode if currently disabled.
+     * Returns flipper to safe position and rotates to loading position.
+     * Used to position rotary between chambers for easier element loading.
+     */
+    public Command setHalfOn = new InstantCommand(() -> {
+        // Only execute if not already in half-chamber mode
+        if (!RotarySubsystem.INSTANCE.halfChamber) {
+            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();  // Retract flipper
+            RotarySubsystem.INSTANCE.setHalfChamberOn.schedule();    // Move to half position
+        }
+    });
+
+    // ========== LAUNCH SETUP ==========
+
+    /**
+     * Prepares the launcher for firing.
+     * Spins up the flywheel to default speed if not already running.
+     * Does not move rotary or flipper - only ensures flywheel is ready.
+     * @return Command that starts flywheel spin-up
+     */
     public Command setup() {
         return new InstantCommand(() -> {
-
-            if (!(OuttakeWheelSubsystem.INSTANCE.targetSpeed > 0)) {
+            // Only spin up if flywheel isn't already running
+            if (OuttakeWheelSubsystem.INSTANCE.targetSpeed == 0) {
                 OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
             }
         });
-
-
     }
 
+    // ========== SINGLE LAUNCH SEQUENCE ==========
 
-    // Launches an artifact
-    public Command Launch1(){
+    /**
+     * Executes a complete single-element launch sequence.
+     *
+     * Sequence steps:
+     * 1. Setup - Ensure flywheel is spinning
+     * 2. Wait for flywheel to reach target speed
+     * 3. Lock rotary to prevent chamber drift
+     * 4. Wait for rotary to reach precise position
+     * 5. Flip element into flywheel (0.7s)
+     * 6. Retract flipper (0.4s)
+     * 7. Unlock rotary for repositioning
+     * 8. Advance to next chamber
+     *
+     * @return Sequential command group executing the launch
+     */
+    public Command Launch1() {
         return new SequentialGroup(
-                setup(),
-                OuttakeWheelSubsystem.INSTANCE.withinRange(),
-                RotarySubsystem.INSTANCE.lock,
-                RotarySubsystem.INSTANCE.withinRange(),
-                OuttakeFlipperSubsystem.INSTANCE.setFullOn,
-                new Delay(0.7),
-                OuttakeFlipperSubsystem.INSTANCE.setFullOff,
-                new Delay(0.4),
-                RotarySubsystem.INSTANCE.unlock,
-                RotarySubsystem.INSTANCE.nextChamber
+                setup(),                                      // Spin up flywheel if needed
+                OuttakeWheelSubsystem.INSTANCE.withinRange(), // Wait for flywheel at speed
+                RotarySubsystem.INSTANCE.lock,                // Lock chamber position
+                RotarySubsystem.INSTANCE.withinRange(),       // Wait for precise alignment
+                OuttakeFlipperSubsystem.INSTANCE.setFullOn,   // Flip element into wheel
+                new Delay(FLIP_DURATION),                     // Wait for full extension
+                OuttakeFlipperSubsystem.INSTANCE.setFullOff,  // Retract flipper
+                new Delay(RETRACT_DURATION),                  // Wait for full retraction
+                RotarySubsystem.INSTANCE.unlock,              // Allow rotary motion
+                RotarySubsystem.INSTANCE.nextChamber          // Rotate to next chamber
         );
     }
+
+    // ========== MULTI-LAUNCH SEQUENCE ==========
+
+    /**
+     * Launches three elements in sequence.
+     * Executes Launch1() three times with brief delays between launches.
+     * Total duration: ~6-7 seconds depending on flywheel spin-up time.
+     *
+     * @return Sequential command group launching all three elements
+     */
     public Command Launch3() {
         return new SequentialGroup(
-                Launch1(),
-                new Delay(0.5),
-                Launch1(),
-                new Delay(0.5),
-                Launch1()
+                Launch1(),                    // Launch from chamber 1
+                new Delay(LAUNCH_DELAY),      // Brief pause for stability
+                Launch1(),                    // Launch from chamber 2
+                new Delay(LAUNCH_DELAY),      // Brief pause for stability
+                Launch1()                     // Launch from chamber 3
         );
     }
 

@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
-import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -21,46 +20,196 @@ import dev.nextftc.core.commands.Command;
 
 @Configurable
 public class RotarySubsystem implements Subsystem {
-    private Timer timer;
-    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode().zeroed();
-    public static final RotarySubsystem INSTANCE = new RotarySubsystem();
-    private final MotorEx Encoder = new MotorEx("RoEn");
-    public boolean locked = true;
-    private RotarySubsystem() {}
+    // ========== SINGLETON PATTERN ==========
 
-    private static double p = 0.85, d = 0.01, f = 0, l = 0.12;
+    /**
+     * Singleton instance for easy access across OpModes
+     */
+    public static final RotarySubsystem INSTANCE = new RotarySubsystem();
+
+    // ========== HARDWARE ==========
+
+    /**
+     * Main rotation motor - configured with brake mode and zeroed position
+     */
+    private final MotorEx motor = new MotorEx(UniConstants.ROTARY_MOTOR_STRING).brakeMode().zeroed();
+
+    /**
+     * Separate encoder for position tracking
+     */
+    private final MotorEx Encoder = new MotorEx("RoEn");
+
+    /**
+     * Color sensors for detecting ball type in each chamber (3 sensors)
+     */
+    private final NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
+
+    /**
+     * Distance sensor for homing routine - detects wall proximity
+     */
+    private ColorRangeSensor distSensor;
+
+    // ========== PHYSICAL CONSTANTS ==========
+
+    /**
+     * Encoder ticks per full 360° rotation (gear ratio: 170:32)
+     */
+    private static final double ticksPerRotation = 8192 * 170.0 / 32.0;
+
+    /**
+     * Tolerance for determining if position is "close enough" (radians)
+     */
+    private static final double positionTolerance = 0.02;
+
+    /**
+     * Minimum power threshold to consider rotary "stopped" for color reading
+     */
+    private static final double stoppedPowerThreshold = 0.04;
+
+    // ========== CONTROLLER TUNING ==========
+
+    /**
+     * Proportional gain for PDFL controller
+     */
+    private static final double p = 0.85;
+
+    /**
+     * Derivative gain for PDFL controller
+     */
+    private static final double d = 0.01;
+
+    /**
+     * Feedforward gain for PDFL controller
+     */
+    private static final double f = 0.0;
+
+    /**
+     * Lerp (smoothing) factor for PDFL controller
+     */
+    private static final double l = 0.12;
+
+    /**
+     * Current feedforward value (modified by lock/unlock)
+     */
     private double fn = f;
-    private final PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn,l);
+
+    /**
+     * PDFL controller for radial (angular) position control
+     */
+    private final PDFLControllerRadial mCon = new PDFLControllerRadial(p, d, fn, l);
+
+    // ========== COLOR DETECTION CONSTANTS ==========
+
+    /**
+     * RGB values for GREEN ball detection (normalized 0-1 scale)
+     */
+    private static final double[] greenColor = {0.009, 0.04, 0.028};
+
+    /**
+     * RGB values for PURPLE ball detection (normalized 0-1 scale)
+     */
+    private static final double[] purpleColor = {0.007, 0.009, 0.014};
+
+    /**
+     * Tolerance for color matching (±this amount per channel)
+     */
+    private static final double colorTolerance = 0.001;
+
+    // ========== STATE VARIABLES ==========
+
+    /**
+     * Current chamber being accessed (1, 2, or 3)
+     */
     private int currentChamber = 1;
+
+    /**
+     * Current rotary position in radians
+     */
     private double currentPosition = 0;
+
+    /**
+     * Target rotary position in radians
+     */
     private double targetPosition = 0;
 
-    private boolean findWall = false, findEdge = false, homingDone = false;
+    /**
+     * Calibration offset from homing routine (radians)
+     */
+    private double offset = 0;
 
-    private final double ticksPerRotation = 8192 * 170.0/32.0;//(537.7*170)/38;
+    /**
+     * When true, motors are locked (feedforward disabled)
+     */
+    public boolean locked = true;
 
-    private final NormalizedColorSensor[] colorSensors = new NormalizedColorSensor[3];
-    private ColorRangeSensor distSensor;
-    private double distSensorOutput;
-    //private ColorRangeSensor thingy;
+    /**
+     * When true, position halfway between chambers for loading
+     */
+    public boolean halfChamber = false;
 
-    private final double[] GreenColor = {0.009, 0.04, 0.028};
-    private final double[] PurpleColor = {0.007, 0.009, 0.014};
-    private final double colorTolerance = 0.001; // + or - tolerance is accounted for
+    /**
+     * Angular offset when halfChamber mode is active (radians)
+     */
+    private double halfOffset = 0;
+
+    /**
+     * When true, color sensors will update on next stop
+     */
     private boolean shouldUpdateColors = true;
-    // The following is an Enum for each chamber.
+
+    // ========== HOMING STATE VARIABLES ==========
+
+    /**
+     * True during wall-finding phase of homing
+     */
+    private boolean findWall = false;
+
+    /**
+     * True during edge-finding phase of homing
+     */
+    private boolean findEdge = false;
+
+    /**
+     * True after homing is complete and offset is set
+     */
+    private boolean homingDone = false;
+
+    /**
+     * Cached distance sensor reading (inches)
+     */
+    private double distSensorOutput;
+
+    // ========== BALL TYPE ENUM ==========
+
+    /**
+     * Enum representing the type of ball in a chamber.
+     * Detected via color sensors.
+     */
     public enum Ball {
-        PURPLE,
-        GREEN,
-        NULL
+        PURPLE,  // Purple/red alliance ball
+        GREEN,   // Green/blue alliance ball
+        NULL     // No ball or unrecognized color
     }
 
-    public enum Chamber {
-        ONE(0, Ball.NULL),
-        TWO(2*Math.PI*1/3, Ball.NULL),
-        THREE(2*Math.PI*2/3, Ball.NULL);
+    // ========== CHAMBER ENUM ==========
 
+    /**
+     * Enum representing the three chambers of the rotary mechanism.
+     * Each chamber has a fixed angle and tracks its current ball type.
+     */
+    public enum Chamber {
+        ONE(0, Ball.NULL),                      // Chamber 1 at 0°
+        TWO(2 * Math.PI / 3, Ball.NULL),       // Chamber 2 at 120°
+        THREE(4 * Math.PI / 3, Ball.NULL);     // Chamber 3 at 240°
+
+        /**
+         * Fixed angular position of this chamber (radians)
+         */
         public final double angle;
+
+        /**
+         * Type of ball currently in this chamber
+         */
         public Ball ball;
 
         Chamber(double angle, Ball ball) {
@@ -69,244 +218,387 @@ public class RotarySubsystem implements Subsystem {
         }
     }
 
-    private final Chamber[] CHAMBERS = {
+    /**
+     * Array for easy iteration over all chambers
+     */
+    private static final Chamber[] CHAMBERS = {
             Chamber.ONE,
             Chamber.TWO,
             Chamber.THREE
     };
 
-    public boolean halfChamber = false;
-    private double halfOffset = 0;
-    private double offset = 0;
+    // ========== CONSTRUCTOR ==========
 
-    public void reset() {
-        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+    /**
+     * Private constructor enforces singleton pattern
+     */
+    private RotarySubsystem() {
     }
 
+    // ========== INITIALIZATION ==========
+
+    /**
+     * Initialize the subsystem.
+     * Resets encoder, configures controller, and initializes sensors.
+     */
     public void initialize() {
-        mCon.setPDFL(p,d,fn,l);
+        // Configure PDFL controller with tuning constants
+        mCon.setPDFL(p, d, fn, l);
+
+        // Reset and configure encoder
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Initialize color sensors from hardware map
         colorSensors[0] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs1");
         colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs2");
         colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs3");
+
+        // Initialize distance sensor (same hardware as cs2, different interface)
         distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, "cs2");
     }
 
+    /**
+     * Manually reset the encoder position.
+     * Use for emergency re-zeroing if needed.
+     */
+    public void reset() {
+        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    // ========== POSITION GETTERS ==========
+
+    /**
+     * Gets the current rotary position.
+     *
+     * @return Current position in radians
+     */
     public double getPosition() {
         return currentPosition;
     }
+
+    /**
+     * Gets the target rotary position.
+     *
+     * @return Target position in radians
+     */
     public double getTargetPosition() {
         return targetPosition;
     }
 
-    public Command withinRange() {
-        return new LambdaCommand(("Rotary Within Range?")).setIsDone(() -> withinRangeBool());
-    }
+    // ========== POSITION CHECKING ==========
+
+    /**
+     * Checks if rotary is within tolerance of target position.
+     *
+     * @return true if position error is less than POSITION_TOLERANCE
+     */
     public Boolean withinRangeBool() {
-        return Math.abs(MathUtil.piWraparound(currentPosition-targetPosition-offset)) < 0.02;
+        return Math.abs(MathUtil.piWraparound(currentPosition - targetPosition - offset)) < positionTolerance;
     }
-    public Command lock = new InstantCommand(()->{
+
+    /**
+     * Command that completes when rotary reaches target position.
+     * Useful for waiting until chamber is aligned before launching.
+     *
+     * @return Command that finishes when position is reached
+     */
+    public Command withinRange() {
+        return new LambdaCommand("Rotary Within Range?")
+                .setIsDone(this::withinRangeBool);
+    }
+
+    // ========== LOCK/UNLOCK COMMANDS ==========
+
+    /**
+     * Locks the rotary by disabling feedforward.
+     * Used to hold position firmly without allowing drift.
+     */
+    public Command lock = new InstantCommand(() -> {
         this.locked = true;
-        fn = 0.0;
-        mCon.setPDFL(p,d,fn,l);
+        fn = 0.0;  // Disable feedforward for stronger holding
+        mCon.setPDFL(p, d, fn, l);
     });
 
+    /**
+     * Unlocks the rotary by enabling feedforward.
+     * Allows smoother motion between positions.
+     */
+    public Command unlock = new InstantCommand(() -> {
+        this.locked = false;
+        fn = f;  // Re-enable feedforward for motion
+        mCon.setPDFL(p, d, fn, l);
+    });
 
+    // ========== HOMING ROUTINE ==========
 
+    /**
+     * Phase 1 of homing: Slowly rotate backward until wall is detected.
+     * Distance sensor reads < 0.3" when wall is found.
+     */
     private Command findWall() {
-        return new LambdaCommand(("Homing Rotary: Finding Wall"))
-                .setStart(() ->  {
+        return new LambdaCommand("Homing Rotary: Finding Wall")
+                .setStart(() -> {
                     findWall = true;
                     distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
                 })
-                .setIsDone(() ->
-                        distSensorOutput < 0.3)
-                .setStop((interrupted) ->{
+                .setIsDone(() -> distSensorOutput < 0.3)
+                .setStop((interrupted) -> {
                     findWall = false;
                 });
     }
+
+    /**
+     * Phase 2 of homing: Rotate forward slowly until edge is found.
+     * Distance sensor reads > 0.5" when edge is detected.
+     */
     private Command findEdge() {
-        return new LambdaCommand(("Homing Rotary: Finding edge"))
+        return new LambdaCommand("Homing Rotary: Finding Edge")
                 .setStart(() -> {
                     findEdge = true;
                     distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
                 })
                 .setIsDone(() -> distSensorOutput > 0.5)
-                .setStop((interrupted) ->{
+                .setStop((interrupted) -> {
                     findEdge = false;
                 });
     }
 
+    /**
+     * Phase 3 of homing: Calculate and store the calibration offset.
+     * Adds 0.16 radians to compensate for edge detection point.
+     */
     private final Command finishHoming = new InstantCommand(() -> {
         offset = currentPosition + 0.16;
         homingDone = true;
     });
 
+    /**
+     * Resets homing state to allow re-homing if needed.
+     */
     public final Command startRotary = new InstantCommand(() -> {
         homingDone = false;
     });
 
+    /**
+     * Complete homing sequence: find wall → find edge → calculate offset.
+     * Run this at the start of autonomous to establish absolute position.
+     */
     public SequentialGroup home = new SequentialGroup(
             findWall(),
             findEdge(),
             finishHoming
-
     );
 
+    // ========== CHAMBER SELECTION ==========
 
-    public Command unlock = new InstantCommand(()->{
-        this.locked = false;
-        fn = f;
-        mCon.setPDFL(p,d,fn,l);
-    });
     /**
-     * Sets target coordinates and heading, flipping x and heading for RED team.
-     * @param chamber The chamber that the robot accesses to launch
+     * Internal method to set target to a specific chamber.
+     *
+     * @param chamber Chamber number (1, 2, or 3)
      */
     private void Chamber(int chamber) {
-        if (chamber == 1) {
-            targetPosition = Chamber.ONE.angle;
-            currentChamber = 1;
+        switch (chamber) {
+            case 1:
+                targetPosition = Chamber.ONE.angle;
+                currentChamber = 1;
+                break;
+            case 2:
+                targetPosition = Chamber.TWO.angle;
+                currentChamber = 2;
+                break;
+            case 3:
+                targetPosition = Chamber.THREE.angle;
+                currentChamber = 3;
+                break;
         }
-        else if(chamber == 2) {
-            targetPosition = Chamber.TWO.angle;
-            currentChamber = 2;
-        }
-        else if(chamber == 3) {
-            targetPosition = Chamber.THREE.angle;
-            currentChamber = 3;
-        }
+        // Flag that colors should be updated when rotary stops
         shouldUpdateColors = true;
     }
 
+    /**
+     * Rotates to the previous chamber (3→2→1→3).
+     * Useful for manual cycling through chambers.
+     */
     public Command previousChamber = new InstantCommand(() -> {
-        if(currentChamber == 1) {
-            Chamber(3);
-        }
-        else if (currentChamber == 2) {
-            Chamber(1);
-        }
-        else if (currentChamber == 3) {
-            Chamber(2);
-        }
+        Chamber(currentChamber == 1 ? 3 : currentChamber - 1);
     });
-    
+
+    /**
+     * Rotates to the next chamber (1→2→3→1).
+     * Useful for manual cycling through chambers.
+     */
     public Command nextChamber = new InstantCommand(() -> {
-        if (currentChamber == 1) {
-            Chamber(2);
-        }
-        else if (currentChamber == 2) {
-            Chamber(3);
-        }
-        else if (currentChamber == 3) {
-            Chamber(1);
-        }
+        Chamber(currentChamber == 3 ? 1 : currentChamber + 1);
     });
 
+    /**
+     * Rotates to whichever chamber contains a GREEN ball.
+     * Searches all three chambers and selects the first match.
+     */
     public Command greenChamber = new InstantCommand(() -> {
-        if (Chamber.ONE.ball == Ball.GREEN) {
-            Chamber(1);
-        }
-        else if (Chamber.TWO.ball == Ball.GREEN) {
-            Chamber(2);
-        }
-        else if (Chamber.THREE.ball == Ball.GREEN) {
-            Chamber(3);
+        for (int i = 0; i < CHAMBERS.length; i++) {
+            if (CHAMBERS[i].ball == Ball.GREEN) {
+                Chamber(i + 1);
+                return;
+            }
         }
     });
 
+    /**
+     * Rotates to whichever chamber contains a PURPLE ball.
+     * Searches all three chambers and selects the first match.
+     */
     public Command purpleChamber = new InstantCommand(() -> {
-        if (Chamber.ONE.ball == Ball.PURPLE) {
-            Chamber(1);
-        }
-        else if (Chamber.TWO.ball == Ball.PURPLE) {
-            Chamber(2);
-        }
-        else if (Chamber.THREE.ball == Ball.PURPLE) {
-            Chamber(3);
+        for (int i = 0; i < CHAMBERS.length; i++) {
+            if (CHAMBERS[i].ball == Ball.PURPLE) {
+                Chamber(i + 1);
+                return;
+            }
         }
     });
 
+    // ========== HALF CHAMBER MODE ==========
+
+    /**
+     * Enables half-chamber mode.
+     * Positions rotary halfway between chambers for easier loading.
+     */
     public Command setHalfChamberOn = new InstantCommand(() -> {
         this.halfChamber = true;
     });
 
+    /**
+     * Disables half-chamber mode.
+     * Returns to normal chamber-aligned positioning.
+     */
     public Command setHalfChamberOff = new InstantCommand(() -> {
         this.halfChamber = false;
     });
-    
+
+    /**
+     * Toggles half-chamber mode on/off.
+     * Convenient for driver control toggle button.
+     */
     public Command toggleHalfChamber = new InstantCommand(() -> {
         this.halfChamber = !halfChamber;
     });
 
-    // Is b within a plus or minus tol
+    // ========== COLOR DETECTION ==========
+
+    /**
+     * Checks if value 'a' is within tolerance of value 'b'.
+     *
+     * @param a   First value
+     * @param b   Second value
+     * @param tol Tolerance (±)
+     * @return true if |a - b| <= tol
+     */
     private boolean close(double a, double b, double tol) {
         return Math.abs(a - b) <= tol;
     }
 
+    /**
+     * Classifies a ball based on color sensor RGB values.
+     * Compares against known GREEN and PURPLE color signatures.
+     *
+     * @param c   Color sensor to read from
+     * @param tol Tolerance for color matching
+     * @return Ball type (GREEN, PURPLE, or NULL)
+     */
     private Ball classify(NormalizedColorSensor c, double tol) {
-        double r = (c.getNormalizedColors().red * 255);
-        double g = (c.getNormalizedColors().green * 255);
-        double b = (c.getNormalizedColors().blue * 255);
+        // Read normalized RGB values (0-1 range)
+        double r = c.getNormalizedColors().red;
+        double g = c.getNormalizedColors().green;
+        double b = c.getNormalizedColors().blue;
 
-        if (close(r, GreenColor[0], tol) &&
-                close(g, GreenColor[1], tol) &&
-                close(b, GreenColor[2], tol))
+        // Check if color matches GREEN signature
+        if (close(r, greenColor[0], tol) &&
+                close(g, greenColor[1], tol) &&
+                close(b, greenColor[2], tol)) {
             return Ball.GREEN;
+        }
 
-        if (close(r, PurpleColor[0], tol) &&
-                close(g, PurpleColor[1], tol) &&
-                close(b, PurpleColor[2], tol))
+        // Check if color matches PURPLE signature
+        if (close(r, purpleColor[0], tol) &&
+                close(g, purpleColor[1], tol) &&
+                close(b, purpleColor[2], tol)) {
             return Ball.PURPLE;
+        }
 
+        // No match found
         return Ball.NULL;
     }
 
+    /**
+     * Updates the ball type for all three chambers.
+     * Reads from all color sensors and classifies each ball.
+     * Only called when rotary is stopped and aligned.
+     */
     private void updateChamberColor() {
         for (int i = 0; i < 3; i++) {
-            NormalizedColorSensor c = colorSensors[i];
-            CHAMBERS[i].ball = classify(c, colorTolerance);
+            CHAMBERS[i].ball = classify(colorSensors[i], colorTolerance);
         }
         shouldUpdateColors = false;
     }
 
+    // ========== PERIODIC UPDATE ==========
+
+    /**
+     * Called every loop cycle by NextFTC's command scheduler.
+     * Handles position control, homing, and color detection.
+     */
     @Override
     public void periodic() {
-        if (halfChamber) {
-            halfOffset = Math.PI / 3;
-        } else {
-            halfOffset = 0;
-        }
+        // Calculate half-chamber offset (60° = π/3 radians)
+        halfOffset = halfChamber ? Math.PI / 3 : 0;
 
-        currentPosition = MathUtil.piWraparound((Encoder.getCurrentPosition() / ticksPerRotation) * 2*Math.PI);
+        // Read current position from encoder and wrap to [-π, π]
+        currentPosition = MathUtil.piWraparound(
+                (Encoder.getCurrentPosition() / ticksPerRotation) * 2 * Math.PI
+        );
 
-        mCon.setTarget(MathUtil.piWraparound( targetPosition + halfOffset + offset));
+        // Update controller target (includes chamber angle + half offset + calibration)
+        mCon.setTarget(MathUtil.piWraparound(targetPosition + halfOffset + offset));
 
+        // Calculate control output
         mCon.update(currentPosition);
         double power = mCon.runPDFL(0.009);
 
-
+        // Handle different operating modes
         if (findWall) {
+            // Homing phase 1: Move backward to find wall
             motor.setPower(-0.5);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
+
         } else if (findEdge) {
+            // Homing phase 2: Move forward slowly to find edge
             motor.setPower(0.2);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
 
         } else if (homingDone) {
+            // Homing complete: hold position at zero power
             motor.setPower(0);
-        }
-        else {
+
+        } else {
             motor.setPower(power);
         }
 
-        if (shouldUpdateColors && power <= 0.04 && !halfChamber){
+        // Update chamber colors when stopped and aligned (not in half-chamber mode)
+        if (shouldUpdateColors && power <= stoppedPowerThreshold && !halfChamber) {
             updateChamberColor();
         }
     }
+
+    // ========== DEBUG INFORMATION ==========
+
+    /**
+     * Generates comprehensive debug string with all subsystem state.
+     * Includes position, controller tuning, chamber states, and sensor data.
+     *
+     * @return Multi-section formatted debug string
+     */
 
     public String debugText() {
         StringBuilder sb = new StringBuilder();
@@ -333,7 +625,7 @@ public class RotarySubsystem implements Subsystem {
         sb.append("\n\n=== Chamber States ===");
         for (int i = 0; i < 3; i++) {
             Chamber ch = CHAMBERS[i];
-            sb.append("\nChamber ").append(i+1)
+            sb.append("\nChamber ").append(i + 1)
                     .append(" | angle: ").append(ch.angle)
                     .append(" | ball: ").append(ch.ball);
         }
@@ -343,9 +635,9 @@ public class RotarySubsystem implements Subsystem {
         for (int i = 0; i < 3; i++) {
             NormalizedColorSensor c = colorSensors[i] != null ? colorSensors[i] : null;
             if (c == null) {
-                sb.append("\nSensor ").append(i+1).append(": NULL");
+                sb.append("\nSensor ").append(i + 1).append(": NULL");
             } else {
-                sb.append("\nSensor ").append(i+1)
+                sb.append("\nSensor ").append(i + 1)
                         .append(" | R: ").append((c.getNormalizedColors().red))
                         .append(" G: ").append((c.getNormalizedColors().green))
                         .append(" B: ").append((c.getNormalizedColors().blue));
@@ -361,5 +653,6 @@ public class RotarySubsystem implements Subsystem {
 
         return sb.toString();
     }
-
 }
+
+
