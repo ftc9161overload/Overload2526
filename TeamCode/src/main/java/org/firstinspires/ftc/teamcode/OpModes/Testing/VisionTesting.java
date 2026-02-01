@@ -13,7 +13,7 @@ public class VisionTesting extends OpMode {
     @Override
     public void init() {
         // Initialize vision subsystem
-        visionSubsystem = new VisionSubsystem(hardwareMap, telemetry);
+        visionSubsystem = new VisionSubsystem();
         visionSubsystem.setDebugMode(true); // Enable debug data output
     }
 

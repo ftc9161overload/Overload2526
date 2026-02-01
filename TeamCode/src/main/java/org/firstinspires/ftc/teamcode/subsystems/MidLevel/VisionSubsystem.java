@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.hardware.android.GpioPin;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 
+import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.core.subsystems.Subsystem;
 
 public class VisionSubsystem implements Subsystem {
@@ -21,14 +23,16 @@ public class VisionSubsystem implements Subsystem {
     private final VisionPortal visionPortal;
     private final Telemetry telemetry;
 
+    public static final VisionSubsystem INSTANCE = new VisionSubsystem();
+
     // Configuration flags
     private boolean debugMode = false;
 
     // Timer to control update frequency (prevents excessive processing)
     private final Timer timer = new Timer();
 
-    public VisionSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
+    public VisionSubsystem() {
+        this.telemetry = ActiveOpMode.telemetry();
 
         // Configure AprilTag processor with visual debugging features
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -39,12 +43,13 @@ public class VisionSubsystem implements Subsystem {
 
         // Configure camera portal with webcam and processor
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(ActiveOpMode.hardwareMap().get(WebcamName.class, "Webcam 1"))
                 .addProcessor(aprilTagProcessor)
                 .setCameraResolution(new Size(640, 480))  // 640x480 resolution
                 .enableLiveView(true)                      // Enable camera preview
                 .build();
     }
+
 
     /**
      * Enables or disables telemetry debug output
