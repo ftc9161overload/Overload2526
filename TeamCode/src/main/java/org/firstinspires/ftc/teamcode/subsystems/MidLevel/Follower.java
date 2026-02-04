@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
+import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Pose2D;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -15,6 +16,7 @@ import dev.nextftc.core.units.Distance;
 
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
+
 
 /**
  * Follower subsystem for autonomous path following and teleop control.
@@ -42,28 +44,23 @@ public class Follower implements Subsystem {
     // ========================================================================
 
     /** Current robot position and orientation */
-    private Distance xPos = Distance.fromIn(0);
-    private Distance yPos = Distance.fromIn(0);
-    private Angle heading = Angle.fromRad(0);
+    private Pose2D currentPose = new Pose2D(0, 0, 0);
 
     /** Target position and orientation for autonomous control */
-    private Distance xTarget = Distance.fromIn(0);
-    private Distance yTarget = Distance.fromIn(0);
-    private Angle headingTarget = Angle.fromRad(0);
+    private Pose2D targetPose = new Pose2D(0, 0, 0);
 
-    /** Goal position for scoring [x, y] - used for auto-aiming */
-    private Distance goalX = Distance.fromIn(8);
-    private Distance goalY = Distance.fromIn(136);
+    /** Goal position for scoring - used for auto-aiming */
+    private Pose2D goalPose = new Pose2D(8, 136, 0);
 
 
     // ========================================================================
     // CONTROL FLAGS
     // ========================================================================
 
-    /** When true, robot follows the linear path to (xTarget, yTarget) */
+    /** When true, robot follows the linear path to target position */
     private boolean linearFollower = false;
 
-    /** When true, robot rotates to match headingTarget */
+    /** When true, robot rotates to match target heading */
     private boolean headingFollower = false;
 
     /** When true, driver input is relative to field orientation instead of robot */
@@ -157,10 +154,28 @@ public class Follower implements Subsystem {
         return Angle.fromRad(new Vector2D(x, -y).angle());
     }
 
+    /**
+     * Mirrors a pose for RED alliance (flips x-coordinate and heading).
+     * @param pose Pose to mirror
+     * @return Mirrored pose
+     */
+    private Pose2D flipPose(Pose2D pose) {
+        return new Pose2D(flipX(pose.x), pose.y, flipXAngle(pose.heading));
+    }
+
 
     // ========================================================================
     // POSITION UPDATE
     // ========================================================================
+
+    /**
+     * Updates the current robot pose.
+     * Call this every loop with odometry data.
+     * @param pose Current robot pose (position + heading)
+     */
+    public void update(Pose2D pose) {
+        this.currentPose = pose;
+    }
 
     /**
      * Updates the current robot position and heading.
@@ -170,9 +185,7 @@ public class Follower implements Subsystem {
      * @param heading Current heading angle
      */
     public void update(Distance xPos, Distance yPos, Angle heading) {
-        this.xPos = xPos;
-        this.yPos = yPos;
-        this.heading = heading;
+        this.currentPose = new Pose2D(xPos, yPos, heading);
     }
 
     /**
@@ -183,9 +196,7 @@ public class Follower implements Subsystem {
      * @param heading Heading in radians
      */
     public void update(double xPos, double yPos, double heading) {
-        this.xPos = Distance.fromIn(xPos);
-        this.yPos = Distance.fromIn(yPos);
-        this.heading = Angle.fromRad(heading);
+        this.currentPose = new Pose2D(xPos, yPos, heading);
     }
 
 
@@ -201,8 +212,8 @@ public class Follower implements Subsystem {
      */
     public Command withinRangeLinear(Distance range) {
         return new LambdaCommand("Follower linear range").setIsDone(() -> {
-            double dx = xPos.inIn - xTarget.inIn;
-            double dy = yPos.inIn - yTarget.inIn;
+            double dx = currentPose.x.inIn - targetPose.x.inIn;
+            double dy = currentPose.y.inIn - targetPose.y.inIn;
             return Math.hypot(dx, dy) < range.inIn;
         });
     }
@@ -222,7 +233,7 @@ public class Follower implements Subsystem {
      */
     public Command withinRangeHeading(Angle range) {
         return new LambdaCommand("Follower heading range").setIsDone(() ->
-                Math.abs(normAngle(Angle.fromRad(heading.inRad - headingTarget.inRad)).inRad) < range.inRad
+                Math.abs(normAngle(Angle.fromRad(currentPose.heading.inRad - targetPose.heading.inRad)).inRad) < range.inRad
         );
     }
 
@@ -242,9 +253,9 @@ public class Follower implements Subsystem {
      */
     public Command withinRange(Angle rangeH, Distance rangeP) {
         return new LambdaCommand("Follower both range").setIsDone(() -> {
-            double headingError = Math.abs(normAngle(Angle.fromRad(heading.inRad - headingTarget.inRad)).inRad);
-            double dx = xPos.inIn - xTarget.inIn;
-            double dy = yPos.inIn - yTarget.inIn;
+            double headingError = Math.abs(normAngle(Angle.fromRad(currentPose.heading.inRad - targetPose.heading.inRad)).inRad);
+            double dx = currentPose.x.inIn - targetPose.x.inIn;
+            double dy = currentPose.y.inIn - targetPose.y.inIn;
             double posError = Math.hypot(dx, dy);
             return headingError < rangeH.inRad && posError < rangeP.inIn;
         });
@@ -259,8 +270,24 @@ public class Follower implements Subsystem {
 
 
     // ========================================================================
-    // TARGET SETTING COMMANDS
+    // TARGET SETTING COMMANDS (NEW POSE2D METHODS)
     // ========================================================================
+
+    /**
+     * Sets target pose (position AND heading) using Pose2D.
+     * Automatically mirrors coordinates for RED alliance.
+     * @param target Target pose
+     * @return InstantCommand that sets the target immediately
+     */
+    public Command set(Pose2D target) {
+        return new InstantCommand(() -> {
+            if (teamcolor == TEAMCOLOR.RED) {
+                this.targetPose = flipPose(target);
+            } else {
+                this.targetPose = target;
+            }
+        });
+    }
 
     /**
      * Sets target position AND heading (full 3DOF control).
@@ -271,26 +298,30 @@ public class Follower implements Subsystem {
      * @return InstantCommand that sets the targets immediately
      */
     public Command set(Distance xTarget, Distance yTarget, Angle headingTarget) {
-        return new InstantCommand(() -> {
-            if (teamcolor == TEAMCOLOR.RED) {
-                // Mirror x-coordinate and heading for red alliance
-                this.xTarget = flipX(xTarget);
-                this.yTarget = yTarget;
-                this.headingTarget = flipXAngle(headingTarget);
-            } else {
-                // Use coordinates as-is for blue alliance
-                this.xTarget = xTarget;
-                this.yTarget = yTarget;
-                this.headingTarget = headingTarget;
-            }
-        });
+        return set(new Pose2D(xTarget, yTarget, headingTarget));
     }
 
     /**
      * Convenience overload accepting raw doubles (inches and radians).
      */
     public Command set(double xTarget, double yTarget, double headingTarget) {
-        return set(Distance.fromIn(xTarget), Distance.fromIn(yTarget), Angle.fromRad(headingTarget));
+        return set(new Pose2D(xTarget, yTarget, headingTarget));
+    }
+
+    /**
+     * Sets only linear target position (x,y) using Pose2D, leaving heading unchanged.
+     * @param target Target pose (only position is used)
+     * @return InstantCommand that sets position target
+     */
+    public Command setLinear(Pose2D target) {
+        return new InstantCommand(() -> {
+            Pose2D newTarget = target.withHeading(targetPose.heading);
+            if (teamcolor == TEAMCOLOR.RED) {
+                this.targetPose = flipPose(newTarget);
+            } else {
+                this.targetPose = newTarget;
+            }
+        });
     }
 
     /**
@@ -300,22 +331,14 @@ public class Follower implements Subsystem {
      * @return InstantCommand that sets position target
      */
     public Command setLinear(Distance xTarget, Distance yTarget) {
-        return new InstantCommand(() -> {
-            if (teamcolor == TEAMCOLOR.RED) {
-                this.xTarget = flipX(xTarget);
-                this.yTarget = yTarget;
-            } else {
-                this.xTarget = xTarget;
-                this.yTarget = yTarget;
-            }
-        });
+        return setLinear(new Pose2D(xTarget, yTarget));
     }
 
     /**
      * Convenience overload accepting raw doubles (inches).
      */
     public Command setLinear(double xTarget, double yTarget) {
-        return setLinear(Distance.fromIn(xTarget), Distance.fromIn(yTarget));
+        return setLinear(new Pose2D(xTarget, yTarget));
     }
 
     /**
@@ -325,10 +348,11 @@ public class Follower implements Subsystem {
      */
     public Command setHeading(Angle headingTarget) {
         return new InstantCommand(() -> {
+            Pose2D newTarget = targetPose.withHeading(headingTarget);
             if (teamcolor == TEAMCOLOR.RED) {
-                this.headingTarget = flipXAngle(headingTarget);
+                this.targetPose = flipPose(newTarget);
             } else {
-                this.headingTarget = headingTarget;
+                this.targetPose = newTarget;
             }
         });
     }
@@ -346,16 +370,27 @@ public class Follower implements Subsystem {
      */
     public void turnToGoal() {
         // Calculate angle from robot to goal
-        double dx = goalX.inIn - xPos.inIn;
-        double dy = goalY.inIn - yPos.inIn;
+        double dx = goalPose.x.inIn - currentPose.x.inIn;
+        double dy = goalPose.y.inIn - currentPose.y.inIn;
         Angle angleToGoal = Angle.fromRad(new Vector2D(dx, dy).angle());
+
+        // Update target with new heading
+        Pose2D newTarget = targetPose.withHeading(angleToGoal);
 
         // Mirror for red alliance if needed
         if (teamcolor == TEAMCOLOR.RED) {
-            headingTarget = flipXAngle(angleToGoal);
+            targetPose = flipPose(newTarget);
         } else {
-            headingTarget = angleToGoal;
+            targetPose = newTarget;
         }
+    }
+
+    /**
+     * Sets the goal position for auto-aiming using Pose2D.
+     * @param goal Goal pose (only position is used)
+     */
+    public void setGoal(Pose2D goal) {
+        this.goalPose = goal;
     }
 
     /**
@@ -364,15 +399,14 @@ public class Follower implements Subsystem {
      * @param y Goal y position
      */
     public void setGoal(Distance x, Distance y) {
-        this.goalX = x;
-        this.goalY = y;
+        this.goalPose = new Pose2D(x, y);
     }
 
     /**
      * Convenience overload accepting raw doubles (inches).
      */
     public void setGoal(double x, double y) {
-        setGoal(Distance.fromIn(x), Distance.fromIn(y));
+        this.goalPose = new Pose2D(x, y);
     }
 
 
@@ -411,14 +445,14 @@ public class Follower implements Subsystem {
     public Vector2D getLinear() {
         if (linearFollower) {
             // Calculate current distance from origin
-            double distFromOrigin = Math.hypot(xPos.inIn, yPos.inIn);
+            double distFromOrigin = Math.hypot(currentPose.x.inIn, currentPose.y.inIn);
 
             // Update controller with current distance
             xCon.update(distFromOrigin);
 
             // Calculate angle toward target
-            double dx = xTarget.inIn - xPos.inIn;
-            double dy = yTarget.inIn - yPos.inIn;
+            double dx = targetPose.x.inIn - currentPose.x.inIn;
+            double dy = targetPose.y.inIn - currentPose.y.inIn;
             double angleToTarget = Math.atan2(dx, dy);
 
             // Return velocity vector pointing toward target
@@ -435,7 +469,7 @@ public class Follower implements Subsystem {
     public Vector2D getHeading() {
         if (headingFollower) {
             // Update controller with current heading
-            headingCon.update(heading.inRad);
+            headingCon.update(currentPose.heading.inRad);
 
             // Return angular velocity to reach target heading
             return new Vector2D(headingCon.runPDFL(headingErrorMin.inRad), 0);
@@ -462,7 +496,7 @@ public class Follower implements Subsystem {
         // Process driver input
         if (fieldCentric) {
             // Rotate input by -heading to make it field-relative
-            return new Vector2D(x, y).rotate(-heading.inRad);
+            return new Vector2D(x, y).rotate(-currentPose.heading.inRad);
         } else {
             // Robot-centric: use input as-is
             return new Vector2D(x, y);
@@ -485,6 +519,35 @@ public class Follower implements Subsystem {
 
 
     // ========================================================================
+    // GETTER METHODS FOR CURRENT STATE
+    // ========================================================================
+
+    /**
+     * Gets the current robot pose.
+     * @return Current pose (position + heading)
+     */
+    public Pose2D getCurrentPose() {
+        return currentPose;
+    }
+
+    /**
+     * Gets the current target pose.
+     * @return Target pose (position + heading)
+     */
+    public Pose2D getTargetPose() {
+        return targetPose;
+    }
+
+    /**
+     * Gets the current goal pose.
+     * @return Goal pose for auto-aiming
+     */
+    public Pose2D getGoalPose() {
+        return goalPose;
+    }
+
+
+    // ========================================================================
     // PERIODIC UPDATE
     // ========================================================================
 
@@ -495,16 +558,16 @@ public class Follower implements Subsystem {
     @Override
     public void periodic() {
         // Update controller targets
-        headingCon.setTarget(headingTarget.inRad);
+        headingCon.setTarget(targetPose.heading.inRad);
 
-        double targetDistFromOrigin = Math.hypot(xTarget.inIn, yTarget.inIn);
+        double targetDistFromOrigin = Math.hypot(targetPose.x.inIn, targetPose.y.inIn);
         xCon.setTarget(targetDistFromOrigin);
 
         // Update field visualization (uses inches for display)
-        panelsField.moveCursor(xPos.inIn, yPos.inIn);        // Show current position
-        panelsField.setCursorHeading(heading.inRad);         // Show current heading
-        panelsField.line(xTarget.inIn, yTarget.inIn);        // Draw line to target
-        panelsField.update();                                 // Refresh display
+        panelsField.moveCursor(currentPose.x.inIn, currentPose.y.inIn);      // Show current position
+        panelsField.setCursorHeading(currentPose.heading.inRad);             // Show current heading
+        panelsField.line(targetPose.x.inIn, targetPose.y.inIn);              // Draw line to target
+        panelsField.update();                                                 // Refresh display
     }
 
 
@@ -519,10 +582,10 @@ public class Follower implements Subsystem {
      */
     public String debugText() {
         // Calculate current errors
-        double dx = xPos.inIn - xTarget.inIn;
-        double dy = yPos.inIn - yTarget.inIn;
+        double dx = currentPose.x.inIn - targetPose.x.inIn;
+        double dy = currentPose.y.inIn - targetPose.y.inIn;
         double linearError = Math.hypot(dx, dy);
-        double headingError = normAngle(Angle.fromRad(headingTarget.inRad - heading.inRad)).inRad;
+        double headingError = normAngle(Angle.fromRad(targetPose.heading.inRad - currentPose.heading.inRad)).inRad;
 
         // Format all state information
         return String.format(
@@ -538,17 +601,17 @@ public class Follower implements Subsystem {
                         "Field Centric: %b\n" +
                         "Team: %s\n" +
                         "Goal: (%.2f\", %.2f\")",
-                xPos.inIn, yPos.inIn,
-                xTarget.inIn, yTarget.inIn,
-                heading.inDeg, heading.inRad,
-                headingTarget.inDeg, headingTarget.inRad,
+                currentPose.x.inIn, currentPose.y.inIn,
+                targetPose.x.inIn, targetPose.y.inIn,
+                currentPose.heading.inDeg, currentPose.heading.inRad,
+                targetPose.heading.inDeg, targetPose.heading.inRad,
                 linearError,
                 Math.toDegrees(headingError), headingError,
                 linearFollower,
                 headingFollower,
                 fieldCentric,
                 teamcolor,
-                goalX.inIn, goalY.inIn
+                goalPose.x.inIn, goalPose.y.inIn
         );
     }
 }
