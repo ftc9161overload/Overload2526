@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
+import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Pose2D;
 
 import dev.nextftc.core.commands.Command;
@@ -52,6 +53,17 @@ public class Follower implements Subsystem {
     /** Goal position for scoring - used for auto-aiming */
     private Pose2D goalPose = new Pose2D(8, 136, 0);
 
+
+    // ========================================================================
+    // VELOCITY VARIABLES
+    // ========================================================================
+
+    private Pose2D lastPose = currentPose;
+
+    private Distance xvel = Distance.fromIn(0);
+    private Distance yvel = Distance.fromIn(0);
+
+    private Timer timer = new Timer();
 
     // ========================================================================
     // CONTROL FLAGS
@@ -567,7 +579,12 @@ public class Follower implements Subsystem {
         panelsField.moveCursor(currentPose.x.inIn, currentPose.y.inIn);      // Show current position
         panelsField.setCursorHeading(currentPose.heading.inRad);             // Show current heading
         panelsField.line(targetPose.x.inIn, targetPose.y.inIn);              // Draw line to target
-        panelsField.update();                                                 // Refresh display
+        panelsField.update();                                                // Refresh display
+
+        // Velocity crap
+        xvel = Distance.fromIn((currentPose.x.inIn - lastPose.y.inIn)/timer.getTimeSeconds());
+        yvel = Distance.fromIn((currentPose.y.inIn - lastPose.y.inIn)/timer.getTimeSeconds());
+        timer.reset();
     }
 
 
