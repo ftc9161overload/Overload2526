@@ -27,4 +27,8 @@ public class Pose2D {
     public Pose2D(double xIn, double yIn) {
         this(Distance.fromIn(xIn), Distance.fromIn(yIn), Angle.fromRad(0));
     }
+
+    public Pose2D withHeading(Angle heading) {
+        return new Pose2D(x,y,heading);
+    }
 }

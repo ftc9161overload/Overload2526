@@ -96,7 +96,12 @@ public class RobotSubsystem extends SubsystemGroup {
 
     // Flag to enable/disable telemetry debug output - defaults to disabled
     // When true, periodic() method will output diagnostic information
+    // These flags are configured via FTC Dashboard using the @Configurable annotation
     public static boolean isTelemetry = false;
+    public static boolean rotaryTelemetry = false;
+    public static boolean outtakeTelemetry = false;
+    public static boolean drivetrainTelemetry = false;
+    public static boolean intakeTelemetry = false;
 
     /**
      * Enables or disables telemetry debug output
@@ -120,6 +125,27 @@ public class RobotSubsystem extends SubsystemGroup {
             VisionSubsystem.INSTANCE.setDebugMode(true);
             // Display follower subsystem debug information to driver station
             telemetry.addLine(Follower.INSTANCE.debugText());
+        }
+
+        // Display rotary subsystem telemetry if enabled
+        if(rotaryTelemetry) {
+            telemetry.addLine(RotarySubsystem.INSTANCE.debugText());
+        }
+
+        // Display outtake subsystem telemetry if enabled
+        if(outtakeTelemetry) {
+            telemetry.addLine(OuttakeFlipperSubsystem.INSTANCE.debugText());
+            telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugText());
+        }
+
+        // Display drivetrain subsystem telemetry if enabled
+        if(drivetrainTelemetry) {
+            telemetry.addLine(swerveDrivetrain.debugText());
+        }
+
+        // Display intake subsystem telemetry if enabled
+        if(intakeTelemetry) {
+//            telemetry.addLine(IntakeSubsystem.INSTANCE.debugText());
         }
     }
 }

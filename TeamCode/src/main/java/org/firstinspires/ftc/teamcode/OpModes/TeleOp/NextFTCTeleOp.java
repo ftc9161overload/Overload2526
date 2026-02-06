@@ -84,7 +84,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         joinedTelemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
 //        joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
 //        joinedTelemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
-        joinedTelemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
+        joinedTelemetry.addData("swerve Output: ", swerveDrivetrain.debugText());
 //        joinedTelemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
 //        joinedTelemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
 //        joinedTelemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);

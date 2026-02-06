@@ -18,4 +18,17 @@ public class OuttakeFlipperSubsystem implements Subsystem {
     public Command setOff = new SetPosition(servo, off).requires(this);
     public Command setFullOn = new SetPosition(servo, fullOn).requires(this);
     public Command setFullOff = new SetPosition(servo, fullOff).requires(this);
+    /**
+     * Returns debug telemetry information for the outtake flipper subsystem
+     *
+     * @return String containing current servo position and preset values
+     */
+    public String debugText() {
+        return String.format("Outtake Flipper | Position: %.3f | fullOff: %.2f | off: %.2f | on: %.2f | fullOn: %.2f",
+                servo.getPosition(),
+                fullOff,
+                off,
+                on,
+                fullOn);
+    }
 }

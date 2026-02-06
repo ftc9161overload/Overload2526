@@ -35,32 +35,32 @@ public class AlignPods extends NextFTCOpMode {
 
 
         if(gamepad1.aWasPressed()) {
-            SwerveDrivetrain.flOffset = (int) pods[0].getAnalogInPos();
-            SwerveDrivetrain.frOffset = (int) pods[1].getAnalogInPos();
-            SwerveDrivetrain.blOffset = (int) pods[2].getAnalogInPos();
-            SwerveDrivetrain.brOffset = (int) pods[3].getAnalogInPos();
+            SwerveDrivetrain.flOffset = (int) pods[0].getAnalogInPos().inDeg;
+            SwerveDrivetrain.frOffset = (int) pods[1].getAnalogInPos().inDeg;
+            SwerveDrivetrain.blOffset = (int) pods[2].getAnalogInPos().inDeg;
+            SwerveDrivetrain.brOffset = (int) pods[3].getAnalogInPos().inDeg;
         }
 
         swerveDrivetrain.setPDFLs(p,d,f,l);
         swerveDrivetrain.updatePods();
         if (runPDFL) {
-            swerveDrivetrain.setPos(target);
+//            swerveDrivetrain.set(target);
         } else {
 //            swerveDrivetrain.setPosZero();
 //            swerveDrivetrain.setServoPowZero();
         }
 
-        joinedTelemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos()));
-        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[1].getAnalogInPos()));
-        joinedTelemetry.addData("BL currentPos: ", Math.toDegrees(pods[2].getAnalogInPos()));
-        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[3].getAnalogInPos()));
+        joinedTelemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos().inDeg));
+        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[1].getAnalogInPos().inDeg));
+        joinedTelemetry.addData("BL currentPos: ", Math.toDegrees(pods[2].getAnalogInPos().inDeg));
+        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[3].getAnalogInPos().inDeg));
 
         joinedTelemetry.addData("current FL: ", SwerveDrivetrain.flOffset);
         joinedTelemetry.addData("current FR: ", SwerveDrivetrain.frOffset);
         joinedTelemetry.addData("current BL: ", SwerveDrivetrain.blOffset);
         joinedTelemetry.addData("current BR: ", SwerveDrivetrain.brOffset);
 
-        joinedTelemetry.addLine(swerveDrivetrain.debugString());
+        joinedTelemetry.addLine(swerveDrivetrain.debugText());
         joinedTelemetry.update();
     }
 }

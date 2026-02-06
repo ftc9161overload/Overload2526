@@ -371,7 +371,7 @@ public class SwerveDrivetrain implements Subsystem {
      *
      * @return Multi-line string containing debug info for each pod
      */
-    public String debugString() {
+    public String debugText() {
         StringBuilder returnStr = new StringBuilder();
 
         String[] podNames = {"Front Left", "Front Right", "Back Left", "Back Right"};

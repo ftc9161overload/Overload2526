@@ -201,6 +201,20 @@ public class OuttakeWheelSubsystem implements Subsystem {
     // ========== DEBUG INFORMATION ==========
 
     /**
+     * Returns compact debug telemetry information for the outtake wheel subsystem.
+     * Designed for single-line display in RobotSubsystem periodic telemetry.
+     * @return Formatted string with velocity, target, power, and status
+     */
+    @SuppressLint("DefaultLocale")
+    public String debugText() {
+        return String.format("Outtake Wheel | Velocity: %.0f RPM | Target: %d RPM | Power: %.3f | At Speed: %b",
+                currentSpeed,
+                targetSpeed,
+                power,
+                withinRangeBool());
+    }
+
+    /**
      * Generates formatted debug string with all subsystem state information.
      * Useful for telemetry display during testing and tuning.
      * @return Multi-line debug string with velocity, target, and control info
