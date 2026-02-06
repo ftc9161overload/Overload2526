@@ -553,6 +553,7 @@ public class RotarySubsystem implements Subsystem {
     public void periodic() {
         // Calculate half-chamber offset (60° = π/3 radians)
         halfOffset = halfChamber ? Math.PI / 3 : 0;
+        mCon.setPDFL(p, d, f, l);
 
         // Read current position from encoder and wrap to [-π, π]
         currentPosition = MathUtil.piWraparound(

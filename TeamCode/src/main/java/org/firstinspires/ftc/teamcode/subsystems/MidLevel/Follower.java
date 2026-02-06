@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
-import androidx.annotation.NonNull;
-
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
@@ -15,6 +13,7 @@ import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.core.units.Angle;
 import dev.nextftc.core.units.Distance;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
 
@@ -24,6 +23,7 @@ import com.bylazar.field.PanelsField;
  * Handles coordinate following, heading control, and alliance color mirroring.
  * Integrates with PedroPathing field visualization.
  */
+@Configurable
 public class Follower implements Subsystem {
 
     // ========================================================================
@@ -97,10 +97,14 @@ public class Follower implements Subsystem {
     // CONTROLLERS
     // ========================================================================
 
+    public static double pLin = 0.0, dLin  = 0, fLin = 0, lLin = 0.35;
+
     /** PID controller for linear (x,y) movement with feedforward */
-    private final PDFLController xCon = new PDFLController(0.0, 0, 0, 0.35);
+    private final PDFLController linearCon = new PDFLController(0.0, 0, 0, 0.35);
 
     /** PID controller for rotational movement (heading) with feedforward */
+
+    public static double pHead, dHead, fHead, lHead;
     private final PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0, 0, 0, 0.35);
 
 
@@ -460,7 +464,7 @@ public class Follower implements Subsystem {
             double distFromOrigin = Math.hypot(currentPose.x.inIn, currentPose.y.inIn);
 
             // Update controller with current distance
-            xCon.update(distFromOrigin);
+            linearCon.update(distFromOrigin);
 
             // Calculate angle toward target
             double dx = targetPose.x.inIn - currentPose.x.inIn;
@@ -468,7 +472,7 @@ public class Follower implements Subsystem {
             double angleToTarget = Math.atan2(dx, dy);
 
             // Return velocity vector pointing toward target
-            return new Vector2D(xCon.runPDFL(xErrorMin.inIn), 0).rotate(angleToTarget);
+            return new Vector2D(linearCon.runPDFL(xErrorMin.inIn), 0).rotate(angleToTarget);
         }
         return new Vector2D(0, 0);
     }
@@ -571,9 +575,12 @@ public class Follower implements Subsystem {
     public void periodic() {
         // Update controller targets
         headingCon.setTarget(targetPose.heading.inRad);
+        linearCon.setPDFL(pLin, dLin, fLin, lLin);
+        headingCon.setPDFL(pHead, dHead, fHead, lHead);
+
 
         double targetDistFromOrigin = Math.hypot(targetPose.x.inIn, targetPose.y.inIn);
-        xCon.setTarget(targetDistFromOrigin);
+        linearCon.setTarget(targetDistFromOrigin);
 
         // Update field visualization (uses inches for display)
         panelsField.moveCursor(currentPose.x.inIn, currentPose.y.inIn);      // Show current position

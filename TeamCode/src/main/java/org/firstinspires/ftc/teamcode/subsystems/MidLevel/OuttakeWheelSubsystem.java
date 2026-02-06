@@ -75,6 +75,8 @@ public class OuttakeWheelSubsystem implements Subsystem {
     /** PDFL controller for velocity correction and stability */
     private final PDFLController pdfl = new PDFLController(0.01, 0, 0.0, 0.000);
 
+    public static double pOut = 0.01, dOut = 0, fOut = 0, lOut = 0;
+
     // ========== CONSTRUCTOR ==========
 
     /** Private constructor enforces singleton pattern */
@@ -175,6 +177,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
     public void periodic() {
         // Read current motor velocity from encoder
         currentSpeed = motor.getVelocity();
+        pdfl.setPDFL(pOut, dOut, fOut, lOut);
 
         // Update PDFL controller with new target and current velocity
         pdfl.setTarget(targetSpeed);

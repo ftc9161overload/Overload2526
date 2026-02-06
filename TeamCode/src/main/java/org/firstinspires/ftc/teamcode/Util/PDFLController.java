@@ -103,10 +103,12 @@ public class PDFLController {
     public void setL(double l) {this.l = l;}
 
     public void setPDFL(double p, double d, double f, double l){
+        if (this.p != p|| this.d != d || this.f != f || this.l != l) {
         this.p = p;
         this.d = d;
         this.f = f;
         this.l = l;
+        }
     }
 
     /**

@@ -47,7 +47,10 @@ public class SwerveDrivetrain implements Subsystem {
     // SWERVE PODS
     // ========================================================================
 
-    private final SwervePodSubsystem[] pods;  // Array of all four pods [FL, FR, BL, BR]
+    public static SwervePodSubsystem frontLeft;
+    public static SwervePodSubsystem frontRight;
+    public static SwervePodSubsystem backLeft;
+    public static SwervePodSubsystem backRight;
 
 
     // ========================================================================
@@ -108,9 +111,11 @@ public class SwerveDrivetrain implements Subsystem {
         // Set calibration offsets for each servo
         configureServoOffsets(fl, fr, bl, br);
 
-        // Store pods in array for easy iteration
-        // Order: [FL, FR, BL, BR]
-        pods = new SwervePodSubsystem[]{fl, fr, bl, br};
+        // Store pods in individual variables for easy access
+        frontLeft = fl;
+        frontRight = fr;
+        backLeft = bl;
+        backRight = br;
     }
 
 
@@ -167,18 +172,20 @@ public class SwerveDrivetrain implements Subsystem {
      * harder to push and more stable when defending.
      */
     public void cross() {
-        for (SwervePodSubsystem pod : pods) {
-            pod.cross();
-        }
+        frontLeft.cross();
+        frontRight.cross();
+        backLeft.cross();
+        backRight.cross();
     }
 
     /**
      * Deactivates cross mode, returning pods to normal driving operation.
      */
     public void uncross() {
-        for (SwervePodSubsystem pod : pods) {
-            pod.unCross();
-        }
+        frontLeft.unCross();
+        frontRight.unCross();
+        backLeft.unCross();
+        backRight.unCross();
     }
 
 
@@ -191,9 +198,10 @@ public class SwerveDrivetrain implements Subsystem {
      * Motors will actively resist movement when power is zero.
      */
     public void setMotorsToBrake() {
-        for (SwervePodSubsystem pod : pods) {
-            pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        }
+        frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -201,9 +209,10 @@ public class SwerveDrivetrain implements Subsystem {
      * Motors will coast freely when power is zero.
      */
     public void setMotorsToFloat() {
-        for (SwervePodSubsystem pod : pods) {
-            pod.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-        }
+        frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        backLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
     }
 
 
@@ -221,9 +230,10 @@ public class SwerveDrivetrain implements Subsystem {
      * @param l Limiting factor
      */
     public void setPDFLs(double p, double d, double f, double l) {
-        for (SwervePodSubsystem pod : pods) {
-            pod.setPDFL(p, d, f, l);
-        }
+        frontLeft.setPDFL(p, d, f, l);
+        frontRight.setPDFL(p, d, f, l);
+        backLeft.setPDFL(p, d, f, l);
+        backRight.setPDFL(p, d, f, l);
     }
 
 
@@ -239,9 +249,10 @@ public class SwerveDrivetrain implements Subsystem {
      * @param rotational Rotational velocity vector (magnitude determines rotation speed)
      */
     public void runDrive(Vector2D drive, Vector2D rotational) {
-        for (SwervePodSubsystem pod : pods) {
-            pod.update(drive, rotational);
-        }
+        frontLeft.update(drive, rotational);
+        frontRight.update(drive, rotational);
+        backLeft.update(drive, rotational);
+        backRight.update(drive, rotational);
     }
 
     /**
@@ -252,9 +263,10 @@ public class SwerveDrivetrain implements Subsystem {
      * @param rotation Rotation speed (-1.0 to 1.0)
      */
     public void simpleRunDrive(double x, double y, double rotation) {
-        for (SwervePodSubsystem pod : pods) {
-            pod.update(x, y, rotation);
-        }
+        frontLeft.update(x, y, rotation);
+        frontRight.update(x, y, rotation);
+        backLeft.update(x, y, rotation);
+        backRight.update(x, y, rotation);
     }
 
     /**
@@ -266,9 +278,10 @@ public class SwerveDrivetrain implements Subsystem {
      * @param movementScaler Global speed multiplier (0.0 to 1.0)
      */
     public void simpleRunDrive(double x, double y, double rotation, double movementScaler) {
-        for (SwervePodSubsystem pod : pods) {
-            pod.update(x, y, rotation, movementScaler);
-        }
+        frontLeft.update(x, y, rotation, movementScaler);
+        frontRight.update(x, y, rotation, movementScaler);
+        backLeft.update(x, y, rotation, movementScaler);
+        backRight.update(x, y, rotation, movementScaler);
     }
 
     /**
@@ -276,9 +289,10 @@ public class SwerveDrivetrain implements Subsystem {
      * Used to maintain servo positioning when not actively driving.
      */
     public void updatePods() {
-        for (SwervePodSubsystem pod : pods) {
-            pod.update();
-        }
+        frontLeft.update();
+        frontRight.update();
+        backLeft.update();
+        backRight.update();
     }
 
 
@@ -291,9 +305,10 @@ public class SwerveDrivetrain implements Subsystem {
      * Useful for emergency stops or testing.
      */
     public void setServoPowZero() {
-        for (SwervePodSubsystem pod : pods) {
-            pod.setServoPower(0);
-        }
+        frontLeft.setServoPower(0);
+        frontRight.setServoPower(0);
+        backLeft.setServoPower(0);
+        backRight.setServoPower(0);
     }
 
     // Commented out methods - uncomment if needed for testing
@@ -331,7 +346,7 @@ public class SwerveDrivetrain implements Subsystem {
      * @return Array of pods in order: [FL, FR, BL, BR]
      */
     public SwervePodSubsystem[] getSwervePods() {
-        return pods;
+        return new SwervePodSubsystem[]{frontLeft, frontRight, backLeft, backRight};
     }
 
 
@@ -374,13 +389,21 @@ public class SwerveDrivetrain implements Subsystem {
     public String debugText() {
         StringBuilder returnStr = new StringBuilder();
 
-        String[] podNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
+        returnStr.append("=== Front Left Pod ===\n");
+        returnStr.append(frontLeft.debugText());
+        returnStr.append("\n\n");
 
-        for (int i = 0; i < pods.length; i++) {
-            returnStr.append("=== ").append(podNames[i]).append(" Pod ===\n");
-            returnStr.append(pods[i].debugText());
-            returnStr.append("\n\n");
-        }
+        returnStr.append("=== Front Right Pod ===\n");
+        returnStr.append(frontRight.debugText());
+        returnStr.append("\n\n");
+
+        returnStr.append("=== Back Left Pod ===\n");
+        returnStr.append(backLeft.debugText());
+        returnStr.append("\n\n");
+
+        returnStr.append("=== Back Right Pod ===\n");
+        returnStr.append(backRight.debugText());
+        returnStr.append("\n\n");
 
         return returnStr.toString();
     }
