@@ -301,6 +301,10 @@ public class SwerveDrivetrain implements Subsystem {
 
     }
 
+    public void runDrive(Vector2D drive, Vector2D rotational, double scaler) {
+        runDrive(drive.scale(scaler),rotational.scale(scaler));
+    }
+
     /**
      * Simplified drive method using individual x, y, and rotation values.
      *
@@ -433,24 +437,18 @@ public class SwerveDrivetrain implements Subsystem {
      * @return Multi-line string containing debug info for each pod
      */
     public String debugText() {
-        StringBuilder returnStr = new StringBuilder();
 
-        returnStr.append("=== Front Left Pod ===\n");
-        returnStr.append(frontLeft.debugText());
-        returnStr.append("\n\n");
-
-        returnStr.append("=== Front Right Pod ===\n");
-        returnStr.append(frontRight.debugText());
-        returnStr.append("\n\n");
-
-        returnStr.append("=== Back Left Pod ===\n");
-        returnStr.append(backLeft.debugText());
-        returnStr.append("\n\n");
-
-        returnStr.append("=== Back Right Pod ===\n");
-        returnStr.append(backRight.debugText());
-        returnStr.append("\n\n");
-
-        return returnStr.toString();
+        return "=== Front Left Pod ===\n" +
+                frontLeft.debugText() +
+                "\n\n" +
+                "=== Front Right Pod ===\n" +
+                frontRight.debugText() +
+                "\n\n" +
+                "=== Back Left Pod ===\n" +
+                backLeft.debugText() +
+                "\n\n" +
+                "=== Back Right Pod ===\n" +
+                backRight.debugText() +
+                "\n\n";
     }
 }
