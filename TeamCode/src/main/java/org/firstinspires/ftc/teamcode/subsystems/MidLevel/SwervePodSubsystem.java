@@ -255,13 +255,6 @@ public class SwervePodSubsystem {
         update(new Vector2D(x, y), new Vector2D(rotation, 0));
     }
 
-    /**
-     * Update with movement scaling applied.
-     */
-    public void update(double x, double y, double rotation, double movementScaler) {
-        this.movementScaler = movementScaler;
-        update(new Vector2D(x, y), new Vector2D(rotation, 0));
-    }
 
     /**
      * Core update method that handles servo positioning and motor control.

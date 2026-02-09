@@ -249,10 +249,56 @@ public class SwerveDrivetrain implements Subsystem {
      * @param rotational Rotational velocity vector (magnitude determines rotation speed)
      */
     public void runDrive(Vector2D drive, Vector2D rotational) {
-        frontLeft.update(drive, rotational);
-        frontRight.update(drive, rotational);
-        backLeft.update(drive, rotational);
-        backRight.update(drive, rotational);
+
+
+//        if (Math.abs(drive.magnitude()) + Math.abs(rotational.magnitude()) > 1) {
+//            double normalizeVal =
+//                    Math.max(frontLeft.getResultantVector(drive, rotational).magnitude(),
+//                    Math.max(frontRight.getResultantVector(drive, rotational).magnitude(),
+//                    Math.max(backLeft.getResultantVector(drive,rotational).magnitude(),
+//                            backRight.getResultantVector(drive,rotational).magnitude())));
+//
+//            Vector2D realDrive = drive.scale(1/normalizeVal);
+//            Vector2D realRotational = rotational.scale(1/normalizeVal);
+//
+//            frontLeft.update(realDrive,realRotational);
+//            backLeft.update(realDrive,realRotational);
+//            frontRight.update(realDrive,realRotational);
+//            backRight.update(realDrive,realRotational);
+//
+//        } else {
+//            frontLeft.update(drive,rotational);
+//            backLeft.update(drive,rotational);
+//            frontRight.update(drive,rotational);
+//            backRight.update(drive,rotational);
+//        }
+
+
+        // Find the maximum magnitude among all wheel vectors
+        double maxMagnitude = Math.max(
+                frontLeft.getResultantVector(drive, rotational).magnitude(),
+                Math.max(frontRight.getResultantVector(drive, rotational).magnitude(),
+                        Math.max(backLeft.getResultantVector(drive, rotational).magnitude(),
+                                backRight.getResultantVector(drive, rotational).magnitude())));
+
+        // Only normalize if we exceed the limit
+        if (maxMagnitude > 1) {
+            Vector2D scaledDrive = drive.scale(1 / maxMagnitude);
+            Vector2D scaledRotational = rotational.scale(1 / maxMagnitude);
+
+            frontLeft.update(scaledDrive, scaledRotational);
+            backLeft.update(scaledDrive, scaledRotational);
+            frontRight.update(scaledDrive, scaledRotational);
+            backRight.update(scaledDrive, scaledRotational);
+        } else {
+            frontLeft.update(drive, rotational);
+            backLeft.update(drive, rotational);
+            frontRight.update(drive, rotational);
+            backRight.update(drive, rotational);
+
+        }
+
+
     }
 
     /**
@@ -275,13 +321,13 @@ public class SwerveDrivetrain implements Subsystem {
      * @param x Forward/backward speed (-1.0 to 1.0)
      * @param y Left/right strafe speed (-1.0 to 1.0)
      * @param rotation Rotation speed (-1.0 to 1.0)
-     * @param movementScaler Global speed multiplier (0.0 to 1.0)
+     * @param scaler Global speed multiplier (0.0 to 1.0)
      */
-    public void simpleRunDrive(double x, double y, double rotation, double movementScaler) {
-        frontLeft.update(x, y, rotation, movementScaler);
-        frontRight.update(x, y, rotation, movementScaler);
-        backLeft.update(x, y, rotation, movementScaler);
-        backRight.update(x, y, rotation, movementScaler);
+    public void simpleRunDrive(double x, double y, double rotation, double scaler) {
+        frontLeft.update(x * scaler, y * scaler, rotation * scaler);
+        frontRight.update(x * scaler, y * scaler, rotation * scaler);
+        backLeft.update(x * scaler, y * scaler, rotation * scaler);
+        backRight.update(x * scaler, y * scaler, rotation * scaler);
     }
 
     /**

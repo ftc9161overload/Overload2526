@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.VisionSubsystem;
 import dev.nextftc.core.subsystems.SubsystemGroup;
-import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.ftc.ActiveOpMode;
 
 /**
  * RobotSubsystem - Main robot subsystem container
@@ -26,16 +25,30 @@ import dev.nextftc.core.subsystems.Subsystem;
 @Configurable
 public class RobotSubsystem extends SubsystemGroup {
 
-    // Swerve drivetrain subsystem - handles omnidirectional robot movement
-    // Initialized first to ensure availability before INSTANCE creation
-    public static SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
 
     // Singleton instance - ensures only one RobotSubsystem exists throughout the program
     public static final RobotSubsystem INSTANCE = new RobotSubsystem();
 
+    /**
+     * Private constructor - prevents external instantiation (singleton pattern)
+     * Registers all subsystem instances with the parent SubsystemGroup for
+     * coordinated lifecycle management (periodic updates, initialization, etc.)
+     */
+    private RobotSubsystem() {
+        super(LauncherSubsystem.INSTANCE,
+                Odometry.INSTANCE,
+                IntakeSubsystem.INSTANCE,
+                VisionSubsystem.INSTANCE,
+                Follower.INSTANCE);
+    }
+
+    // Swerve drivetrain subsystem - handles omnidirectional robot movement
+    // Initialized first to ensure availability before INSTANCE creation
+    public static SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
+
     // Telemetry object for displaying debug information to the driver station
     // Initialized in initialize() method when subsystem is set up
-    Telemetry telemetry;
+    JoinedTelemetry joinedTelemetry;
 
     /**
      * Initialization method called when the subsystem is first created
@@ -45,7 +58,7 @@ public class RobotSubsystem extends SubsystemGroup {
     @Override
     public void initialize() {
         // Assign telemetry to the singleton instance for use throughout the program
-        RobotSubsystem.INSTANCE.telemetry = telemetry;
+        joinedTelemetry = new JoinedTelemetry(ActiveOpMode.telemetry(), PanelsTelemetry.INSTANCE.getFtcTelemetry());
     }
 
     /**
@@ -61,18 +74,7 @@ public class RobotSubsystem extends SubsystemGroup {
     // This should be set before autonomous or teleop based on alliance station
     public static TEAMCOLOR teamColor = TEAMCOLOR.BLUE;
 
-    /**
-     * Private constructor - prevents external instantiation (singleton pattern)
-     * Registers all subsystem instances with the parent SubsystemGroup for
-     * coordinated lifecycle management (periodic updates, initialization, etc.)
-     */
-    private RobotSubsystem() {
-        super(LauncherSubsystem.INSTANCE,
-                Odometry.INSTANCE,
-                IntakeSubsystem.INSTANCE,
-                VisionSubsystem.INSTANCE,
-                Follower.INSTANCE);
-    }
+
 
     /**
      * Sets the team color for the robot and propagates it to dependent subsystems
@@ -103,14 +105,6 @@ public class RobotSubsystem extends SubsystemGroup {
     public static boolean drivetrainTelemetry = false;
     public static boolean intakeTelemetry = false;
 
-    /**
-     * Enables or disables telemetry debug output
-     *
-     * @param state true to enable telemetry output, false to disable
-     */
-    public void setIsTelemetry(boolean state) {
-        isTelemetry = state;
-    }
 
     /**
      * Periodic method called continuously during OpMode execution
@@ -120,32 +114,34 @@ public class RobotSubsystem extends SubsystemGroup {
     @Override
     public void periodic() {
         // Only output debug info if telemetry is enabled
-        if(isTelemetry) {
-            // Enable vision subsystem debug visualization
-            VisionSubsystem.INSTANCE.setDebugMode(true);
-            // Display follower subsystem debug information to driver station
-            telemetry.addLine(Follower.INSTANCE.debugText());
-        }
+//        if(isTelemetry) {
+//            // Enable vision subsystem debug visualization
+//            VisionSubsystem.INSTANCE.setDebugMode(true);
+//            // Display follower subsystem debug information to driver station
+//            telemetry.addLine(Follower.INSTANCE.debugText());
+//        }
 
         // Display rotary subsystem telemetry if enabled
-        if(rotaryTelemetry) {
-            telemetry.addLine(RotarySubsystem.INSTANCE.debugText());
-        }
-
-        // Display outtake subsystem telemetry if enabled
-        if(outtakeTelemetry) {
-            telemetry.addLine(OuttakeFlipperSubsystem.INSTANCE.debugText());
-            telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugText());
-        }
-
-        // Display drivetrain subsystem telemetry if enabled
-        if(drivetrainTelemetry) {
-            telemetry.addLine(swerveDrivetrain.debugText());
-        }
-
-        // Display intake subsystem telemetry if enabled
-        if(intakeTelemetry) {
-//            telemetry.addLine(IntakeSubsystem.INSTANCE.debugText());
-        }
+//        if(rotaryTelemetry) {
+//            joinedTelemetry.addLine(RotarySubsystem.INSTANCE.debugText());
+//        }
+//
+//        // Display outtake subsystem telemetry if enabled
+//        if(outtakeTelemetry) {
+//            joinedTelemetry.addLine(OuttakeFlipperSubsystem.INSTANCE.debugText());
+//            joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugText());
+//        }
+//
+//        // Display drivetrain subsystem telemetry if enabled
+//        if(drivetrainTelemetry) {
+//            joinedTelemetry.addLine(swerveDrivetrain.debugText());
+//        }
+//
+//        // Display intake subsystem telemetry if enabled
+//        if(intakeTelemetry) {
+////            telemetry.addLine(IntakeSubsystem.INSTANCE.debugText());
+//        }
+//
+//        joinedTelemetry.update();
     }
 }

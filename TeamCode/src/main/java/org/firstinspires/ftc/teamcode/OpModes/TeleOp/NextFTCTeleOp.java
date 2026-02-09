@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.RobotSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
@@ -25,13 +26,14 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 @TeleOp(name = "TeleOp", group = "Gameday")
 @Configurable
 public class NextFTCTeleOp extends NextFTCOpMode {
-    public NextFTCTeleOp() {
+    {
         addComponents(
-            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
-            BulkReadComponent.INSTANCE,
-            BindingsComponent.INSTANCE
+                new SubsystemComponent(RobotSubsystem.INSTANCE),
+                BulkReadComponent.INSTANCE,
+                BindingsComponent.INSTANCE
         );
     }
+
 
     JoinedTelemetry joinedTelemetry;
 
@@ -50,11 +52,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
-        addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
+
         OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain();
 
