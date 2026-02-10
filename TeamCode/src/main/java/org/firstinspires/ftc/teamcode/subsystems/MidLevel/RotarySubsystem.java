@@ -103,12 +103,20 @@ public class RotarySubsystem implements Subsystem {
     /**
      * RGB values for GREEN ball detection (normalized 0-1 scale)
      */
-    private static final double[] greenColor = {0.009, 0.04, 0.028};
+    public static final double[] greenColor = {0.009, 0.04, 0.028};
+
+    // The lower and upper sections of green colors
+    public static double[] lowerGreenColors = {0.004, 0.00, 0.023};
+    public static double[] higherGreenColors = {0.014, 0.09, 0.033};
 
     /**
      * RGB values for PURPLE ball detection (normalized 0-1 scale)
      */
-    private static final double[] purpleColor = {0.007, 0.009, 0.014};
+
+    // The lower and upper sections of purple colors
+    public static final double[] purpleColor = {0.007, 0.009, 0.014};
+    public static double[] lowerPurpleColors = {0.002, 0.004, 0.009};
+    public static double[] higherPurpleColors = {0.012, 0.014, 0.019};
 
     /**
      * Tolerance for color matching (±this amount per channel)
@@ -642,6 +650,24 @@ public class RotarySubsystem implements Subsystem {
                         .append(" | R: ").append((c.getNormalizedColors().red))
                         .append(" G: ").append((c.getNormalizedColors().green))
                         .append(" B: ").append((c.getNormalizedColors().blue));
+            }
+
+            for(int a = 0; a < 3; a ++) {
+                if((c.getNormalizedColors().red >= lowerGreenColors[a]) && (c.getNormalizedColors().red <= higherGreenColors[a])) {
+                    sb.append("\n Red in range for green");
+                }   if((c.getNormalizedColors().blue >= lowerGreenColors[a]) && (c.getNormalizedColors().blue <= higherGreenColors[a])) {
+                    sb.append("\n Blue in range for green");
+                }   if((c.getNormalizedColors().green >= lowerGreenColors[a]) && (c.getNormalizedColors().green <= higherGreenColors[a])) {
+                    sb.append("\n Green in range for green");
+                }
+
+                if((c.getNormalizedColors().red >= lowerPurpleColors[a]) && (c.getNormalizedColors().red <= higherPurpleColors[a])) {
+                    sb.append("\n Red in range for purple");
+                }   if((c.getNormalizedColors().blue >= lowerPurpleColors[a]) && (c.getNormalizedColors().blue <= higherPurpleColors[a])) {
+                    sb.append("\n Blue in range for purple");
+                }   if((c.getNormalizedColors().green >= lowerPurpleColors[a]) && (c.getNormalizedColors().green <= higherPurpleColors[a])) {
+                    sb.append("\n Green in range for purple");
+                }
             }
         }
 
