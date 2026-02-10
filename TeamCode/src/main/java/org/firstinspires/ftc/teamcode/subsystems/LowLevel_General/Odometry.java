@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -22,13 +23,13 @@ public class Odometry implements Subsystem {
 
     @Override
     public void initialize() {
-        pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, UniConstants.PINPOINT);
         pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
     }
 
     public void initReal() {
-        pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, UniConstants.PINPOINT);
         pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
     }
 

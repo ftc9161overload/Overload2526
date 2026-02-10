@@ -110,6 +110,9 @@ public class UniConstants {
     public static final String INTAKE_MOTOR_STRING = "InM";    // Control Hub - Port 2
     public static final String OUTTAKE_SERVO_STRING = "OuS";   // Expansion Hub - Port 2
 
+    public static final String ROTARY_ENCODER = "RoEn";
+    public static final String PINPOINT = "pinpoint"; // Expansion Hub - I2C bus 1
+
 
     // ========================================================================
     // OTHER SUBSYSTEMS - MOTOR CONFIGURATIONS
@@ -145,9 +148,9 @@ public class UniConstants {
     /**
      * Hardware names for color sensors used in sample detection.
      */
-    public static final String COLOR_SENSOR_SLOT_1_STRING = "COLOR0";
-    public static final String COLOR_SENSOR_SLOT_2_STRING = "COLOR1";
-    public static final String COLOR_SENSOR_SLOT_3_STRING = "COLOR2";
+    public static final String COLOR_SENSOR_SLOT_1_STRING = "COLOR0"; // Control Hub - I2C 1
+    public static final String COLOR_SENSOR_SLOT_2_STRING = "COLOR1"; // Expansion Hub - I2C 0
+    public static final String COLOR_SENSOR_SLOT_3_STRING = "COLOR2"; // Expansion Hub - I2C 2
 
 
     // ========================================================================

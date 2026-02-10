@@ -37,7 +37,7 @@ public class RotarySubsystem implements Subsystem {
     /**
      * Separate encoder for position tracking
      */
-    private final MotorEx Encoder = new MotorEx("RoEn");
+    private final MotorEx Encoder = new MotorEx(UniConstants.ROTARY_ENCODER);
 
     /**
      * Color sensors for detecting ball type in each chamber (3 sensors)
@@ -250,12 +250,12 @@ public class RotarySubsystem implements Subsystem {
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Initialize color sensors from hardware map
-        colorSensors[0] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs1");
-        colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs2");
-        colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, "cs3");
+        colorSensors[0] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, UniConstants.COLOR_SENSOR_SLOT_1_STRING);
+        colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, UniConstants.COLOR_SENSOR_SLOT_2_STRING);
+        colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, UniConstants.COLOR_SENSOR_SLOT_3_STRING);
 
         // Initialize distance sensor (same hardware as cs2, different interface)
-        distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, "cs2");
+        distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, UniConstants.COLOR_SENSOR_SLOT_2_STRING);
     }
 
     /**
