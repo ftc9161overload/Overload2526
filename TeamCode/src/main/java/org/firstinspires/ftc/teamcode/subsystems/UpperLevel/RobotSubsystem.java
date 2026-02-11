@@ -117,7 +117,7 @@ public class RobotSubsystem extends SubsystemGroup {
         // Only output debug info if telemetry is enabled
         if(isTelemetry) {
             // Enable vision subsystem debug visualization
-            VisionSubsystem.INSTANCE.setDebugMode(true);
+            //VisionSubsystem.INSTANCE.setDebugMode(true);
             // Display follower subsystem debug information to driver station
             joinedTelemetry.addLine(Follower.INSTANCE.debugText());
         }

@@ -522,16 +522,16 @@ public class RotarySubsystem implements Subsystem {
         double b = c.getNormalizedColors().blue;
 
         // Check if color matches GREEN signature
-        if (close(r, greenColor[0], tol) &&
-                close(g, greenColor[1], tol) &&
-                close(b, greenColor[2], tol)) {
+        if (close(r, greenColor[0], higherGreenColors[0] - greenColor[0]) &&
+                close(g, greenColor[1], higherGreenColors[1] - greenColor[1]) &&
+                close(b, greenColor[2], higherGreenColors[2] - greenColor[2])) {
             return Ball.GREEN;
         }
 
         // Check if color matches PURPLE signature
-        if (close(r, purpleColor[0], tol) &&
-                close(g, purpleColor[1], tol) &&
-                close(b, purpleColor[2], tol)) {
+        if (close(r, purpleColor[0],higherPurpleColors[0] - purpleColor[0]) &&
+                close(g, purpleColor[1], higherPurpleColors[1] - purpleColor[1]) &&
+                close(b, purpleColor[2], higherPurpleColors[2] - purpleColor[2])) {
             return Ball.PURPLE;
         }
 
@@ -652,23 +652,21 @@ public class RotarySubsystem implements Subsystem {
                         .append(" B: ").append((c.getNormalizedColors().blue));
             }
 
-            for(int a = 0; a < 3; a ++) {
-                assert c != null;
-                if((c.getNormalizedColors().red >= lowerGreenColors[a]) && (c.getNormalizedColors().red <= higherGreenColors[a])) {
-                    sb.append("\n Red in range for green");
-                }   if((c.getNormalizedColors().blue >= lowerGreenColors[a]) && (c.getNormalizedColors().blue <= higherGreenColors[a])) {
-                    sb.append("\n Blue in range for green");
-                }   if((c.getNormalizedColors().green >= lowerGreenColors[a]) && (c.getNormalizedColors().green <= higherGreenColors[a])) {
-                    sb.append("\n Green in range for green");
-                }
 
-                if((c.getNormalizedColors().red >= lowerPurpleColors[a]) && (c.getNormalizedColors().red <= higherPurpleColors[a])) {
-                    sb.append("\n Red in range for purple");
-                }   if((c.getNormalizedColors().blue >= lowerPurpleColors[a]) && (c.getNormalizedColors().blue <= higherPurpleColors[a])) {
-                    sb.append("\n Blue in range for purple");
-                }   if((c.getNormalizedColors().green >= lowerPurpleColors[a]) && (c.getNormalizedColors().green <= higherPurpleColors[a])) {
-                    sb.append("\n Green in range for purple");
-                }
+            assert c != null;
+            if((c.getNormalizedColors().red >= lowerGreenColors[0]) && (c.getNormalizedColors().red <= higherGreenColors[0])) {
+                sb.append("\n Red in range for green");
+            }   if((c.getNormalizedColors().blue >= lowerGreenColors[1]) && (c.getNormalizedColors().blue <= higherGreenColors[1])) {
+                sb.append("\n Blue in range for green");
+            }   if((c.getNormalizedColors().green >= lowerGreenColors[2]) && (c.getNormalizedColors().green <= higherGreenColors[2])) {
+                sb.append("\n Green in range for green");
+            }
+            if((c.getNormalizedColors().red >= lowerPurpleColors[0]) && (c.getNormalizedColors().red <= higherPurpleColors[0])) {
+                sb.append("\n Red in range for purple");
+            }   if((c.getNormalizedColors().blue >= lowerPurpleColors[1]) && (c.getNormalizedColors().blue <= higherPurpleColors[1])) {
+                sb.append("\n Blue in range for purple");
+            }   if((c.getNormalizedColors().green >= lowerPurpleColors[2]) && (c.getNormalizedColors().green <= higherPurpleColors[2])) {
+                sb.append("\n Green in range for purple");
             }
         }
 
