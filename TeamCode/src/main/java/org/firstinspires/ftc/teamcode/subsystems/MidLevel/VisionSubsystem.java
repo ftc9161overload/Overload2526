@@ -26,7 +26,7 @@ public class VisionSubsystem implements Subsystem {
     public static final VisionSubsystem INSTANCE = new VisionSubsystem();
 
     // Configuration flags
-    private boolean debugMode = false;
+    private boolean debugMode;
 
     // Timer to control update frequency (prevents excessive processing)
     private final Timer timer = new Timer();
@@ -48,6 +48,11 @@ public class VisionSubsystem implements Subsystem {
                 .setCameraResolution(new Size(640, 480))  // 640x480 resolution
                 .enableLiveView(true)                      // Enable camera preview
                 .build();
+    }
+
+    @Override
+    public void initialize() {
+        debugMode = false;
     }
 
 

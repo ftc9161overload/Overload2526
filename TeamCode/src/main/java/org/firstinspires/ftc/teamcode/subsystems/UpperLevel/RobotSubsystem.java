@@ -38,13 +38,13 @@ public class RobotSubsystem extends SubsystemGroup {
         super(LauncherSubsystem.INSTANCE,
                 Odometry.INSTANCE,
                 IntakeSubsystem.INSTANCE,
-                VisionSubsystem.INSTANCE,
+//                VisionSubsystem.INSTANCE,
                 Follower.INSTANCE);
     }
 
     // Swerve drivetrain subsystem - handles omnidirectional robot movement
     // Initialized first to ensure availability before INSTANCE creation
-    public static SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain();
+    public static SwerveDrivetrain swerveDrivetrain;
 
     // Telemetry object for displaying debug information to the driver station
     // Initialized in initialize() method when subsystem is set up
@@ -57,6 +57,7 @@ public class RobotSubsystem extends SubsystemGroup {
      */
     @Override
     public void initialize() {
+        swerveDrivetrain = new SwerveDrivetrain();
         // Assign telemetry to the singleton instance for use throughout the program
         joinedTelemetry = new JoinedTelemetry(ActiveOpMode.telemetry(), PanelsTelemetry.INSTANCE.getFtcTelemetry());
     }
@@ -114,34 +115,34 @@ public class RobotSubsystem extends SubsystemGroup {
     @Override
     public void periodic() {
         // Only output debug info if telemetry is enabled
-//        if(isTelemetry) {
-//            // Enable vision subsystem debug visualization
-//            VisionSubsystem.INSTANCE.setDebugMode(true);
-//            // Display follower subsystem debug information to driver station
-//            telemetry.addLine(Follower.INSTANCE.debugText());
-//        }
+        if(isTelemetry) {
+            // Enable vision subsystem debug visualization
+            VisionSubsystem.INSTANCE.setDebugMode(true);
+            // Display follower subsystem debug information to driver station
+            joinedTelemetry.addLine(Follower.INSTANCE.debugText());
+        }
 
-        // Display rotary subsystem telemetry if enabled
-//        if(rotaryTelemetry) {
-//            joinedTelemetry.addLine(RotarySubsystem.INSTANCE.debugText());
-//        }
-//
-//        // Display outtake subsystem telemetry if enabled
-//        if(outtakeTelemetry) {
-//            joinedTelemetry.addLine(OuttakeFlipperSubsystem.INSTANCE.debugText());
-//            joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugText());
-//        }
-//
-//        // Display drivetrain subsystem telemetry if enabled
-//        if(drivetrainTelemetry) {
-//            joinedTelemetry.addLine(swerveDrivetrain.debugText());
-//        }
-//
-//        // Display intake subsystem telemetry if enabled
-//        if(intakeTelemetry) {
-////            telemetry.addLine(IntakeSubsystem.INSTANCE.debugText());
-//        }
-//
-//        joinedTelemetry.update();
+//         Display rotary subsystem telemetry if enabled
+        if(rotaryTelemetry) {
+            joinedTelemetry.addLine(RotarySubsystem.INSTANCE.debugText());
+        }
+
+        // Display outtake subsystem telemetry if enabled
+        if(outtakeTelemetry) {
+            joinedTelemetry.addLine(OuttakeFlipperSubsystem.INSTANCE.debugText());
+            joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugText());
+        }
+
+        // Display drivetrain subsystem telemetry if enabled
+        if(drivetrainTelemetry) {
+            joinedTelemetry.addLine(swerveDrivetrain.debugText());
+        }
+
+        // Display intake subsystem telemetry if enabled
+        if(intakeTelemetry) {
+       //     joinedTelemetry.addLine(IntakeSubsystem.INSTANCE.debugText());
+        }
+
+        joinedTelemetry.update();
     }
 }

@@ -178,7 +178,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 //        joinedTelemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
 //        joinedTelemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
 //        joinedTelemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
-        joinedTelemetry.update();
+//        joinedTelemetry.update();
         timer.reset();
 
         //swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);

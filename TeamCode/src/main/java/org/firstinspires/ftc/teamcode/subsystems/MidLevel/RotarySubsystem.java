@@ -653,6 +653,7 @@ public class RotarySubsystem implements Subsystem {
             }
 
             for(int a = 0; a < 3; a ++) {
+                assert c != null;
                 if((c.getNormalizedColors().red >= lowerGreenColors[a]) && (c.getNormalizedColors().red <= higherGreenColors[a])) {
                     sb.append("\n Red in range for green");
                 }   if((c.getNormalizedColors().blue >= lowerGreenColors[a]) && (c.getNormalizedColors().blue <= higherGreenColors[a])) {
