@@ -105,6 +105,7 @@ public class RobotSubsystem extends SubsystemGroup {
     public static boolean outtakeTelemetry = false;
     public static boolean drivetrainTelemetry = false;
     public static boolean intakeTelemetry = false;
+    public static boolean colorTelemetry = false;
 
 
     /**
@@ -125,6 +126,10 @@ public class RobotSubsystem extends SubsystemGroup {
 //         Display rotary subsystem telemetry if enabled
         if(rotaryTelemetry) {
             joinedTelemetry.addLine(RotarySubsystem.INSTANCE.debugText());
+        }
+
+        if(colorTelemetry) {
+            joinedTelemetry.addLine(RotarySubsystem.INSTANCE.debugColors());
         }
 
         // Display outtake subsystem telemetry if enabled

@@ -4,10 +4,12 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
+import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -26,6 +28,8 @@ public class RotarySubsystem implements Subsystem {
      * Singleton instance for easy access across OpModes
      */
     public static final RotarySubsystem INSTANCE = new RotarySubsystem();
+
+    Timer timer = new Timer();
 
     // ========== HARDWARE ==========
 
@@ -103,20 +107,20 @@ public class RotarySubsystem implements Subsystem {
     /**
      * RGB values for GREEN ball detection (normalized 0-1 scale)
      */
-    public static final double[] greenColor = {0.009, 0.04, 0.028};
+    public static final double[] greenColor = {175.0, 0.81, 0.70};
 
     // The lower and upper sections of green colors
-    public static double[] lowerGreenColors = {0.004, 0.00, 0.023};
-    public static double[] higherGreenColors = {0.014, 0.09, 0.033};
+    public static double[] lowerGreenColors = {150.0, 0.31, 0.20};
+    public static double[] higherGreenColors = {200.0, 0.100, 0.100};
 
     /**
      * RGB values for PURPLE ball detection (normalized 0-1 scale)
      */
 
     // The lower and upper sections of purple colors
-    public static final double[] purpleColor = {0.007, 0.009, 0.014};
-    public static double[] lowerPurpleColors = {0.002, 0.004, 0.009};
-    public static double[] higherPurpleColors = {0.012, 0.014, 0.019};
+    public static final double[] purpleColor = {130, 81, 70};
+    public static double[] lowerPurpleColors = {100, 0.004, 0.009};
+    public static double[] higherPurpleColors = {160, 0.014, 0.019};
 
     /**
      * Tolerance for color matching (±this amount per channel)
@@ -262,6 +266,7 @@ public class RotarySubsystem implements Subsystem {
         colorSensors[1] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, UniConstants.COLOR_SENSOR_SLOT_2_STRING);
         colorSensors[2] = ActiveOpMode.hardwareMap().get(NormalizedColorSensor.class, UniConstants.COLOR_SENSOR_SLOT_3_STRING);
 
+
         // Initialize distance sensor (same hardware as cs2, different interface)
         distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, UniConstants.COLOR_SENSOR_SLOT_2_STRING);
     }
@@ -272,6 +277,9 @@ public class RotarySubsystem implements Subsystem {
      */
     public void reset() {
         motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (motor.getMotor().getCurrentPosition() != 0) {
+            timer.hasElapsedSeconds(0.01); // or use idle() if inside a LinearOpMode
+        }
         motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
@@ -507,6 +515,31 @@ public class RotarySubsystem implements Subsystem {
         return Math.abs(a - b) <= tol;
     }
 
+    private double[] getColor(NormalizedColorSensor c) {
+        NormalizedRGBA colors = c.getNormalizedColors();
+        double r = colors.red;
+        double g = colors.green;
+        double b = colors.blue;
+
+        double max = Math.max(r, Math.max(g, b));
+        double min = Math.min(r, Math.min(g, b));
+        double delta = max - min;
+
+        double h = 0;
+        if (delta != 0) {
+            if      (max == r) h = 60 * (((g - b) / delta) % 6);
+            else if (max == g) h = 60 * (((b - r) / delta) + 2);
+            else               h = 60 * (((r - g) / delta) + 4);
+            if (h < 0) h += 360;
+        }
+
+        return new double[] {
+                h,                                  // Hue:        [0, 360)
+                (max == 0) ? 0 : delta / max,       // Saturation: [0, 1]
+                max                                 // Value:      [0, 1]
+        };
+    }
+
     /**
      * Classifies a ball based on color sensor RGB values.
      * Compares against known GREEN and PURPLE color signatures.
@@ -516,22 +549,20 @@ public class RotarySubsystem implements Subsystem {
      * @return Ball type (GREEN, PURPLE, or NULL)
      */
     private Ball classify(NormalizedColorSensor c, double tol) {
-        // Read normalized RGB values (0-1 range)
-        double r = c.getNormalizedColors().red;
-        double g = c.getNormalizedColors().green;
-        double b = c.getNormalizedColors().blue;
+        double[] hsv = getColor(c);
+
 
         // Check if color matches GREEN signature
-        if (close(r, greenColor[0], higherGreenColors[0] - greenColor[0]) &&
-                close(g, greenColor[1], higherGreenColors[1] - greenColor[1]) &&
-                close(b, greenColor[2], higherGreenColors[2] - greenColor[2])) {
+        if (close(hsv[0], greenColor[0], higherGreenColors[0] - greenColor[0]) &&
+                close(hsv[1], greenColor[1], higherGreenColors[1] - greenColor[1]) &&
+                close(hsv[2], greenColor[2], higherGreenColors[2] - greenColor[2])) {
             return Ball.GREEN;
         }
 
         // Check if color matches PURPLE signature
-        if (close(r, purpleColor[0],higherPurpleColors[0] - purpleColor[0]) &&
-                close(g, purpleColor[1], higherPurpleColors[1] - purpleColor[1]) &&
-                close(b, purpleColor[2], higherPurpleColors[2] - purpleColor[2])) {
+        if (close(hsv[0], purpleColor[0],higherPurpleColors[0] - purpleColor[0]) &&
+                close(hsv[1], purpleColor[1], higherPurpleColors[1] - purpleColor[1]) &&
+                close(hsv[2], purpleColor[2], higherPurpleColors[2] - purpleColor[2])) {
             return Ball.PURPLE;
         }
 
@@ -638,36 +669,44 @@ public class RotarySubsystem implements Subsystem {
                     .append(" | angle: ").append(ch.angle)
                     .append(" | ball: ").append(ch.ball);
         }
-
+        return sb.toString();
+    }
+    public String debugColors() {
+        StringBuilder sb = new StringBuilder();
         // show raw RGB from each sensor
         sb.append("\n\n=== Sensor Colors ===");
         for (int i = 0; i < 3; i++) {
+            double[] hsv = getColor(colorSensors[i]);
             NormalizedColorSensor c = colorSensors[i] != null ? colorSensors[i] : null;
             if (c == null) {
                 sb.append("\nSensor ").append(i + 1).append(": NULL");
             } else {
+
                 sb.append("\nSensor ").append(i + 1)
-                        .append(" | R: ").append((c.getNormalizedColors().red))
-                        .append(" G: ").append((c.getNormalizedColors().green))
-                        .append(" B: ").append((c.getNormalizedColors().blue));
+                        .append(" | H: ").append(hsv[0])
+                        .append(" S: ").append(hsv[1])
+                        .append(" V: ").append(hsv[2]);
             }
 
 
             assert c != null;
-            if((c.getNormalizedColors().red >= lowerGreenColors[0]) && (c.getNormalizedColors().red <= higherGreenColors[0])) {
+            if((hsv[i] >= lowerGreenColors[0]) && (hsv[i] <= higherGreenColors[0])) {
                 sb.append("\n Red in range for green");
-            }   if((c.getNormalizedColors().blue >= lowerGreenColors[1]) && (c.getNormalizedColors().blue <= higherGreenColors[1])) {
+            }   if((hsv[i] >= lowerGreenColors[1]) && (hsv[i] <= higherGreenColors[1])) {
                 sb.append("\n Blue in range for green");
-            }   if((c.getNormalizedColors().green >= lowerGreenColors[2]) && (c.getNormalizedColors().green <= higherGreenColors[2])) {
+            }   if((hsv[i] >= lowerGreenColors[2]) && (hsv[i] <= higherGreenColors[2])) {
                 sb.append("\n Green in range for green");
             }
-            if((c.getNormalizedColors().red >= lowerPurpleColors[0]) && (c.getNormalizedColors().red <= higherPurpleColors[0])) {
+
+            if((hsv[i] >= lowerPurpleColors[0]) && (hsv[i] <= higherPurpleColors[0])) {
                 sb.append("\n Red in range for purple");
-            }   if((c.getNormalizedColors().blue >= lowerPurpleColors[1]) && (c.getNormalizedColors().blue <= higherPurpleColors[1])) {
+            }   if((hsv[i] >= lowerPurpleColors[1]) && (hsv[i] <= higherPurpleColors[1])) {
                 sb.append("\n Blue in range for purple");
-            }   if((c.getNormalizedColors().green >= lowerPurpleColors[2]) && (c.getNormalizedColors().green <= higherPurpleColors[2])) {
+            }   if((hsv[i] >= lowerPurpleColors[2]) && (hsv[i] <= higherPurpleColors[2])) {
                 sb.append("\n Green in range for purple");
             }
+
+
         }
 
         sb.append("\n\n=== Sensor Distance ===");

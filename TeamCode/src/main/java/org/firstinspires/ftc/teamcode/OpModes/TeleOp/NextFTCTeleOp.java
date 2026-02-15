@@ -52,6 +52,11 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
         joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
+        addComponents(
+                new SubsystemComponent(RobotSubsystem.INSTANCE),
+                BulkReadComponent.INSTANCE,
+                BindingsComponent.INSTANCE
+        );
 
         OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain();
@@ -59,7 +64,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         Odometry.INSTANCE.initReal();
 
         RotarySubsystem.INSTANCE.reset();
-        RotarySubsystem.INSTANCE.home.schedule();
+        //RotarySubsystem.INSTANCE.home.schedule();
 
         Follower.INSTANCE.turnOffLinear.schedule();
         Follower.INSTANCE.turnOffHeading.schedule();
