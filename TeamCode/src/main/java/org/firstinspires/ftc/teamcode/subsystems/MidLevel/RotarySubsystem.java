@@ -107,7 +107,7 @@ public class RotarySubsystem implements Subsystem {
     /**
      * RGB values for GREEN ball detection (normalized 0-1 scale)
      */
-    public static final double[] greenColor = {175.0, 0.81, 0.70};
+    public static double[] greenColor = {175.0, 0.81, 0.70};
 
     // The lower and upper sections of green colors
     public static double[] lowerGreenColors = {150.0, 0.31, 0.20};
@@ -118,7 +118,7 @@ public class RotarySubsystem implements Subsystem {
      */
 
     // The lower and upper sections of purple colors
-    public static final double[] purpleColor = {130, 81, 70};
+    public static double[] purpleColor = {130, 81, 70};
     public static double[] lowerPurpleColors = {100, 0.004, 0.009};
     public static double[] higherPurpleColors = {160, 0.014, 0.019};
 

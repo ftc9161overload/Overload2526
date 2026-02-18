@@ -263,6 +263,8 @@ public class SwervePodSubsystem {
      * @param drive The desired velocity vector for this pod
      */
     public void update(Vector2D drive) {
+
+        sCon.setPDFL(p,d,f,l);
         // Read current servo position from analog sensor
         currentPos = readServoPosition();
 
@@ -298,6 +300,9 @@ public class SwervePodSubsystem {
      * Used when you want to position the servo without driving.
      */
     public void update() {
+        sCon.setPDFL(p,d,f,l);
+
+
         currentPos = readServoPosition();
 
         Angle diffTargetPos = Angle.fromRad(Math.abs(MathUtil.piWraparound(targetPos.inRad - currentPos.inRad)));

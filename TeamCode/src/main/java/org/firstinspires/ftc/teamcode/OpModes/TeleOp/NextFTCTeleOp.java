@@ -64,12 +64,11 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         Odometry.INSTANCE.initReal();
 
         RotarySubsystem.INSTANCE.reset();
-        //RotarySubsystem.INSTANCE.home.schedule();
+        RotarySubsystem.INSTANCE.home.schedule();
 
         Follower.INSTANCE.turnOffLinear.schedule();
         Follower.INSTANCE.turnOffHeading.schedule();
 
-        //RotarySubsystem.INSTANCE.resetOffset();
     }
 
 
@@ -174,7 +173,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
 
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
-        joinedTelemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
+//        joinedTelemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
 //        joinedTelemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
 //        joinedTelemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 //        joinedTelemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
