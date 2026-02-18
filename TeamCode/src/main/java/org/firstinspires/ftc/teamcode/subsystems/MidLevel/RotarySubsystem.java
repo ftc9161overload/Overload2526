@@ -553,16 +553,16 @@ public class RotarySubsystem implements Subsystem {
 
 
         // Check if color matches GREEN signature
-        if (close(hsv[0], greenColor[0], higherGreenColors[0] - greenColor[0]) &&
-                close(hsv[1], greenColor[1], higherGreenColors[1] - greenColor[1]) &&
-                close(hsv[2], greenColor[2], higherGreenColors[2] - greenColor[2])) {
+        if ((hsv[0] <= higherGreenColors[0] && hsv[0] >= lowerGreenColors[0]) &&
+                (hsv[1] <= higherGreenColors[1] && hsv[1] >= lowerGreenColors[1]) &&
+                (hsv[2] <= higherGreenColors[2] && hsv[2] >= lowerGreenColors[2])) {
             return Ball.GREEN;
         }
 
         // Check if color matches PURPLE signature
-        if (close(hsv[0], purpleColor[0],higherPurpleColors[0] - purpleColor[0]) &&
-                close(hsv[1], purpleColor[1], higherPurpleColors[1] - purpleColor[1]) &&
-                close(hsv[2], purpleColor[2], higherPurpleColors[2] - purpleColor[2])) {
+        if ((hsv[0] <= higherPurpleColors[0] && hsv[0] >= lowerPurpleColors[0]) &&
+                (hsv[1] <= higherPurpleColors[1] && hsv[1] >= lowerPurpleColors[1]) &&
+                (hsv[2] <= higherPurpleColors[2] && hsv[2] >= lowerPurpleColors[2])) {
             return Ball.PURPLE;
         }
 
@@ -691,19 +691,19 @@ public class RotarySubsystem implements Subsystem {
 
             assert c != null;
             if((hsv[i] >= lowerGreenColors[0]) && (hsv[i] <= higherGreenColors[0])) {
-                sb.append("\n Red in range for green");
+                sb.append("\n Hue in range for green");
             }   if((hsv[i] >= lowerGreenColors[1]) && (hsv[i] <= higherGreenColors[1])) {
-                sb.append("\n Blue in range for green");
+                sb.append("\n Saturation in range for green");
             }   if((hsv[i] >= lowerGreenColors[2]) && (hsv[i] <= higherGreenColors[2])) {
-                sb.append("\n Green in range for green");
+                sb.append("\n Value in range for green");
             }
 
             if((hsv[i] >= lowerPurpleColors[0]) && (hsv[i] <= higherPurpleColors[0])) {
-                sb.append("\n Red in range for purple");
+                sb.append("\n Hue in range for purple");
             }   if((hsv[i] >= lowerPurpleColors[1]) && (hsv[i] <= higherPurpleColors[1])) {
-                sb.append("\n Blue in range for purple");
+                sb.append("\n Saturation in range for purple");
             }   if((hsv[i] >= lowerPurpleColors[2]) && (hsv[i] <= higherPurpleColors[2])) {
-                sb.append("\n Green in range for purple");
+                sb.append("\n Value in range for purple");
             }
 
 
