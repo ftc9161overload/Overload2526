@@ -133,16 +133,25 @@ public class SwerveDrivetrain implements Subsystem {
         bl.setServoMKII();
         bl.setPDFL(0.5, 0.005, 0, 0.1);
 
+
         // Front Right pod configuration
         fr.setServoMKII();
-        fr.setServoReverse(true);
-        fr.setPDFL(0.4, 0.005, 0, 0.1);
+        fr.setServoReverse(false);
+//        fr.setPDFL(0.4, 0.005, 0, 0.2);
+        fr.setPDFL(0., 0.00, 0, 0);
+        fr.setErrorMin(0);
 
         // Front Left pod configuration
-        fl.setPDFL(0.4, 0.005, 0, 0.1);
+        fl.setPDFL(0.8, 0.005, 0, 0.15);
+        fl.setErrorMin(0.005);
 
         // Back Right pod configuration
-        br.setPDFL(0.3, 0.005, 0, 0.1);
+        br.setServoReverse(true);
+        br.setPDFL(0.6, 0.005, 0, 0.15);
+        br.setErrorMin(0.005);
+
+
+
 
         // Note: Some pods use MK2 servos with different characteristics
         // Uncomment if BR also needs MK2 settings:

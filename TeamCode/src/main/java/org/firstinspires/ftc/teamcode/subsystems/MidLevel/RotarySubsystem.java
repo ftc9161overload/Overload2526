@@ -521,6 +521,8 @@ public class RotarySubsystem implements Subsystem {
         double g = colors.green;
         double b = colors.blue;
 
+
+
         double max = Math.max(r, Math.max(g, b));
         double min = Math.min(r, Math.min(g, b));
         double delta = max - min;

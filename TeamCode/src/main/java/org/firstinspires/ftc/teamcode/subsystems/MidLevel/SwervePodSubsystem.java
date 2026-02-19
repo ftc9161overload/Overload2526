@@ -66,11 +66,11 @@ public class SwervePodSubsystem {
     // SERVO CONTROL (PID-like controller)
     // ========================================================================
 
-    public static double p = 0.4;                // Proportional gain
-    public static double d = 0.01;               // Derivative gain
-    public static double f = 0;                  // Feedforward gain
-    public static double l = 0.1;                // (Likely a limiting factor or low-pass filter)
-    public static double errorMin = 0.1;         // Minimum error threshold for servo control
+    private double p = 0.4;                // Proportional gain
+    private double d = 0.01;               // Derivative gain
+    private double f = 0;                  // Feedforward gain
+    private double l = 0.1;                // (Likely a limiting factor or low-pass filter)
+    private double errorMin = 0.1;         // Minimum error threshold for servo control
 
     private final PDFLControllerRadial sCon; // Servo controller
     private boolean reverseServo = false;  // Flag to reverse servo direction
@@ -479,6 +479,10 @@ public class SwervePodSubsystem {
         servo.setPower(power);
     }
 
+    public void setErrorMin(double newMin) {
+        errorMin = newMin;
+    }
+
 
     // ========================================================================
     // DEBUG / TELEMETRY
@@ -492,7 +496,7 @@ public class SwervePodSubsystem {
                 "\nCurrent Pos: " + currentPos.inDeg + "° (" + currentPos.inDeg + " rad)" +
                 "\nTarget Pos: " + targetPos.inDeg + "° (" + targetPos.inDeg + " rad)" +
                 "\nSet Target Pos: " + setTargetPos.inDeg + "° (" + setTargetPos.inDeg + " rad)" +
-                "\nPDFL Output: " + sCon.runPDFL(0.05) +
+                "\nPDFL Output: " + sCon.runPDFL(errorMin) +
                 "\nServo Offset: " + servoOffset.inDeg + "° (" + servoOffset.inDeg + " rad)" +
                 "\nMotor Direction: " + motorDirection +
                 "\n" + sCon.debugText();
