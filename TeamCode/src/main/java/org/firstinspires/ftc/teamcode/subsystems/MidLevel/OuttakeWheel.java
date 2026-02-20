@@ -20,12 +20,12 @@ import dev.nextftc.hardware.impl.MotorEx;
  * Uses PDFL (PID with FeedForward and Lerp) control for precise velocity management.
  * Supports multiple preset speeds and manual speed adjustment.
  */
-public class OuttakeWheelSubsystem implements Subsystem {
+public class OuttakeWheel implements Subsystem {
 
     // ========== SINGLETON PATTERN ==========
 
     /** Singleton instance for easy access across OpModes */
-    public static final OuttakeWheelSubsystem INSTANCE = new OuttakeWheelSubsystem();
+    public static final OuttakeWheel INSTANCE = new OuttakeWheel();
 
     // ========== HARDWARE ==========
 
@@ -80,7 +80,7 @@ public class OuttakeWheelSubsystem implements Subsystem {
     // ========== CONSTRUCTOR ==========
 
     /** Private constructor enforces singleton pattern */
-    private OuttakeWheelSubsystem() {}
+    private OuttakeWheel() {}
 
     // ========== INITIALIZATION ==========
 

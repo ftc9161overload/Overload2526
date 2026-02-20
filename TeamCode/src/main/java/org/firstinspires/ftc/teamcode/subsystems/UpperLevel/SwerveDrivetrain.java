@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePod;
 
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.core.units.Distance;
@@ -47,10 +47,10 @@ public class SwerveDrivetrain implements Subsystem {
     // SWERVE PODS
     // ========================================================================
 
-    public static SwervePodSubsystem frontLeft;
-    public static SwervePodSubsystem frontRight;
-    public static SwervePodSubsystem backLeft;
-    public static SwervePodSubsystem backRight;
+    public static SwervePod frontLeft;
+    public static SwervePod frontRight;
+    public static SwervePod backLeft;
+    public static SwervePod backRight;
 
 
     // ========================================================================
@@ -69,7 +69,7 @@ public class SwerveDrivetrain implements Subsystem {
      */
     public SwerveDrivetrain() {
         // Initialize all four swerve pods with their positions and hardware names
-        SwervePodSubsystem fr = new SwervePodSubsystem(
+        SwervePod fr = new SwervePod(
                 POD_X_OFFSET.times(-1),  // Front Right: -X (right side)
                 POD_Y_OFFSET.times(-1),  // Front Right: -Y (front)
                 UniConstants.DRIVE_FRONT_RIGHT_SERVO_STRING,
@@ -78,7 +78,7 @@ public class SwerveDrivetrain implements Subsystem {
                 ActiveOpMode.hardwareMap()
         );
 
-        SwervePodSubsystem fl = new SwervePodSubsystem(
+        SwervePod fl = new SwervePod(
                 POD_X_OFFSET.times(-1),  // Front Left: -X (left side)
                 POD_Y_OFFSET,            // Front Left: +Y (front)
                 UniConstants.DRIVE_FRONT_LEFT_SERVO_STRING,
@@ -87,7 +87,7 @@ public class SwerveDrivetrain implements Subsystem {
                 ActiveOpMode.hardwareMap()
         );
 
-        SwervePodSubsystem br = new SwervePodSubsystem(
+        SwervePod br = new SwervePod(
                 POD_X_OFFSET,            // Back Right: +X (right side)
                 POD_Y_OFFSET.times(-1),  // Back Right: -Y (back)
                 UniConstants.DRIVE_BACK_RIGHT_SERVO_STRING,
@@ -96,7 +96,7 @@ public class SwerveDrivetrain implements Subsystem {
                 ActiveOpMode.hardwareMap()
         );
 
-        SwervePodSubsystem bl = new SwervePodSubsystem(
+        SwervePod bl = new SwervePod(
                 POD_X_OFFSET,            // Back Left: +X (left side)
                 POD_Y_OFFSET,            // Back Left: +Y (back)
                 UniConstants.DRIVE_BACK_LEFT_SERVO_STRING,
@@ -126,8 +126,8 @@ public class SwerveDrivetrain implements Subsystem {
     /**
      * Configures servo-specific settings (MK version, reversal, PID values).
      */
-    private void configureServoSettings(SwervePodSubsystem fl, SwervePodSubsystem fr,
-                                        SwervePodSubsystem bl, SwervePodSubsystem br) {
+    private void configureServoSettings(SwervePod fl, SwervePod fr,
+                                        SwervePod bl, SwervePod br) {
         // Back Left pod configuration
         bl.setServoReverse(true);
         bl.setServoMKII();
@@ -138,16 +138,16 @@ public class SwerveDrivetrain implements Subsystem {
         fr.setServoMKII();
         fr.setServoReverse(false);
 //        fr.setPDFL(0.4, 0.005, 0, 0.2);
-        fr.setPDFL(0., 0.00, 0, 0);
-        fr.setErrorMin(0);
+        fr.setPDFL(0.5, 0.00, 0, 0.15);
+        fr.setErrorMin(0.005);
 
         // Front Left pod configuration
-        fl.setPDFL(0.8, 0.005, 0, 0.15);
+        fl.setPDFL(0.6, 0.005, 0, 0.15);
         fl.setErrorMin(0.005);
 
         // Back Right pod configuration
         br.setServoReverse(true);
-        br.setPDFL(0.6, 0.005, 0, 0.15);
+        br.setPDFL(0.5, 0.005, 0, 0.15);
         br.setErrorMin(0.005);
 
 
@@ -162,8 +162,8 @@ public class SwerveDrivetrain implements Subsystem {
     /**
      * Sets the calibration offsets for all servos to account for mounting variations.
      */
-    private void configureServoOffsets(SwervePodSubsystem fl, SwervePodSubsystem fr,
-                                       SwervePodSubsystem bl, SwervePodSubsystem br) {
+    private void configureServoOffsets(SwervePod fl, SwervePod fr,
+                                       SwervePod bl, SwervePod br) {
         fl.setServoOffsetDeg(flOffset);
         fr.setServoOffsetDeg(frOffset);
         bl.setServoOffsetDeg(blOffset);
@@ -404,8 +404,8 @@ public class SwerveDrivetrain implements Subsystem {
      *
      * @return Array of pods in order: [FL, FR, BL, BR]
      */
-    public SwervePodSubsystem[] getSwervePods() {
-        return new SwervePodSubsystem[]{frontLeft, frontRight, backLeft, backRight};
+    public SwervePod[] getSwervePods() {
+        return new SwervePod[]{frontLeft, frontRight, backLeft, backRight};
     }
 
 

@@ -9,11 +9,11 @@ import com.bylazar.configurables.annotations.Configurable;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 @Configurable
-public class IntakeSubsystem implements Subsystem {
+public class Intake implements Subsystem {
     private final MotorEx motor = new MotorEx(UniConstants.INTAKE_MOTOR_STRING);
 
-    public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
-    private IntakeSubsystem() { }
+    public static final Intake INSTANCE = new Intake();
+    private Intake() { }
 
     public double motorSpeed = 0.5;
 

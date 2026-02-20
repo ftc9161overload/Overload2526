@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Pose2D;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -83,14 +84,10 @@ public class Follower implements Subsystem {
     // ALLIANCE COLOR
     // ========================================================================
 
-    /** Enum defining team alliance colors */
-    public enum TEAMCOLOR {
-        RED,   // Red alliance - robot on red side
-        BLUE   // Blue alliance - robot on blue side
-    }
+
 
     /** Current team color - automatically mirrors coordinates for RED alliance */
-    public TEAMCOLOR teamcolor = TEAMCOLOR.BLUE;
+    public Robot.TEAMCOLOR teamcolor = Robot.TEAMCOLOR.BLUE;
 
 
     // ========================================================================
@@ -297,7 +294,7 @@ public class Follower implements Subsystem {
      */
     public Command set(Pose2D target) {
         return new InstantCommand(() -> {
-            if (teamcolor == TEAMCOLOR.RED) {
+            if (teamcolor == Robot.TEAMCOLOR.RED) {
                 this.targetPose = flipPose(target);
             } else {
                 this.targetPose = target;
@@ -332,7 +329,7 @@ public class Follower implements Subsystem {
     public Command setLinear(Pose2D target) {
         return new InstantCommand(() -> {
             Pose2D newTarget = target.withHeading(targetPose.heading);
-            if (teamcolor == TEAMCOLOR.RED) {
+            if (teamcolor == Robot.TEAMCOLOR.RED) {
                 this.targetPose = flipPose(newTarget);
             } else {
                 this.targetPose = newTarget;
@@ -365,7 +362,7 @@ public class Follower implements Subsystem {
     public Command setHeading(Angle headingTarget) {
         return new InstantCommand(() -> {
             Pose2D newTarget = targetPose.withHeading(headingTarget);
-            if (teamcolor == TEAMCOLOR.RED) {
+            if (teamcolor == Robot.TEAMCOLOR.RED) {
                 this.targetPose = flipPose(newTarget);
             } else {
                 this.targetPose = newTarget;
@@ -394,7 +391,7 @@ public class Follower implements Subsystem {
         Pose2D newTarget = targetPose.withHeading(angleToGoal);
 
         // Mirror for red alliance if needed
-        if (teamcolor == TEAMCOLOR.RED) {
+        if (teamcolor == Robot.TEAMCOLOR.RED) {
             targetPose = flipPose(newTarget);
         } else {
             targetPose = newTarget;

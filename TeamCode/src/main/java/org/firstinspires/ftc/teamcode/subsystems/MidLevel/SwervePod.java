@@ -28,7 +28,7 @@ import dev.nextftc.core.units.Distance;
  * if that results in a faster rotation to the target angle.
  */
 @Configurable
-public class SwervePodSubsystem {
+public class SwervePod {
 
     // ========================================================================
     // HARDWARE COMPONENTS
@@ -106,8 +106,8 @@ public class SwervePodSubsystem {
      * @param analogInput Hardware name of the analog position sensor
      * @param hMap The robot's hardware map
      */
-    public SwervePodSubsystem(Distance x, Distance y, String servo, String motor,
-                              String analogInput, HardwareMap hMap) {
+    public SwervePod(Distance x, Distance y, String servo, String motor,
+                     String analogInput, HardwareMap hMap) {
         this.x = x;
         this.y = y;
         this.servo = hMap.get(CRServo.class, servo);

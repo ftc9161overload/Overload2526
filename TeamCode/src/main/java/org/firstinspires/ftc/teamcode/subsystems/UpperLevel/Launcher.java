@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode.subsystems.UpperLevel;
 import com.bylazar.configurables.annotations.Configurable;
 
 
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipper;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.SubsystemGroup;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -19,12 +18,12 @@ import dev.nextftc.core.commands.utility.InstantCommand;
  * to launch game elements. Manages the complete launch sequence including
  * spin-up, chamber positioning, and element ejection.
  */
-public class LauncherSubsystem extends SubsystemGroup {
+public class Launcher extends SubsystemGroup {
 
     // ========== SINGLETON PATTERN ==========
 
     /** Singleton instance for easy access across OpModes */
-    public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
+    public static final Launcher INSTANCE = new Launcher();
 
     // ========== TIMING CONSTANTS ==========
 
@@ -43,11 +42,11 @@ public class LauncherSubsystem extends SubsystemGroup {
      * Private constructor enforces singleton pattern.
      * Registers all child subsystems with the SubsystemGroup.
      */
-    private LauncherSubsystem() {
+    private Launcher() {
         super(
-                OuttakeFlipperSubsystem.INSTANCE,  // Controls flipper mechanism
-                OuttakeWheelSubsystem.INSTANCE,     // Controls flywheel speed
-                RotarySubsystem.INSTANCE            // Controls chamber rotation
+                OuttakeFlipper.INSTANCE,  // Controls flipper mechanism
+                OuttakeWheel.INSTANCE,     // Controls flywheel speed
+                Rotary.INSTANCE            // Controls chamber rotation
         );
     }
 
@@ -60,9 +59,9 @@ public class LauncherSubsystem extends SubsystemGroup {
      */
     public Command setHalfOff = new InstantCommand(() -> {
         // Only execute if currently in half-chamber mode
-        if (RotarySubsystem.INSTANCE.halfChamber) {
-            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();  // Retract flipper
-            RotarySubsystem.INSTANCE.setHalfChamberOff.schedule();   // Align to chamber
+        if (Rotary.INSTANCE.halfChamber) {
+            OuttakeFlipper.INSTANCE.setFullOff.schedule();  // Retract flipper
+            Rotary.INSTANCE.setHalfChamberOff.schedule();   // Align to chamber
         }
     });
 
@@ -73,9 +72,9 @@ public class LauncherSubsystem extends SubsystemGroup {
      */
     public Command setHalfOn = new InstantCommand(() -> {
         // Only execute if not already in half-chamber mode
-        if (!RotarySubsystem.INSTANCE.halfChamber) {
-            OuttakeFlipperSubsystem.INSTANCE.setFullOff.schedule();  // Retract flipper
-            RotarySubsystem.INSTANCE.setHalfChamberOn.schedule();    // Move to half position
+        if (!Rotary.INSTANCE.halfChamber) {
+            OuttakeFlipper.INSTANCE.setFullOff.schedule();  // Retract flipper
+            Rotary.INSTANCE.setHalfChamberOn.schedule();    // Move to half position
         }
     });
 
@@ -90,8 +89,8 @@ public class LauncherSubsystem extends SubsystemGroup {
     public Command setup() {
         return new InstantCommand(() -> {
             // Only spin up if flywheel isn't already running
-            if (OuttakeWheelSubsystem.INSTANCE.targetSpeed == 0) {
-                OuttakeWheelSubsystem.INSTANCE.setSpeed1.schedule();
+            if (OuttakeWheel.INSTANCE.targetSpeed == 0) {
+                OuttakeWheel.INSTANCE.setSpeed1.schedule();
             }
         });
     }
@@ -116,15 +115,15 @@ public class LauncherSubsystem extends SubsystemGroup {
     public Command Launch1() {
         return new SequentialGroup(
                 setup(),                                      // Spin up flywheel if needed
-                OuttakeWheelSubsystem.INSTANCE.withinRange(), // Wait for flywheel at speed
-                RotarySubsystem.INSTANCE.lock,                // Lock chamber position
-                RotarySubsystem.INSTANCE.withinRange(),       // Wait for precise alignment
-                OuttakeFlipperSubsystem.INSTANCE.setFullOn,   // Flip element into wheel
+                OuttakeWheel.INSTANCE.withinRange(), // Wait for flywheel at speed
+                Rotary.INSTANCE.lock,                // Lock chamber position
+                Rotary.INSTANCE.withinRange(),       // Wait for precise alignment
+                OuttakeFlipper.INSTANCE.setFullOn,   // Flip element into wheel
                 new Delay(FLIP_DURATION),                     // Wait for full extension
-                OuttakeFlipperSubsystem.INSTANCE.setFullOff,  // Retract flipper
+                OuttakeFlipper.INSTANCE.setFullOff,  // Retract flipper
                 new Delay(RETRACT_DURATION),                  // Wait for full retraction
-                RotarySubsystem.INSTANCE.unlock,              // Allow rotary motion
-                RotarySubsystem.INSTANCE.nextChamber          // Rotate to next chamber
+                Rotary.INSTANCE.unlock,              // Allow rotary motion
+                Rotary.INSTANCE.nextChamber          // Rotate to next chamber
         );
     }
 

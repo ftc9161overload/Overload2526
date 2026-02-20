@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
@@ -28,7 +28,7 @@ public class AutonClose extends NextFTCOpMode {
     JoinedTelemetry joinedTelemetry;
     public AutonClose() {
         addComponents(
-            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+            new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
             BulkReadComponent.INSTANCE,
             BindingsComponent.INSTANCE
         );
@@ -39,7 +39,7 @@ public class AutonClose extends NextFTCOpMode {
 
     private Timer timer = new Timer();
 
-    private static LauncherSubsystem launcherSubsystem;
+    private static Launcher launcher;
     private static SwerveDrivetrain swerveDrivetrain;
 
     // Time Delay
@@ -51,20 +51,20 @@ public class AutonClose extends NextFTCOpMode {
     // Rotates the rotary to collect balls
     private Command rotate = new SequentialGroup(
             time,
-            RotarySubsystem.INSTANCE.nextChamber,
+            Rotary.INSTANCE.nextChamber,
             time,
-            RotarySubsystem.INSTANCE.nextChamber
+            Rotary.INSTANCE.nextChamber
     );
 
     // Should score in the blue goal
     private Command autonCommand = new SequentialGroup(
-            OuttakeWheelSubsystem.INSTANCE.setSpeed1,
+            OuttakeWheel.INSTANCE.setSpeed1,
             Follower.INSTANCE.setLinear(23,-22),
             Follower.INSTANCE.setHeading(Math.toRadians(140)),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
-            LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -19),
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
@@ -74,8 +74,8 @@ public class AutonClose extends NextFTCOpMode {
 
             Follower.INSTANCE.setLinear(34, 19),
             Follower.INSTANCE.setHeading(Math.toRadians(140)),
-            LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -43),
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
@@ -85,8 +85,8 @@ public class AutonClose extends NextFTCOpMode {
 
             Follower.INSTANCE.setLinear(34, 43),
             Follower.INSTANCE.setHeading(Math.toRadians(140)),
-            LauncherSubsystem.INSTANCE.Launch3(),
-            LauncherSubsystem.INSTANCE.setHalfOn,
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.setLinear(0, -67),
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
@@ -96,9 +96,9 @@ public class AutonClose extends NextFTCOpMode {
 
             Follower.INSTANCE.setLinear(34, 67),
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
-            LauncherSubsystem.INSTANCE.Launch3(),
+            Launcher.INSTANCE.Launch3(),
 
-            IntakeSubsystem.INSTANCE.stop
+            Intake.INSTANCE.stop
 
     );
 
@@ -107,11 +107,11 @@ public class AutonClose extends NextFTCOpMode {
 
         joinedTelemetry = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), telemetry);
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-        OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
+        OuttakeWheel.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain();
 
         Follower.INSTANCE.turnOnLinear.schedule();
@@ -122,8 +122,8 @@ public class AutonClose extends NextFTCOpMode {
 
         Odometry.INSTANCE.initReal();
         Odometry.INSTANCE.reset.schedule();
-        RotarySubsystem.INSTANCE.reset();
-        RotarySubsystem.INSTANCE.home.schedule();
+//        RotarySubsystem.INSTANCE.reset();
+        Rotary.INSTANCE.home.schedule();
         joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
         //RotarySubsystem.INSTANCE.resetOffset();
@@ -144,8 +144,7 @@ public class AutonClose extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-        RotarySubsystem.INSTANCE.startRotary.schedule();
-        RotarySubsystem.INSTANCE.locked = false;
+
         // INTAKE (HOLD TO USE)
         autonCommand.schedule();
 

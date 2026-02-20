@@ -9,12 +9,13 @@ import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipperSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeFlipper;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Launcher;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -27,7 +28,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class NextFTCTeleOpTesting extends NextFTCOpMode {
     public NextFTCTeleOpTesting() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -42,7 +43,7 @@ public class NextFTCTeleOpTesting extends NextFTCOpMode {
 
     private Timer timer = new Timer();
 
-    private static LauncherSubsystem launcherSubsystem;
+    private static Launcher launcher;
     private static SwerveDrivetrain swerveDrivetrain;
 
     @Override
@@ -51,17 +52,17 @@ public class NextFTCTeleOpTesting extends NextFTCOpMode {
         joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-        OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
+        OuttakeWheel.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain();
 
         Odometry.INSTANCE.initReal();
 
-        RotarySubsystem.INSTANCE.reset();
-        RotarySubsystem.INSTANCE.home.schedule();
+//        RotarySubsystem.INSTANCE.reset();
+        Rotary.INSTANCE.home.schedule();
 
         Follower.INSTANCE.turnOffLinear.schedule();
         Follower.INSTANCE.turnOffHeading.schedule();
@@ -74,9 +75,9 @@ public class NextFTCTeleOpTesting extends NextFTCOpMode {
     @Override
     public void onWaitForStart() {
         if (gamepad2.a) {
-            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
+            Follower.INSTANCE.teamcolor = Robot.TEAMCOLOR.BLUE;
         } else if (gamepad2.y) {
-            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
+            Follower.INSTANCE.teamcolor = Robot.TEAMCOLOR.RED;
         }
         joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
         joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
@@ -96,51 +97,50 @@ public class NextFTCTeleOpTesting extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-        RotarySubsystem.INSTANCE.startRotary.schedule();
-        RotarySubsystem.INSTANCE.locked = false;
+
         // INTAKE (HOLD TO USE)
         Gamepads.gamepad1().a()
-                .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
-                .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
+                .whenBecomesTrue(Intake.INSTANCE.run)
+                .whenBecomesFalse(Intake.INSTANCE.stop);
 
         Gamepads.gamepad2().a()
-                .whenBecomesTrue(IntakeSubsystem.INSTANCE.run)
-                .whenBecomesFalse(IntakeSubsystem.INSTANCE.stop);
+                .whenBecomesTrue(Intake.INSTANCE.run)
+                .whenBecomesFalse(Intake.INSTANCE.stop);
 
         // SET HALF ON THE ROTARY AND MAKES SURE FLIPPER IS NOT IN THE WAY
         Gamepads.gamepad1().y().toggleOnBecomesTrue()
-                .whenBecomesTrue(LauncherSubsystem.INSTANCE.setHalfOn)
-                .whenBecomesFalse(LauncherSubsystem.INSTANCE.setHalfOff);
+                .whenBecomesTrue(Launcher.INSTANCE.setHalfOn)
+                .whenBecomesFalse(Launcher.INSTANCE.setHalfOff);
 
         // OUTTAKE WHEEL STUFF
         Gamepads.gamepad1().x()
-                .whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.turnOff);
+                .whenBecomesTrue(OuttakeWheel.INSTANCE.turnOff);
 
         Gamepads.gamepad1().rightTrigger().greaterThan(0.3)
-                .whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.setSpeedHigher);
+                .whenBecomesTrue(OuttakeWheel.INSTANCE.setSpeedHigher);
 
         Gamepads.gamepad1().leftTrigger().greaterThan(0.3)
-                .whenBecomesTrue(OuttakeWheelSubsystem.INSTANCE.setSpeedLower);
+                .whenBecomesTrue(OuttakeWheel.INSTANCE.setSpeedLower);
 
         // CHANGE ROTARY POSITION
         Gamepads.gamepad1().rightBumper()
-                .whenBecomesTrue(RotarySubsystem.INSTANCE.nextChamber);
+                .whenBecomesTrue(Rotary.INSTANCE.nextChamber);
 
         Gamepads.gamepad1().leftBumper()
-                .whenBecomesTrue(RotarySubsystem.INSTANCE.previousChamber);
+                .whenBecomesTrue(Rotary.INSTANCE.previousChamber);
 
         // AUTO LAUNCH 1 ARTIFACT
         Gamepads.gamepad1().dpadUp()
-                .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch1());
+                .whenBecomesTrue(Launcher.INSTANCE.Launch1());
 
         // AUTO LAUNCH 3 ARTIFACT
         Gamepads.gamepad1().dpadDown()
-                .whenBecomesTrue(LauncherSubsystem.INSTANCE.Launch3());
+                .whenBecomesTrue(Launcher.INSTANCE.Launch3());
 
         // MANUEL CONTROL OF FLIPPER
         Gamepads.gamepad1().circle().toggleOnBecomesTrue()
-                .whenBecomesTrue(OuttakeFlipperSubsystem.INSTANCE.setFullOn)
-                .whenBecomesFalse(OuttakeFlipperSubsystem.INSTANCE.setFullOff);
+                .whenBecomesTrue(OuttakeFlipper.INSTANCE.setFullOn)
+                .whenBecomesFalse(OuttakeFlipper.INSTANCE.setFullOff);
         Gamepads.gamepad2().square()
                 .whenBecomesTrue(Odometry.INSTANCE.reset);
         Gamepads.gamepad2().rightBumper()

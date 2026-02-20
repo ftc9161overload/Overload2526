@@ -4,7 +4,7 @@ import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePodSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.SwervePod;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.ftc.NextFTCOpMode;
@@ -13,7 +13,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @TeleOp(name = "AlignPods", group = "TeleOp")
 public class AlignPods extends NextFTCOpMode {
     private static SwerveDrivetrain swerveDrivetrain;
-    SwervePodSubsystem[] pods;
+    SwervePod[] pods;
     public static double p = 0,d = 0,f = 0,l = 0;
     public static boolean runPDFL = false;
     public static double target = 0;

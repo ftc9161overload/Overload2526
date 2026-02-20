@@ -21,13 +21,13 @@ import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.core.commands.Command;
 
 @Configurable
-public class RotarySubsystem implements Subsystem {
+public class Rotary implements Subsystem {
     // ========== SINGLETON PATTERN ==========
 
     /**
      * Singleton instance for easy access across OpModes
      */
-    public static final RotarySubsystem INSTANCE = new RotarySubsystem();
+    public static final Rotary INSTANCE = new Rotary();
 
     Timer timer = new Timer();
 
@@ -110,8 +110,8 @@ public class RotarySubsystem implements Subsystem {
     public static double[] greenColor = {175.0, 0.81, 0.70};
 
     // The lower and upper sections of green colors
-    public static double[] lowerGreenColors = {150.0, 0.31, 0.20};
-    public static double[] higherGreenColors = {200.0, 0.100, 0.100};
+    public static double[] lowerGreenColors = {140.0, 0.55, 0.0009};
+    public static double[] higherGreenColors = {180.0, 0.9, 0.04};
 
     /**
      * RGB values for PURPLE ball detection (normalized 0-1 scale)
@@ -119,8 +119,8 @@ public class RotarySubsystem implements Subsystem {
 
     // The lower and upper sections of purple colors
     public static double[] purpleColor = {130, 81, 70};
-    public static double[] lowerPurpleColors = {100, 0.004, 0.009};
-    public static double[] higherPurpleColors = {160, 0.014, 0.019};
+    public static double[] lowerPurpleColors = {200, 0.4, 0.002};
+    public static double[] higherPurpleColors = {250, 0.6, 0.05};
 
     /**
      * Tolerance for color matching (±this amount per channel)
@@ -152,7 +152,7 @@ public class RotarySubsystem implements Subsystem {
     /**
      * When true, motors are locked (feedforward disabled)
      */
-    public boolean locked = true;
+    private boolean locked = true;
 
     /**
      * When true, position halfway between chambers for loading
@@ -244,7 +244,7 @@ public class RotarySubsystem implements Subsystem {
     /**
      * Private constructor enforces singleton pattern
      */
-    private RotarySubsystem() {
+    private Rotary() {
     }
 
     // ========== INITIALIZATION ==========
@@ -271,17 +271,17 @@ public class RotarySubsystem implements Subsystem {
         distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, UniConstants.COLOR_SENSOR_SLOT_2_STRING);
     }
 
-    /**
-     * Manually reset the encoder position.
-     * Use for emergency re-zeroing if needed.
-     */
-    public void reset() {
-        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (motor.getMotor().getCurrentPosition() != 0) {
-            timer.hasElapsedSeconds(0.01); // or use idle() if inside a LinearOpMode
-        }
-        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
+//    /**
+//     * Manually reset the encoder position.
+//     * Use for emergency re-zeroing if needed.
+//     */
+//    public void reset() {
+//        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        while (motor.getMotor().getCurrentPosition() != 0) {
+//            timer.hasElapsedSeconds(0.01); // or use idle() if inside a LinearOpMode
+//        }
+//        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    }
 
     // ========== POSITION GETTERS ==========
 
@@ -388,13 +388,6 @@ public class RotarySubsystem implements Subsystem {
     private final Command finishHoming = new InstantCommand(() -> {
         offset = currentPosition + 0.16;
         homingDone = true;
-    });
-
-    /**
-     * Resets homing state to allow re-homing if needed.
-     */
-    public final Command startRotary = new InstantCommand(() -> {
-        homingDone = false;
     });
 
     /**
@@ -631,6 +624,11 @@ public class RotarySubsystem implements Subsystem {
         if (shouldUpdateColors && power <= stoppedPowerThreshold && !halfChamber) {
             updateChamberColor();
         }
+
+        if ( timer.hasElapsedSeconds(.5) && !shouldUpdateColors) {
+            timer.reset();
+            shouldUpdateColors = true;
+        }
     }
 
     // ========== DEBUG INFORMATION ==========
@@ -671,6 +669,8 @@ public class RotarySubsystem implements Subsystem {
                     .append(" | angle: ").append(ch.angle)
                     .append(" | ball: ").append(ch.ball);
         }
+
+
         return sb.toString();
     }
     public String debugColors() {
@@ -685,31 +685,66 @@ public class RotarySubsystem implements Subsystem {
             } else {
 
                 sb.append("\nSensor ").append(i + 1)
-                        .append(" | H: ").append(hsv[0])
-                        .append(" S: ").append(hsv[1])
-                        .append(" V: ").append(hsv[2]);
+                        .append(" | \nH: ").append(hsv[0])
+                        .append(" \nS: ").append(hsv[1])
+                        .append(" \nV: ").append(hsv[2]);
             }
 
 
             assert c != null;
-            if((hsv[i] >= lowerGreenColors[0]) && (hsv[i] <= higherGreenColors[0])) {
+            if((hsv[0] >= lowerGreenColors[0]) && (hsv[0] <= higherGreenColors[0])) {
                 sb.append("\n Hue in range for green");
-            }   if((hsv[i] >= lowerGreenColors[1]) && (hsv[i] <= higherGreenColors[1])) {
+            }   else {
+                sb.append("\n Hue not in range for green");
+            }
+            if((hsv[1] >= lowerGreenColors[1]) && (hsv[1] <= higherGreenColors[1])) {
                 sb.append("\n Saturation in range for green");
-            }   if((hsv[i] >= lowerGreenColors[2]) && (hsv[i] <= higherGreenColors[2])) {
+            }  else {
+                sb.append("\n Saturation not in range for green");
+            }
+            if((hsv[2] >= lowerGreenColors[2]) && (hsv[2] <= higherGreenColors[2])) {
                 sb.append("\n Value in range for green");
+            } else {
+                sb.append("\n Value not in range for green");
             }
 
-            if((hsv[i] >= lowerPurpleColors[0]) && (hsv[i] <= higherPurpleColors[0])) {
+            if((hsv[0] >= lowerPurpleColors[0]) && (hsv[0] <= higherPurpleColors[0])) {
                 sb.append("\n Hue in range for purple");
-            }   if((hsv[i] >= lowerPurpleColors[1]) && (hsv[i] <= higherPurpleColors[1])) {
+            }   else {
+                sb.append("\n Hue not in range for purple");
+            }
+            if((hsv[1] >= lowerPurpleColors[1]) && (hsv[1] <= higherPurpleColors[1])) {
                 sb.append("\n Saturation in range for purple");
-            }   if((hsv[i] >= lowerPurpleColors[2]) && (hsv[i] <= higherPurpleColors[2])) {
+            }  else {
+                sb.append("\n Saturation not in range for purple");
+            }
+            if((hsv[2] >= lowerPurpleColors[2]) && (hsv[2] <= higherPurpleColors[2])) {
                 sb.append("\n Value in range for purple");
+            } else {
+                sb.append("\n Value not in range for purple");
             }
 
 
         }
+
+        sb.append("\n-- General Colors --");
+        sb.append("\n Hue Upper Value Green: ");sb.append(higherGreenColors[0]);
+        sb.append("\n Saturation Upper Value Green: ");sb.append(higherGreenColors[1]);
+        sb.append("\n Value Upper Value Green: ");sb.append(higherGreenColors[2]);
+
+        sb.append("\n Hue Lower Value Green: ");sb.append(lowerGreenColors[0]);
+        sb.append("\n Saturation Lower Value Green: ");sb.append(lowerGreenColors[1]);
+        sb.append("\n Value Lower Value Green: ");sb.append(lowerGreenColors[2]);
+
+        sb.append("\n Hue Higher Value Purple: ");sb.append(higherPurpleColors[0]);
+        sb.append("\n Saturation Higher Value Purple: ");sb.append(higherPurpleColors[1]);
+        sb.append("\n Value Higher Value Purple: ");sb.append(higherPurpleColors[2]);
+
+        sb.append("\n Hue Lower Value Purple: ");sb.append(lowerPurpleColors[0]);
+        sb.append("\n Saturation Lower Value Purple: ");sb.append(lowerPurpleColors[1]);
+        sb.append("\n Value Lower Value Purple: ");sb.append(lowerPurpleColors[2]);
+
+
 
         sb.append("\n\n=== Sensor Distance ===");
         sb.append("\nDist: ").append(distSensorOutput);

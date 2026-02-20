@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MidLevel.RotarySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
+import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
@@ -25,7 +25,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class Auton extends NextFTCOpMode {
     public Auton() {
         addComponents(
-            new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+            new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
             BulkReadComponent.INSTANCE,
             BindingsComponent.INSTANCE
         );
@@ -36,7 +36,7 @@ public class Auton extends NextFTCOpMode {
 
     private Timer timer = new Timer();
 
-    private static LauncherSubsystem launcherSubsystem;
+    private static Launcher launcher;
     private static SwerveDrivetrain swerveDrivetrain;
 
 
@@ -45,17 +45,17 @@ public class Auton extends NextFTCOpMode {
 //            Follower.INSTANCE.withinRangeLinear(4),
 //            Follower.INSTANCE.withinRangeHeading(.4),
             new Delay(2),
-            LauncherSubsystem.INSTANCE.Launch3()
+            Launcher.INSTANCE.Launch3()
     );
 
     @Override
     public void onInit() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, OuttakeWheelSubsystem.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-        OuttakeWheelSubsystem.INSTANCE.targetSpeed = 0;
+        OuttakeWheel.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain();
 
         Follower.INSTANCE.turnOnLinear.schedule();
@@ -66,9 +66,9 @@ public class Auton extends NextFTCOpMode {
 
         Odometry.INSTANCE.initReal();
         Odometry.INSTANCE.reset.schedule();
-        RotarySubsystem.INSTANCE.reset();
+//        RotarySubsystem.INSTANCE.reset();
 
-        RotarySubsystem.INSTANCE.home.schedule();
+        Rotary.INSTANCE.home.schedule();
 
         //RotarySubsystem.INSTANCE.resetOffset();
     }
@@ -83,8 +83,7 @@ public class Auton extends NextFTCOpMode {
         Follower.INSTANCE.turnOffHeading.schedule();
         Follower.INSTANCE.turnOffLinear.schedule();
 
-        RotarySubsystem.INSTANCE.startRotary.schedule();
-        RotarySubsystem.INSTANCE.locked = false;
+
         // INTAKE (HOLD TO USE)
         autonCommand.schedule();
 
@@ -103,14 +102,14 @@ public class Auton extends NextFTCOpMode {
 //        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
 
 //        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
+        telemetry.addLine(OuttakeWheel.INSTANCE.debugString());
 //        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
 ////        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
         telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
 ////        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
 ////        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
-        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
+        telemetry.addData("Flywheel withinrange: ", OuttakeWheel.INSTANCE.withinRangeBool());
+        telemetry.addData("Rotary withinrange: ", Rotary.INSTANCE.withinRangeBool());
         telemetry.update();
 //        timer.reset();
 

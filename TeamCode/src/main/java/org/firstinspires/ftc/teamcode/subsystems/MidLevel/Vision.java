@@ -2,11 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems.MidLevel;
 
 import android.util.Size;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.hardware.android.GpioPin;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -17,13 +14,13 @@ import java.util.ArrayList;
 import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.core.subsystems.Subsystem;
 
-public class VisionSubsystem implements Subsystem {
+public class Vision implements Subsystem {
     // Vision processing components
     private final AprilTagProcessor aprilTagProcessor;
     private final VisionPortal visionPortal;
     private final Telemetry telemetry;
 
-    public static final VisionSubsystem INSTANCE = new VisionSubsystem();
+    public static final Vision INSTANCE = new Vision();
 
     // Configuration flags
     private boolean debugMode;
@@ -31,7 +28,7 @@ public class VisionSubsystem implements Subsystem {
     // Timer to control update frequency (prevents excessive processing)
     private final Timer timer = new Timer();
 
-    public VisionSubsystem() {
+    public Vision() {
         this.telemetry = ActiveOpMode.telemetry();
 
         // Configure AprilTag processor with visual debugging features
