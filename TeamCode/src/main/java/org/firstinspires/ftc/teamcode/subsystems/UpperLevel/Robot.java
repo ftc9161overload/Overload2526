@@ -81,7 +81,6 @@ public class Robot extends SubsystemGroup {
         OpModeSafeInit();
         Rotary.INSTANCE.home.schedule();
 
-
     }
 
     /**

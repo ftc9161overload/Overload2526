@@ -17,6 +17,7 @@ import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
+import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.core.commands.Command;
 
@@ -271,17 +272,7 @@ public class Rotary implements Subsystem {
         distSensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class, UniConstants.COLOR_SENSOR_SLOT_2_STRING);
     }
 
-//    /**
-//     * Manually reset the encoder position.
-//     * Use for emergency re-zeroing if needed.
-//     */
-//    public void reset() {
-//        motor.getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        while (motor.getMotor().getCurrentPosition() != 0) {
-//            timer.hasElapsedSeconds(0.01); // or use idle() if inside a LinearOpMode
-//        }
-//        motor.getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//    }
+
 
     // ========== POSITION GETTERS ==========
 
@@ -359,7 +350,7 @@ public class Rotary implements Subsystem {
                     findWall = true;
                     distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
                 })
-                .setIsDone(() -> distSensorOutput < 0.3)
+                .setIsDone(() -> distSensorOutput < 0.3 && CHAMBERS[1].ball == Ball.NULL)
                 .setStop((interrupted) -> {
                     findWall = false;
                 });
@@ -375,7 +366,7 @@ public class Rotary implements Subsystem {
                     findEdge = true;
                     distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
                 })
-                .setIsDone(() -> distSensorOutput > 0.5)
+                .setIsDone(() -> distSensorOutput > 0.5 && CHAMBERS[1].ball != Ball.NULL)
                 .setStop((interrupted) -> {
                     findEdge = false;
                 });
@@ -539,11 +530,10 @@ public class Rotary implements Subsystem {
      * Classifies a ball based on color sensor RGB values.
      * Compares against known GREEN and PURPLE color signatures.
      *
-     * @param c   Color sensor to read from
-     * @param tol Tolerance for color matching
+     * @param c Color sensor to read from
      * @return Ball type (GREEN, PURPLE, or NULL)
      */
-    private Ball classify(NormalizedColorSensor c, double tol) {
+    private Ball classify(NormalizedColorSensor c) {
         double[] hsv = getColor(c);
 
 
@@ -572,7 +562,7 @@ public class Rotary implements Subsystem {
      */
     private void updateChamberColor() {
         for (int i = 0; i < 3; i++) {
-            CHAMBERS[i].ball = classify(colorSensors[i], colorTolerance);
+            CHAMBERS[i].ball = classify(colorSensors[i]);
         }
         shouldUpdateColors = false;
     }
@@ -606,11 +596,13 @@ public class Rotary implements Subsystem {
             // Homing phase 1: Move backward to find wall
             motor.setPower(-0.5);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
+            updateChamberColor();
 
         } else if (findEdge) {
             // Homing phase 2: Move forward slowly to find edge
             motor.setPower(0.2);
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
+            updateChamberColor();
 
         } else if (homingDone) {
             // Homing complete: hold position at zero power
