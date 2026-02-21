@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Launcher;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
@@ -25,7 +26,7 @@ public class AutonTemplate extends NextFTCOpMode {
     JoinedTelemetry joinedTelemetry;
     public AutonTemplate() {
         addComponents(
-                new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+                new SubsystemComponent(Robot.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -48,19 +49,9 @@ public class AutonTemplate extends NextFTCOpMode {
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-        OuttakeWheel.INSTANCE.targetSpeed = 0;
-        swerveDrivetrain = new SwerveDrivetrain();
 
-        Follower.INSTANCE.turnOnLinear.schedule();
-        Follower.INSTANCE.turnOnHeading.schedule();
-        Follower.INSTANCE.setHeading(0).schedule();
-        Follower.INSTANCE.setLinear(0,0).schedule();
-        Odometry.INSTANCE.reset.schedule();
+        Robot.INSTANCE.setAuton();
 
-        Odometry.INSTANCE.initReal();
-        Odometry.INSTANCE.reset.schedule();
-//        RotarySubsystem.INSTANCE.reset();
-        Rotary.INSTANCE.home.schedule();
 
         // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
         Odometry.INSTANCE.setPos(0,0, 0);
@@ -83,28 +74,6 @@ public class AutonTemplate extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
-
-
-        swerveDrivetrain.runDrive(Follower.INSTANCE.getLinear(), Follower.INSTANCE.getHeading());
-
-//        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x,gamepad2.left_stick_y), new Vector2D(-gamepad2.right_stick_x,0));
-
-//        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
-
-//        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addLine(OuttakeWheel.INSTANCE.debugString());
-//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
-////        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
-////        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
-////        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-        telemetry.addData("Flywheel withinrange: ", OuttakeWheel.INSTANCE.withinRangeBool());
-        telemetry.addData("Rotary withinrange: ", Rotary.INSTANCE.withinRangeBool());
-        telemetry.update();
-//        timer.reset();
-
-        //swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
     }
 
 }

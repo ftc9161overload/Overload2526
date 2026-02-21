@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Launcher;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
@@ -28,28 +29,13 @@ public class AutonFar extends NextFTCOpMode {
     JoinedTelemetry joinedTelemetry;
     public AutonFar() {
         addComponents(
-                new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+                new SubsystemComponent(Robot.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
     }
 
-    private static SwerveDrivetrain swerveDrivetrain;
-    private Timer timer = new Timer();
 
-
-    private Command time = new InstantCommand(() -> {
-        timer.reset();
-        boolean b = timer.hasElapsedSeconds(0.5);
-    });
-
-    // Time Delay
-    private Command rotate = new SequentialGroup(
-            time,
-            Rotary.INSTANCE.nextChamber,
-            time,
-            Rotary.INSTANCE.nextChamber
-    );
 
     // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
     private Command autonCommand = new SequentialGroup(
@@ -63,21 +49,21 @@ public class AutonFar extends NextFTCOpMode {
 
             Follower.INSTANCE.set(64, 36, Math.toRadians(0)),
             Follower.INSTANCE.setLinear(104, 36),
-            rotate,
+            Rotary.INSTANCE.rotateRotary,
             Follower.INSTANCE.set(64, 15, Math.toRadians(75)),
             Launcher.INSTANCE.Launch3(),
             Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.set(64, 60, Math.toRadians(0)),
             Follower.INSTANCE.setLinear(104, 60),
-            rotate,
+            Rotary.INSTANCE.rotateRotary,
             Follower.INSTANCE.set(64, 15, Math.toRadians(75)),
             Launcher.INSTANCE.Launch3(),
             Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.set(64, 84, Math.toRadians(0)),
             Follower.INSTANCE.setLinear(104, 84),
-            rotate,
+            Rotary.INSTANCE.rotateRotary,
             Follower.INSTANCE.set(64, 15, Math.toRadians(75)),
             Launcher.INSTANCE.Launch3(),
             Launcher.INSTANCE.setHalfOn,
@@ -92,20 +78,7 @@ public class AutonFar extends NextFTCOpMode {
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-        OuttakeWheel.INSTANCE.targetSpeed = 0;
-        swerveDrivetrain = new SwerveDrivetrain();
-
-        Follower.INSTANCE.turnOnLinear.schedule();
-        Follower.INSTANCE.turnOnHeading.schedule();
-        Follower.INSTANCE.setHeading(0).schedule();
-        Follower.INSTANCE.setLinear(0,0).schedule();
-        Odometry.INSTANCE.reset.schedule();
-
-        Odometry.INSTANCE.initReal();
-        Odometry.INSTANCE.reset.schedule();
-//        RotarySubsystem.INSTANCE.reset();
-        Rotary.INSTANCE.home.schedule();
-        joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+                Robot.INSTANCE.setAuton();
 
         // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
         Odometry.INSTANCE.setPos(64,8, Math.toRadians(90));
@@ -113,14 +86,7 @@ public class AutonFar extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        if (gamepad2.a) {
-            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
-        } else if (gamepad2.y) {
-            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
-        }
-        joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
-        joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
-        joinedTelemetry.update();
+
     }
 
     @Override
@@ -135,28 +101,6 @@ public class AutonFar extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
-
-
-        swerveDrivetrain.runDrive(Follower.INSTANCE.getLinear(), Follower.INSTANCE.getHeading());
-
-//        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x,gamepad2.left_stick_y), new Vector2D(-gamepad2.right_stick_x,0));
-
-//        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
-
-//        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-        telemetry.addLine(OuttakeWheel.INSTANCE.debugString());
-//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
-////        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
-////        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
-////        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-        telemetry.addData("Flywheel withinrange: ", OuttakeWheel.INSTANCE.withinRangeBool());
-        telemetry.addData("Rotary withinrange: ", Rotary.INSTANCE.withinRangeBool());
-        telemetry.update();
-//        timer.reset();
-
-        //swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
     }
 
 }

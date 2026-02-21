@@ -40,7 +40,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
     private double movementScaler = 1.0;
     public static double outtakePreset1 = 1900;
     public static double outtakePreset2 = 2560;
-    
+
 
     @Override
     public void onInit() {
@@ -53,7 +53,7 @@ public class NextFTCTeleOp extends NextFTCOpMode {
         );
 
 
-        Robot.INSTANCE.OpModeSafeInit();
+        Robot.INSTANCE.OpModeFullInit();
 
 
     }

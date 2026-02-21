@@ -493,11 +493,11 @@ public class SwervePod {
      */
     public String debugText() {
         return "Servo Voltage: " + sIn.getVoltage() +
-                "\nCurrent Pos: " + currentPos.inDeg + "° (" + currentPos.inDeg + " rad)" +
-                "\nTarget Pos: " + targetPos.inDeg + "° (" + targetPos.inDeg + " rad)" +
-                "\nSet Target Pos: " + setTargetPos.inDeg + "° (" + setTargetPos.inDeg + " rad)" +
+                "\nCurrent Pos: " + currentPos.inDeg + "° (" + currentPos.inRad + " rad)" +
+                "\nTarget Pos: " + targetPos.inDeg + "° (" + targetPos.inRad + " rad)" +
+                "\nSet Target Pos: " + setTargetPos.inDeg + "° (" + setTargetPos.inRad + " rad)" +
                 "\nPDFL Output: " + sCon.runPDFL(errorMin) +
-                "\nServo Offset: " + servoOffset.inDeg + "° (" + servoOffset.inDeg + " rad)" +
+                "\nServo Offset: " + servoOffset.inDeg + "° (" + servoOffset.inRad + " rad)" +
                 "\nMotor Direction: " + motorDirection +
                 "\n" + sCon.debugText();
     }

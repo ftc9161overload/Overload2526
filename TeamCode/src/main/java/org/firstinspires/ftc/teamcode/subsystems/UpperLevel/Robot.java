@@ -13,6 +13,9 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 
 import dev.nextftc.bindings.BindingManager;
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.subsystems.SubsystemGroup;
 import dev.nextftc.ftc.ActiveOpMode;
@@ -57,6 +60,7 @@ public class Robot extends SubsystemGroup {
 
     private boolean teleSlowmode = false;
     private boolean teleOp = false;
+
 
     /**
      * Initialization method called when the subsystem is first created
@@ -104,6 +108,8 @@ public class Robot extends SubsystemGroup {
 
         Follower.INSTANCE.turnOffLinear.schedule();
         Follower.INSTANCE.turnOffHeading.schedule();
+
+        Rotary.INSTANCE.startOpMode.schedule();
 
         teleOp = true;
 
@@ -197,6 +203,23 @@ public class Robot extends SubsystemGroup {
     public static TEAMCOLOR teamColor = TEAMCOLOR.BLUE;
 
 
+    public void setAuton() {
+        OuttakeWheel.INSTANCE.targetSpeed = 0;
+        swerveDrivetrain = new SwerveDrivetrain();
+
+        Follower.INSTANCE.turnOnLinear.schedule();
+        Follower.INSTANCE.turnOnHeading.schedule();
+        Follower.INSTANCE.setHeading(0).schedule();
+        Follower.INSTANCE.setLinear(0,0).schedule();
+        Odometry.INSTANCE.reset.schedule();
+
+        Odometry.INSTANCE.initReal();
+        Odometry.INSTANCE.reset.schedule();
+//        RotarySubsystem.INSTANCE.reset();
+        Rotary.INSTANCE.home.schedule();
+    }
+
+
 
     /**
      * Sets the team color for the robot and propagates it to dependent subsystems
@@ -239,6 +262,9 @@ public class Robot extends SubsystemGroup {
                     ActiveOpMode.gamepad2().left_stick_y  * (teleSlowmode ? 0.5 : 1),
                     ActiveOpMode.gamepad2().right_stick_x  * (teleSlowmode ? 0.5 : 1)
             );
+        } else {
+            Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
+            swerveDrivetrain.runDrive(Follower.INSTANCE.getLinear(), Follower.INSTANCE.getHeading());
         }
         Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
 

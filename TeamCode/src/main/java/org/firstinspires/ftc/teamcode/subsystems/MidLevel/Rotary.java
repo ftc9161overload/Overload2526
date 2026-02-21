@@ -11,13 +11,14 @@ import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 
+import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
-import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.core.commands.Command;
 
@@ -169,6 +170,8 @@ public class Rotary implements Subsystem {
      * When true, color sensors will update on next stop
      */
     private boolean shouldUpdateColors = true;
+
+    public static double PICKUP_DELAY = 0.7;
 
     // ========== HOMING STATE VARIABLES ==========
 
@@ -338,6 +341,9 @@ public class Rotary implements Subsystem {
         mCon.setPDFL(p, d, fn, l);
     });
 
+    public Command startOpMode = new InstantCommand(() -> {
+        homingDone = false;
+    });
     // ========== HOMING ROUTINE ==========
 
     /**
@@ -356,6 +362,7 @@ public class Rotary implements Subsystem {
                 });
     }
 
+
     /**
      * Phase 2 of homing: Rotate forward slowly until edge is found.
      * Distance sensor reads > 0.5" when edge is detected.
@@ -366,7 +373,7 @@ public class Rotary implements Subsystem {
                     findEdge = true;
                     distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
                 })
-                .setIsDone(() -> distSensorOutput > 0.5 && CHAMBERS[1].ball != Ball.NULL)
+                .setIsDone(() -> distSensorOutput > 0.5 || CHAMBERS[1].ball != Ball.NULL)
                 .setStop((interrupted) -> {
                     findEdge = false;
                 });
@@ -389,6 +396,24 @@ public class Rotary implements Subsystem {
             findWall(),
             findEdge(),
             finishHoming
+    );
+
+    // ========== CHAMBER SWITCHING ==========
+
+
+    /**
+     * Rotates to the next chamber (1→2→3→1).
+     * Useful for manual cycling through chambers.
+     */
+    public Command nextChamber = new InstantCommand(() -> {
+        Chamber(currentChamber == 3 ? 1 : currentChamber + 1);
+    });
+    // Rotates the rotary to collect balls
+    public Command rotateRotary = new SequentialGroup(
+            new Delay(PICKUP_DELAY),
+            nextChamber,
+            new Delay(PICKUP_DELAY),
+            nextChamber
     );
 
     // ========== CHAMBER SELECTION ==========
@@ -425,13 +450,7 @@ public class Rotary implements Subsystem {
         Chamber(currentChamber == 1 ? 3 : currentChamber - 1);
     });
 
-    /**
-     * Rotates to the next chamber (1→2→3→1).
-     * Useful for manual cycling through chambers.
-     */
-    public Command nextChamber = new InstantCommand(() -> {
-        Chamber(currentChamber == 3 ? 1 : currentChamber + 1);
-    });
+
 
     /**
      * Rotates to whichever chamber contains a GREEN ball.
@@ -486,18 +505,6 @@ public class Rotary implements Subsystem {
     });
 
     // ========== COLOR DETECTION ==========
-
-    /**
-     * Checks if value 'a' is within tolerance of value 'b'.
-     *
-     * @param a   First value
-     * @param b   Second value
-     * @param tol Tolerance (±)
-     * @return true if |a - b| <= tol
-     */
-    private boolean close(double a, double b, double tol) {
-        return Math.abs(a - b) <= tol;
-    }
 
     private double[] getColor(NormalizedColorSensor c) {
         NormalizedRGBA colors = c.getNormalizedColors();

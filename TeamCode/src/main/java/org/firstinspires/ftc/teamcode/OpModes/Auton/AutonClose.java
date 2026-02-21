@@ -12,9 +12,11 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Launcher;
+import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
@@ -28,33 +30,15 @@ public class AutonClose extends NextFTCOpMode {
     JoinedTelemetry joinedTelemetry;
     public AutonClose() {
         addComponents(
-            new SubsystemComponent(Intake.INSTANCE, Launcher.INSTANCE, OuttakeWheel.INSTANCE,Odometry.INSTANCE, Follower.INSTANCE),
+            new SubsystemComponent(Robot.INSTANCE),
             BulkReadComponent.INSTANCE,
             BindingsComponent.INSTANCE
         );
     }
-    private double movementScaler = 1.0;
-    public static double outtakePreset1 = 1900;
-    public static double outtakePreset2 = 2560;
 
-    private Timer timer = new Timer();
 
-    private static Launcher launcher;
-    private static SwerveDrivetrain swerveDrivetrain;
 
-    // Time Delay
-    private Command time = new InstantCommand(() -> {
-        timer.reset();
-        boolean b = timer.hasElapsedSeconds(0.5);
-    });
 
-    // Rotates the rotary to collect balls
-    private Command rotate = new SequentialGroup(
-            time,
-            Rotary.INSTANCE.nextChamber,
-            time,
-            Rotary.INSTANCE.nextChamber
-    );
 
     // Should score in the blue goal
     private Command autonCommand = new SequentialGroup(
@@ -70,7 +54,7 @@ public class AutonClose extends NextFTCOpMode {
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
 
             Follower.INSTANCE.setLinear(-34, 0),
-            rotate,
+            Rotary.INSTANCE.rotateRotary,
 
             Follower.INSTANCE.setLinear(34, 19),
             Follower.INSTANCE.setHeading(Math.toRadians(140)),
@@ -81,7 +65,7 @@ public class AutonClose extends NextFTCOpMode {
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
 
             Follower.INSTANCE.setLinear(-34, 0),
-            rotate,
+            Rotary.INSTANCE.rotateRotary,
 
             Follower.INSTANCE.setLinear(34, 43),
             Follower.INSTANCE.setHeading(Math.toRadians(140)),
@@ -92,7 +76,7 @@ public class AutonClose extends NextFTCOpMode {
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
 
             Follower.INSTANCE.setLinear(-34, 0),
-            rotate,
+            Rotary.INSTANCE.rotateRotary,
 
             Follower.INSTANCE.setLinear(34, 67),
             Follower.INSTANCE.setHeading(Math.toRadians(180)),
@@ -111,20 +95,7 @@ public class AutonClose extends NextFTCOpMode {
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
-        OuttakeWheel.INSTANCE.targetSpeed = 0;
-        swerveDrivetrain = new SwerveDrivetrain();
-
-        Follower.INSTANCE.turnOnLinear.schedule();
-        Follower.INSTANCE.turnOnHeading.schedule();
-        Follower.INSTANCE.setHeading(0).schedule();
-        Follower.INSTANCE.setLinear(0,0).schedule();
-        Odometry.INSTANCE.reset.schedule();
-
-        Odometry.INSTANCE.initReal();
-        Odometry.INSTANCE.reset.schedule();
-//        RotarySubsystem.INSTANCE.reset();
-        Rotary.INSTANCE.home.schedule();
-        joinedTelemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+        Robot.INSTANCE.setAuton();
 
         //RotarySubsystem.INSTANCE.resetOffset();
         Odometry.INSTANCE.setPos(22,125, Math.toRadians(144));
@@ -132,14 +103,7 @@ public class AutonClose extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        if (gamepad2.a) {
-            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.BLUE;
-        } else if (gamepad2.y) {
-            Follower.INSTANCE.teamcolor = Follower.TEAMCOLOR.RED;
-        }
-        joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
-        joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
-        joinedTelemetry.update();
+
     }
 
     @Override
@@ -153,29 +117,7 @@ public class AutonClose extends NextFTCOpMode {
     @Override
     public void onUpdate() {
 
-        Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
 
-
-        swerveDrivetrain.runDrive(Follower.INSTANCE.getLinear(), Follower.INSTANCE.getHeading());
-
-//        swerveDrivetrain.runDrive(Follower.INSTANCE.teleOpLinear(-gamepad2.left_stick_x,gamepad2.left_stick_y), new Vector2D(-gamepad2.right_stick_x,0));
-
-//        swerveDrivetrain.simpleRunDrive(-gamepad2.left_stick_x,gamepad2.left_stick_y,-gamepad2.right_stick_x);
-
-//        telemetry.addData("FPS", timer.getTime()/ Math.pow(10.0,9));
-//        telemetry.addLine(OuttakeWheelSubsystem.INSTANCE.debugString());
-//        telemetry.addData("Rotary", RotarySubsystem.INSTANCE.debugText());
-////        telemetry.addData("swerve Output: ", swerveDrivetrain.debugString());
-//        telemetry.addData("ODO Output: ", Odometry.INSTANCE.getPos() );
-////        telemetry.addData("lerp timer: ", OuttakeWheelSubsystem.INSTANCE.lerp.time);
-////        telemetry.addData("lerp oldTime: ", OuttakeWheelSubsystem.INSTANCE.lerp.oldTime);
-//        telemetry.addData("Flywheel withinrange: ", OuttakeWheelSubsystem.INSTANCE.withinRangeBool());
-//        telemetry.addData("Rotary withinrange: ", RotarySubsystem.INSTANCE.withinRangeBool());
-        telemetry.addData("Follower", Follower.INSTANCE.debugText());
-        telemetry.update();
-//        timer.reset();
-
-        //swerveDrivetrain.simpleRunDrive(gamepad2.left_stick_x, -gamepad2.left_stick_y, gamepad2.right_stick_x, movementScaler);
     }
 
 }
