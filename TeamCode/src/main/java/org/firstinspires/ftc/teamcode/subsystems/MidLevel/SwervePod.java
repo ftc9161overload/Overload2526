@@ -329,6 +329,34 @@ public class SwervePod {
         servo.setPower(reverseServo ? sCon.runPDFL(errorMin) : -sCon.runPDFL(errorMin));
     }
 
+    public void unpoweredUpdate() {
+        sCon.setPDFL(p,d,f,l);
+
+
+        currentPos = readServoPosition();
+
+        Angle diffTargetPos = Angle.fromRad(Math.abs(MathUtil.piWraparound(targetPos.inRad - currentPos.inRad)));
+        Angle diffFlippedTargetPos = Angle.fromRad(Math.abs(MathUtil.piWraparound(flippedTargetPos.inRad - currentPos.inRad)));
+
+        // Choose flip vs normal based on which is faster (only when motor isn't moving)
+        if (motor.getVelocity() < UniConstants.servoMovementDeadzone) {
+            if (diffFlippedTargetPos.inRad < diffTargetPos.inRad && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
+                setTargetPos = flippedTargetPos;
+                motorDirection = -1;
+                flipTimer.reset();
+            } else if (diffFlippedTargetPos.inRad >= diffTargetPos.inRad && flipTimer.hasElapsedSeconds(flipCooldownSeconds)) {
+                setTargetPos = targetPos;
+                motorDirection = 1;
+                flipTimer.reset();
+            }
+        }
+
+        // Update servo controller
+        sCon.setTarget(setTargetPos.inRad);
+        sCon.update(currentPos.inRad);
+
+    }
+
 
     // ========================================================================
     // DRIVE MODE IMPLEMENTATIONS

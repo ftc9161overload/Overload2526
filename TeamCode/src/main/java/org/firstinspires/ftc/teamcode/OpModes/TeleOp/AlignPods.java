@@ -14,8 +14,8 @@ import dev.nextftc.ftc.NextFTCOpMode;
 public class AlignPods extends NextFTCOpMode {
     private static SwerveDrivetrain swerveDrivetrain;
     SwervePod[] pods;
-    public static double p = 0,d = 0,f = 0,l = 0;
-    public static boolean runPDFL = false;
+
+    public static boolean runPower = false;
     public static double target = 0;
 
     JoinedTelemetry joinedTelemetry;
@@ -41,19 +41,22 @@ public class AlignPods extends NextFTCOpMode {
             SwerveDrivetrain.brOffset = (int) pods[3].getAnalogInPos().inDeg;
         }
 
-        swerveDrivetrain.setPDFLs(p,d,f,l);
-        swerveDrivetrain.updatePods();
-        if (runPDFL) {
-//            swerveDrivetrain.set(target);
+
+        if (runPower) {
+            swerveDrivetrain.updatePods();
+//
         } else {
-//            swerveDrivetrain.setPosZero();
-//            swerveDrivetrain.setServoPowZero();
+            swerveDrivetrain.updatePodsUnpowered();
         }
 
-        joinedTelemetry.addData("FL currentPos: ", Math.toDegrees(pods[0].getAnalogInPos().inDeg));
-        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[1].getAnalogInPos().inDeg));
-        joinedTelemetry.addData("BL currentPos: ", Math.toDegrees(pods[2].getAnalogInPos().inDeg));
-        joinedTelemetry.addData("FR currentPos: ", Math.toDegrees(pods[3].getAnalogInPos().inDeg));
+        joinedTelemetry.addData("FL currentPos Deg: ", pods[0].getAnalogInPos().inDeg);
+        joinedTelemetry.addData("FL currentPos Rad: ", pods[0].getAnalogInPos().inRad);
+        joinedTelemetry.addData("FR currentPos Deg: ", pods[1].getAnalogInPos().inDeg);
+        joinedTelemetry.addData("FR currentPos Rad: ", pods[1].getAnalogInPos().inRad);
+        joinedTelemetry.addData("BL currentPos Deg: ", pods[2].getAnalogInPos().inDeg);
+        joinedTelemetry.addData("BL currentPos Rad: ", pods[2].getAnalogInPos().inRad);
+        joinedTelemetry.addData("BR currentPos Deg: ", pods[3].getAnalogInPos().inDeg);
+        joinedTelemetry.addData("BR currentPos Rad: ", pods[3].getAnalogInPos().inRad);
 
         joinedTelemetry.addData("current FL: ", SwerveDrivetrain.flOffset);
         joinedTelemetry.addData("current FR: ", SwerveDrivetrain.frOffset);

@@ -138,11 +138,12 @@ public class SwerveDrivetrain implements Subsystem {
         fr.setServoMKII();
         fr.setServoReverse(false);
 //        fr.setPDFL(0.4, 0.005, 0, 0.2);
-        fr.setPDFL(0.5, 0.00, 0, 0.15);
+        fr.setPDFL(0.3, 0.00, 0, 0.1);
         fr.setErrorMin(0.005);
 
         // Front Left pod configuration
-        fl.setPDFL(0.6, 0.005, 0, 0.15);
+        fl.setServoReverse(true);
+        fl.setPDFL(0.1, 0.005, 0, 0.1);
         fl.setErrorMin(0.005);
 
         // Back Right pod configuration
@@ -352,6 +353,13 @@ public class SwerveDrivetrain implements Subsystem {
         frontRight.update();
         backLeft.update();
         backRight.update();
+    }
+
+    public void updatePodsUnpowered() {
+        frontLeft.unpoweredUpdate();
+        frontRight.unpoweredUpdate();
+        backLeft.unpoweredUpdate();
+        backRight.unpoweredUpdate();
     }
 
 

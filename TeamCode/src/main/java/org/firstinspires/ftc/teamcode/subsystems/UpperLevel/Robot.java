@@ -110,6 +110,7 @@ public class Robot extends SubsystemGroup {
         Follower.INSTANCE.turnOffHeading.schedule();
 
         Rotary.INSTANCE.startOpMode.schedule();
+        Rotary.INSTANCE.homingDone = false;
 
         teleOp = true;
 

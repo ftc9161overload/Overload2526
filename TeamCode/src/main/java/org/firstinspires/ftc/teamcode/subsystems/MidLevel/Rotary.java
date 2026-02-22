@@ -188,7 +188,7 @@ public class Rotary implements Subsystem {
     /**
      * True after homing is complete and offset is set
      */
-    private boolean homingDone = false;
+    public boolean homingDone = false;
 
     /**
      * Cached distance sensor reading (inches)
