@@ -48,6 +48,12 @@ public class Follower implements Subsystem {
     /** Current robot position and orientation */
     private Pose2D currentPose = new Pose2D(0, 0, 0);
 
+    /**
+     * Starting pose offset - subtracted from every odometry update so the robot
+     * treats this position as (0, 0, 0). Set via setStartingPose().
+     */
+    private Pose2D startingPose = new Pose2D(0, 0, 0);
+
     /** Target position and orientation for autonomous control */
     private Pose2D targetPose = new Pose2D(0, 0, 0);
 
@@ -97,12 +103,12 @@ public class Follower implements Subsystem {
     public static double pLin = 0.0, dLin  = 0, fLin = 0, lLin = 0.35;
 
     /** PID controller for linear (x,y) movement with feedforward */
-    private final PDFLController linearCon = new PDFLController(0.0, 0, 0, 0.35);
+    private final PDFLController linearCon = new PDFLController(0.0, 0, 0, 0.5);
 
     /** PID controller for rotational movement (heading) with feedforward */
 
     public static double pHead, dHead, fHead, lHead;
-    private final PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0, 0, 0, 0.35);
+    private final PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0, 0, 0, 0.5);
 
 
     // ========================================================================
@@ -187,7 +193,7 @@ public class Follower implements Subsystem {
      * @param pose Current robot pose (position + heading)
      */
     public void update(Pose2D pose) {
-        this.currentPose = pose;
+        this.currentPose = applyStartingOffset(pose);
     }
 
     /**
@@ -198,7 +204,7 @@ public class Follower implements Subsystem {
      * @param heading Current heading angle
      */
     public void update(Distance xPos, Distance yPos, Angle heading) {
-        this.currentPose = new Pose2D(xPos, yPos, heading);
+        this.currentPose = applyStartingOffset(new Pose2D(xPos, yPos, heading));
     }
 
     /**
@@ -209,7 +215,59 @@ public class Follower implements Subsystem {
      * @param heading Heading in radians
      */
     public void update(double xPos, double yPos, double heading) {
-        this.currentPose = new Pose2D(xPos, yPos, heading);
+        this.currentPose = applyStartingOffset(new Pose2D(xPos, yPos, heading));
+    }
+
+    /**
+     * Applies the starting pose offset to a raw odometry pose.
+     * Subtracts the starting position and normalizes the heading delta,
+     * so the robot treats startingPose as (0, 0, 0).
+     */
+    private Pose2D applyStartingOffset(Pose2D raw) {
+        double x = raw.x.inIn - startingPose.x.inIn;
+        double y = raw.y.inIn - startingPose.y.inIn;
+        double heading = normAngle(Angle.fromRad(raw.heading.inRad - startingPose.heading.inRad)).inRad;
+        return new Pose2D(x, y, heading);
+    }
+
+    /**
+     * Sets the starting pose offset. All subsequent update() calls will be
+     * measured relative to this pose (i.e., this position becomes the origin).
+     * Useful for setting a known starting position at the beginning of an auto.
+     * @param pose The pose to treat as (0, 0, 0)
+     */
+    public Command setStartingPose(Pose2D pose) {
+        return new InstantCommand(() -> {startingPose = pose;});
+    }
+
+    /**
+     * Sets the starting pose using typed Distance and Angle values.
+     * @param x Starting x position
+     * @param y Starting y position
+     * @param heading Starting heading angle
+     * @return InstantCommand that sets the starting pose immediately
+     */
+    public Command setStartingPose(Distance x, Distance y, Angle heading) {
+        return setStartingPose(new Pose2D(x, y, heading));
+    }
+
+    /**
+     * Sets the starting pose using raw doubles (inches and radians).
+     * @param xIn Starting x in inches
+     * @param yIn Starting y in inches
+     * @param headingRad Starting heading in radians
+     * @return InstantCommand that sets the starting pose immediately
+     */
+    public Command setStartingPose(double xIn, double yIn, double headingRad) {
+        return setStartingPose(new Pose2D(xIn, yIn, headingRad));
+    }
+
+    /**
+     * Returns the currently configured starting pose offset.
+     * @return Starting pose
+     */
+    public Pose2D getStartingPose() {
+        return startingPose;
     }
 
 
@@ -380,46 +438,52 @@ public class Follower implements Subsystem {
     /**
      * Points robot heading toward the goal position.
      * Calculates angle from current position to goal.
+     * @return InstantCommand that updates the heading target immediately
      */
-    public void turnToGoal() {
-        // Calculate angle from robot to goal
-        double dx = goalPose.x.inIn - currentPose.x.inIn;
-        double dy = goalPose.y.inIn - currentPose.y.inIn;
-        Angle angleToGoal = Angle.fromRad(new Vector2D(dx, dy).angle());
+    public Command turnToGoal() {
+        return new InstantCommand(() -> {
+            // Calculate angle from robot to goal
+            double dx = goalPose.x.inIn - currentPose.x.inIn;
+            double dy = goalPose.y.inIn - currentPose.y.inIn;
+            Angle angleToGoal = Angle.fromRad(new Vector2D(dx, dy).angle());
 
-        // Update target with new heading
-        Pose2D newTarget = targetPose.withHeading(angleToGoal);
+            // Update target with new heading
+            Pose2D newTarget = targetPose.withHeading(angleToGoal);
 
-        // Mirror for red alliance if needed
-        if (teamcolor == Robot.TEAMCOLOR.RED) {
-            targetPose = flipPose(newTarget);
-        } else {
-            targetPose = newTarget;
-        }
+            // Mirror for red alliance if needed
+            if (teamcolor == Robot.TEAMCOLOR.RED) {
+                targetPose = flipPose(newTarget);
+            } else {
+                targetPose = newTarget;
+            }
+        });
     }
 
     /**
      * Sets the goal position for auto-aiming using Pose2D.
      * @param goal Goal pose (only position is used)
+     * @return InstantCommand that sets the goal immediately
      */
-    public void setGoal(Pose2D goal) {
-        this.goalPose = goal;
+    public Command setGoal(Pose2D goal) {
+        return new InstantCommand(() -> this.goalPose = goal);
     }
 
     /**
      * Sets the goal position for auto-aiming.
      * @param x Goal x position
      * @param y Goal y position
+     * @return InstantCommand that sets the goal immediately
      */
-    public void setGoal(Distance x, Distance y) {
-        this.goalPose = new Pose2D(x, y);
+    public Command setGoal(Distance x, Distance y) {
+        return setGoal(new Pose2D(x, y));
     }
 
     /**
      * Convenience overload accepting raw doubles (inches).
+     * @return InstantCommand that sets the goal immediately
      */
-    public void setGoal(double x, double y) {
-        this.goalPose = new Pose2D(x, y);
+    public Command setGoal(double x, double y) {
+        return setGoal(new Pose2D(x, y));
     }
 
 
@@ -585,9 +649,11 @@ public class Follower implements Subsystem {
         panelsField.line(targetPose.x.inIn, targetPose.y.inIn);              // Draw line to target
         panelsField.update();                                                // Refresh display
 
-        // Velocity crap
-        xvel = Distance.fromIn((currentPose.x.inIn - lastPose.y.inIn)/timer.getTimeSeconds());
-        yvel = Distance.fromIn((currentPose.y.inIn - lastPose.y.inIn)/timer.getTimeSeconds());
+        // Velocity calculation
+        double dt = timer.getTimeSeconds();
+        xvel = Distance.fromIn((currentPose.x.inIn - lastPose.x.inIn) / dt);
+        yvel = Distance.fromIn((currentPose.y.inIn - lastPose.y.inIn) / dt);
+        lastPose = currentPose;
         timer.reset();
     }
 

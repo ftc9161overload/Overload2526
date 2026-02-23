@@ -198,7 +198,13 @@ public class OuttakeWheel implements Subsystem {
 
         // Apply base power + PDFL correction to motor
         // PDFL adds small correction to minimize velocity error
-        motor.setPower(power + pdfl.runPDFL(10));
+        if (targetSpeed <= 100) {
+            motor.setPower(power);
+        } else {
+            motor.setPower(power + pdfl.runPDFL(10));
+
+        }
+
     }
 
     // ========== DEBUG INFORMATION ==========

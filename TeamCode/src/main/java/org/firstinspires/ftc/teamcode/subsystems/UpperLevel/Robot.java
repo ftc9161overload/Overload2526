@@ -82,6 +82,12 @@ public class Robot extends SubsystemGroup {
         OpModeSafeInit();
         Rotary.INSTANCE.home.schedule();
 
+        Follower.INSTANCE.turnOffHeading.schedule();
+        Follower.INSTANCE.turnOffLinear.schedule();
+
+        Odometry.INSTANCE.reset.schedule();
+
+
     }
 
     /**
@@ -208,12 +214,11 @@ public class Robot extends SubsystemGroup {
         Follower.INSTANCE.turnOnHeading.schedule();
         Follower.INSTANCE.setHeading(0).schedule();
         Follower.INSTANCE.setLinear(0,0).schedule();
-        Odometry.INSTANCE.reset.schedule();
 
         Odometry.INSTANCE.initReal();
         Odometry.INSTANCE.reset.schedule();
 //        RotarySubsystem.INSTANCE.reset();
-        Rotary.INSTANCE.home.schedule();
+
     }
 
 
