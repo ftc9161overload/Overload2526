@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.Util.MathUtil;
 import org.firstinspires.ftc.teamcode.Util.PDFLControllerRadial;
 import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
-import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -188,7 +187,7 @@ public class Rotary implements Subsystem {
     /**
      * True after homing is complete and offset is set
      */
-    public boolean homingDone = false;
+    private boolean startOperation = false;
 
     /**
      * Cached distance sensor reading (inches)
@@ -342,7 +341,7 @@ public class Rotary implements Subsystem {
     });
 
     public Command startOpMode = new InstantCommand(() -> {
-        homingDone = false;
+        startOperation = true;
     });
     // ========== HOMING ROUTINE ==========
 
@@ -385,7 +384,7 @@ public class Rotary implements Subsystem {
      */
     private final Command finishHoming = new InstantCommand(() -> {
         offset = currentPosition + 0.16;
-        homingDone = true;
+
     });
 
     /**
@@ -611,7 +610,7 @@ public class Rotary implements Subsystem {
             distSensorOutput = distSensor.getDistance(DistanceUnit.INCH);
             updateChamberColor();
 
-        } else if (homingDone) {
+        } else if (!startOperation) {
             // Homing complete: hold position at zero power
             motor.setPower(0);
 

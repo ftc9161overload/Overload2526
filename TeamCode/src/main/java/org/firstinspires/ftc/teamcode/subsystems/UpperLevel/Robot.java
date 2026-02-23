@@ -13,9 +13,6 @@ import org.firstinspires.ftc.teamcode.subsystems.MidLevel.OuttakeWheel;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Rotary;
 
 import dev.nextftc.bindings.BindingManager;
-import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.subsystems.SubsystemGroup;
 import dev.nextftc.ftc.ActiveOpMode;
@@ -110,7 +107,6 @@ public class Robot extends SubsystemGroup {
         Follower.INSTANCE.turnOffHeading.schedule();
 
         Rotary.INSTANCE.startOpMode.schedule();
-        Rotary.INSTANCE.homingDone = false;
 
         teleOp = true;
 
