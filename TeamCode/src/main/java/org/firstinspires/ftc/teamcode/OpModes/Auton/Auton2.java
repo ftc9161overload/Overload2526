@@ -21,7 +21,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name = "CloseAuton2", group = "Auton")
+@Autonomous(name = "Auton2", group = "Auton")
 @Configurable
 public class Auton2 extends NextFTCOpMode {
     public Auton2() {

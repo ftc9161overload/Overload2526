@@ -310,7 +310,7 @@ public class Robot extends SubsystemGroup {
         if(intakeTelemetry) {
        //     joinedTelemetry.addLine(IntakeSubsystem.INSTANCE.debugText());
         }
-
+        loopTimer.reset();
         joinedTelemetry.update();
     }
 }

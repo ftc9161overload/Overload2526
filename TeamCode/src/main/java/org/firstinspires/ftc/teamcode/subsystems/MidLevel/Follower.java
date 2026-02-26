@@ -100,15 +100,17 @@ public class Follower implements Subsystem {
     // CONTROLLERS
     // ========================================================================
 
-    public static double pLin = 0.0, dLin  = 0, fLin = 0, lLin = 0.35;
+    public static double pLin = 0.18, dLin  = .01, fLin = 0, lLin = 0.1;
 
     /** PID controller for linear (x,y) movement with feedforward */
-    private final PDFLController linearCon = new PDFLController(0.0, 0, 0, 0.5);
+    private final PDFLController linearCon = new PDFLController(0.0, 0, 0, 0);
+
+
 
     /** PID controller for rotational movement (heading) with feedforward */
 
-    public static double pHead, dHead, fHead, lHead;
-    private final PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0, 0, 0, 0.5);
+    public static double pHead = 0.1, dHead, fHead, lHead = 0.15;
+    private final PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0, 0, 0, 0);
 
 
     // ========================================================================
@@ -116,7 +118,7 @@ public class Follower implements Subsystem {
     // ========================================================================
 
     /** Minimum linear error before controller output goes to zero */
-    private final Distance xErrorMin = Distance.fromIn(0.5);
+    private final Distance linearErrorMin = Distance.fromIn(0.25);
 
     /** Minimum heading error before controller output goes to zero */
     private final Angle headingErrorMin = Angle.fromRad(0.1);
@@ -133,6 +135,8 @@ public class Follower implements Subsystem {
     public void initialize() {
         // Configure field visualization to match PedroPathing coordinate system
         panelsField.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
+        linearCon.setTarget(0);
+
     }
 
 
@@ -224,9 +228,9 @@ public class Follower implements Subsystem {
      * so the robot treats startingPose as (0, 0, 0).
      */
     private Pose2D applyStartingOffset(Pose2D raw) {
-        double x = raw.x.inIn - startingPose.x.inIn;
-        double y = raw.y.inIn - startingPose.y.inIn;
-        double heading = normAngle(Angle.fromRad(raw.heading.inRad - startingPose.heading.inRad)).inRad;
+        double x = raw.x.inIn + startingPose.x.inIn;
+        double y = raw.y.inIn + startingPose.y.inIn;
+        double heading = normAngle(Angle.fromRad(raw.heading.inRad + startingPose.heading.inRad)).inRad;
         return new Pose2D(x, y, heading);
     }
 
@@ -521,19 +525,19 @@ public class Follower implements Subsystem {
      */
     public Vector2D getLinear() {
         if (linearFollower) {
-            // Calculate current distance from origin
-            double distFromOrigin = Math.hypot(currentPose.x.inIn, currentPose.y.inIn);
 
-            // Update controller with current distance
-            linearCon.update(distFromOrigin);
+
 
             // Calculate angle toward target
-            double dx = targetPose.x.inIn - currentPose.x.inIn;
-            double dy = targetPose.y.inIn - currentPose.y.inIn;
-            double angleToTarget = Math.atan2(dx, dy);
+            double dx = -targetPose.x.inIn + currentPose.x.inIn;
+            double dy = -targetPose.y.inIn + currentPose.y.inIn;
+            double angleToTarget = Math.atan2(dx, -dy);
 
+            linearCon.update(Math.hypot(dx,dy));
             // Return velocity vector pointing toward target
-            return new Vector2D(linearCon.runPDFL(xErrorMin.inIn), 0).rotate(angleToTarget);
+
+            return new Vector2D(linearCon.runPDFL(linearErrorMin.inIn), 0).rotate(angleToTarget + Math.toRadians(90) - currentPose.heading.inRad);
+
         }
         return new Vector2D(0, 0);
     }
@@ -640,8 +644,7 @@ public class Follower implements Subsystem {
         headingCon.setPDFL(pHead, dHead, fHead, lHead);
 
 
-        double targetDistFromOrigin = Math.hypot(targetPose.x.inIn, targetPose.y.inIn);
-        linearCon.setTarget(targetDistFromOrigin);
+
 
         // Update field visualization (uses inches for display)
         panelsField.moveCursor(currentPose.x.inIn, currentPose.y.inIn);      // Show current position
@@ -668,37 +671,111 @@ public class Follower implements Subsystem {
      * @return Multi-line debug string
      */
     public String debugText() {
-        // Calculate current errors
-        double dx = currentPose.x.inIn - targetPose.x.inIn;
-        double dy = currentPose.y.inIn - targetPose.y.inIn;
-        double linearError = Math.hypot(dx, dy);
+        // ── Pose errors ──────────────────────────────────────────────────────
+        double dx           = targetPose.x.inIn - currentPose.x.inIn;
+        double dy           = targetPose.y.inIn - currentPose.y.inIn;
+        double linearError  = Math.hypot(dx, dy);
         double headingError = normAngle(Angle.fromRad(targetPose.heading.inRad - currentPose.heading.inRad)).inRad;
 
-        // Format all state information
+        // ── Angle to target ───────────────────────────────────────────────────
+        double angleToTargetRad = Math.atan2(dx, dy);
+        double angleToTargetDeg = Math.toDegrees(angleToTargetRad);
+
+        // ── Goal geometry ─────────────────────────────────────────────────────
+        double gx              = goalPose.x.inIn - currentPose.x.inIn;
+        double gy              = goalPose.y.inIn - currentPose.y.inIn;
+        double distToGoal      = Math.hypot(gx, gy);
+        double angleToGoalRad  = Math.atan2(gx, gy);
+        double angleToGoalDeg  = Math.toDegrees(angleToGoalRad);
+        double headingGoalErr  = normAngle(Angle.fromRad(angleToGoalRad - currentPose.heading.inRad)).inRad;
+
+        // ── Velocity magnitude ────────────────────────────────────────────────
+        double speed = Math.hypot(xvel.inIn, yvel.inIn);
+
+        // ── Controller outputs (call once, reuse) ─────────────────────────────
+        Vector2D linearOut  = getLinear();
+        Vector2D headingOut = getHeading();
+        double   linearMag  = Math.hypot(linearOut.x, linearOut.y);
+
+        // ── At-target flags ───────────────────────────────────────────────────
+        boolean atLinearTarget  = linearError  < linearErrorMin.inIn;
+        boolean atHeadingTarget = Math.abs(headingError) < headingErrorMin.inRad;
+
         return String.format(
-                "=== Follower Debug ===\n" +
-                        "Position: (%.2f\", %.2f\")\n" +
-                        "Target: (%.2f\", %.2f\")\n" +
-                        "Heading: %.2f° (%.3f rad)\n" +
-                        "Target Heading: %.2f° (%.3f rad)\n" +
-                        "Linear Error: %.2f\"\n" +
-                        "Heading Error: %.2f° (%.3f rad)\n" +
-                        "Linear Follower: %b\n" +
-                        "Heading Follower: %b\n" +
-                        "Field Centric: %b\n" +
-                        "Team: %s\n" +
-                        "Goal: (%.2f\", %.2f\")",
-                currentPose.x.inIn, currentPose.y.inIn,
-                targetPose.x.inIn, targetPose.y.inIn,
+                        "╔══════════════════════════════════════╗\n"  +
+                        "║          FOLLOWER  TELEMETRY         ║\n"  +
+                        "╚══════════════════════════════════════╝\n"  +
+
+                        "── POSE ────────────────────────────────\n"  +
+                        "  Current  : (%.2f\", %.2f\")  %.2f° (%.4f rad)\n" +
+                        "  Target   : (%.2f\", %.2f\")  %.2f° (%.4f rad)\n" +
+                        "  Starting : (%.2f\", %.2f\")  %.2f° (%.4f rad)\n" +
+
+                        "── ERRORS ──────────────────────────────\n"  +
+                        "  Linear   : %.3f\"  [thresh %.3f\"]  %s\n"  +
+                        "  Heading  : %.3f°  (%.4f rad)  [thresh %.3f rad]  %s\n" +
+                        "  Angle→Tgt: %.2f°  (%.4f rad)\n"            +
+
+                        "── VELOCITY ────────────────────────────\n"  +
+                        "  vX: %.3f in/s   vY: %.3f in/s   |v|: %.3f in/s\n" +
+
+                        "── GOAL ────────────────────────────────\n"  +
+                        "  Goal Pose       : (%.2f\", %.2f\")\n"       +
+                        "  Dist to Goal    : %.3f\"\n"                 +
+                        "  Angle to Goal   : %.2f°  (%.4f rad)\n"     +
+                        "  Heading Err→Goal: %.2f°  (%.4f rad)\n"     +
+
+                        "── CONTROLLER GAINS ────────────────────\n"  +
+                        "  Linear  P=%.4f  D=%.4f  F=%.4f  L=%.4f\n" +
+                        "  Heading P=%.4f  D=%.4f  F=%.4f  L=%.4f\n" +
+
+                        "── OUTPUTS ─────────────────────────────\n"  +
+                        "  Linear  : (%.4f, %.4f)  |mag|=%.4f\n"      +
+                        "  Linear Normal : (%.4f, %.4f) \n"      +
+                        "  Heading : %.4f\n"                           +
+
+                        "── FLAGS ───────────────────────────────\n"  +
+                        "  linearFollower=%b  headingFollower=%b\n"    +
+                        "  fieldCentric=%b    team=%s\n"               +
+                        "  atLinear=%b        atHeading=%b\n",
+
+                // POSE
+                currentPose.x.inIn,  currentPose.y.inIn,
                 currentPose.heading.inDeg, currentPose.heading.inRad,
-                targetPose.heading.inDeg, targetPose.heading.inRad,
-                linearError,
-                Math.toDegrees(headingError), headingError,
-                linearFollower,
-                headingFollower,
-                fieldCentric,
-                teamcolor,
-                goalPose.x.inIn, goalPose.y.inIn
+                targetPose.x.inIn,   targetPose.y.inIn,
+                targetPose.heading.inDeg,  targetPose.heading.inRad,
+                startingPose.x.inIn, startingPose.y.inIn,
+                startingPose.heading.inDeg, startingPose.heading.inRad,
+
+                // ERRORS
+                linearError, linearErrorMin.inIn,
+                atLinearTarget ? "IN RANGE" : "OUT",
+                Math.toDegrees(headingError), headingError, headingErrorMin.inRad,
+                atHeadingTarget ? "IN RANGE" : "OUT",
+                angleToTargetDeg, angleToTargetRad,
+
+                // VELOCITY
+                xvel.inIn, yvel.inIn, speed,
+
+                // GOAL
+                goalPose.x.inIn, goalPose.y.inIn,
+                distToGoal,
+                angleToGoalDeg, angleToGoalRad,
+                Math.toDegrees(headingGoalErr), headingGoalErr,
+
+                // GAINS
+                pLin, dLin, fLin, lLin,
+                pHead, dHead, fHead, lHead,
+
+                // OUTPUTS
+                linearOut.x, linearOut.y, linearMag,
+                linearOut.rotate(-currentPose.heading.inRad).x,linearOut.rotate(-currentPose.heading.inRad).y,
+                headingOut.x,
+
+                // FLAGS
+                linearFollower, headingFollower,
+                fieldCentric, teamcolor,
+                atLinearTarget, atHeadingTarget
         );
     }
 }

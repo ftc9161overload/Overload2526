@@ -148,7 +148,7 @@ public class SwerveDrivetrain implements Subsystem {
 
         // Back Right pod configuration
         br.setServoReverse(false);
-        br.setPDFL(0.3, 0.005, 0, 0.08);
+        br.setPDFL(0.3, 0.005, 0, 0.06);
         br.setErrorMin(0.005);
 
 

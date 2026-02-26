@@ -35,71 +35,69 @@ public class AutonClose2 extends NextFTCOpMode {
         );
     }
 
-    private static SwerveDrivetrain swerveDrivetrain;
 
     // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
-    private Command autonCommand = new SequentialGroup(
-            Follower.INSTANCE.setStartingPose(new Pose2D(Distance.fromIn(22),Distance.fromIn(130), Angle.fromDeg(144))),
-            Follower.INSTANCE.turnOnLinear,
-            Follower.INSTANCE.turnOnHeading,
+    private final Command autonCommand = new SequentialGroup(
+//            Follower.INSTANCE.turnOnLinear,
+//            Follower.INSTANCE.turnOnHeading,
 
-            Follower.INSTANCE.set(new Pose2D(Distance.fromIn(23),Distance.fromIn(-22),Angle.fromDeg(140))),
+            Follower.INSTANCE.set(new Pose2D(Distance.fromIn(0),Distance.fromIn(0),Angle.fromDeg(0))),
             Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
+            Follower.INSTANCE.withinRangeHeading(.2)
 //            Launcher.INSTANCE.Launch3(),
 //            Launcher.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.setLinear(0, -19),
-            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-
-            Follower.INSTANCE.setLinear(-34, 0),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-//            Rotary.INSTANCE.rotateRotary,
-
-            Follower.INSTANCE.setLinear(34, 19),
-            Follower.INSTANCE.setHeading(Math.toRadians(140)),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-//            Launcher.INSTANCE.Launch3(),
-//            Launcher.INSTANCE.setHalfOn,
-
-            Follower.INSTANCE.setLinear(0, -43),
-            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-
-            Follower.INSTANCE.setLinear(-34, 0),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-//            Rotary.INSTANCE.rotateRotary,
-
-            Follower.INSTANCE.setLinear(34, 43),
-            Follower.INSTANCE.setHeading(Math.toRadians(140)),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-//            Launcher.INSTANCE.Launch3(),
-//            Launcher.INSTANCE.setHalfOn,
-
-            Follower.INSTANCE.setLinear(0, -67),
-            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-
-            Follower.INSTANCE.setLinear(-34, 0),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-//            Rotary.INSTANCE.rotateRotary,
-
-            Follower.INSTANCE.setLinear(34, 67),
-            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-            Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2),
-//            Launcher.INSTANCE.Launch3(),
-
-            Intake.INSTANCE.stop
+//            Follower.INSTANCE.setLinear(0, -19),
+//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+//
+//            Follower.INSTANCE.setLinear(-34, 0),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+////            Rotary.INSTANCE.rotateRotary,
+//
+//            Follower.INSTANCE.setLinear(34, 19),
+//            Follower.INSTANCE.setHeading(Math.toRadians(140)),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+////            Launcher.INSTANCE.Launch3(),
+////            Launcher.INSTANCE.setHalfOn,
+//
+//            Follower.INSTANCE.setLinear(0, -43),
+//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+//
+//            Follower.INSTANCE.setLinear(-34, 0),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+////            Rotary.INSTANCE.rotateRotary,
+//
+//            Follower.INSTANCE.setLinear(34, 43),
+//            Follower.INSTANCE.setHeading(Math.toRadians(140)),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+////            Launcher.INSTANCE.Launch3(),
+////            Launcher.INSTANCE.setHalfOn,
+//
+//            Follower.INSTANCE.setLinear(0, -67),
+//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+//
+//            Follower.INSTANCE.setLinear(-34, 0),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+////            Rotary.INSTANCE.rotateRotary,
+//
+//            Follower.INSTANCE.setLinear(34, 67),
+//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
+//            Follower.INSTANCE.withinRangeLinear(0.5),
+//            Follower.INSTANCE.withinRangeHeading(.2),
+////            Launcher.INSTANCE.Launch3(),
+//
+//            Intake.INSTANCE.stop
     );
 
     @Override
@@ -111,10 +109,11 @@ public class AutonClose2 extends NextFTCOpMode {
         );
 
         Robot.INSTANCE.OpModeFullInit();
+        Follower.INSTANCE.turnOffLinear.schedule();
+        Follower.INSTANCE.turnOffHeading.schedule();
 
+        Follower.INSTANCE.setStartingPose(new Pose2D(Distance.fromIn(0),Distance.fromIn(0), Angle.fromDeg(0))).schedule();
 
-        // DON'T FORGET TO CHANGE THIS SO THE ROBOT KNOWS WHERE IT IS AT!!!
-        Odometry.INSTANCE.setPos(0,0, 0);
     }
 
     @Override
@@ -126,6 +125,7 @@ public class AutonClose2 extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
         // INTAKE (HOLD TO USE)
+        Robot.INSTANCE.setAuton();
         autonCommand.schedule();
 
     }
