@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.JoinedTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Util.Poses;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Pose2D;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.UpperLevel.SwerveDrivetrain;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -41,63 +43,81 @@ public class AutonClose2 extends NextFTCOpMode {
 //            Follower.INSTANCE.turnOnLinear,
 //            Follower.INSTANCE.turnOnHeading,
 
-            Follower.INSTANCE.set(new Pose2D(Distance.fromIn(0),Distance.fromIn(0),Angle.fromDeg(0))),
+            Follower.INSTANCE.set(Poses.closeGoal),
             Follower.INSTANCE.withinRangeLinear(0.5),
-            Follower.INSTANCE.withinRangeHeading(.2)
-//            Launcher.INSTANCE.Launch3(),
-//            Launcher.INSTANCE.setHalfOn,
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
 
-//            Follower.INSTANCE.setLinear(0, -19),
-//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-//
-//            Follower.INSTANCE.setLinear(-34, 0),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-////            Rotary.INSTANCE.rotateRotary,
-//
-//            Follower.INSTANCE.setLinear(34, 19),
-//            Follower.INSTANCE.setHeading(Math.toRadians(140)),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-////            Launcher.INSTANCE.Launch3(),
-////            Launcher.INSTANCE.setHalfOn,
-//
-//            Follower.INSTANCE.setLinear(0, -43),
-//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-//
-//            Follower.INSTANCE.setLinear(-34, 0),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-////            Rotary.INSTANCE.rotateRotary,
-//
-//            Follower.INSTANCE.setLinear(34, 43),
-//            Follower.INSTANCE.setHeading(Math.toRadians(140)),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-////            Launcher.INSTANCE.Launch3(),
-////            Launcher.INSTANCE.setHalfOn,
-//
-//            Follower.INSTANCE.setLinear(0, -67),
-//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-//
-//            Follower.INSTANCE.setLinear(-34, 0),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-////            Rotary.INSTANCE.rotateRotary,
-//
-//            Follower.INSTANCE.setLinear(34, 67),
-//            Follower.INSTANCE.setHeading(Math.toRadians(180)),
-//            Follower.INSTANCE.withinRangeLinear(0.5),
-//            Follower.INSTANCE.withinRangeHeading(.2),
-////            Launcher.INSTANCE.Launch3(),
-//
-//            Intake.INSTANCE.stop
+            Follower.INSTANCE.set(Poses.spike1Start),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Intake.INSTANCE.run,
+
+            Follower.INSTANCE.set(Poses.spike1End),
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Intake.INSTANCE.stop,
+
+            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
+
+            Follower.INSTANCE.set(Poses.spike2Start),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Intake.INSTANCE.run,
+
+            Follower.INSTANCE.set(Poses.spike2End),
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Intake.INSTANCE.stop,
+
+            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
+
+            Follower.INSTANCE.set(Poses.spike3Start),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Intake.INSTANCE.run,
+
+            Follower.INSTANCE.set(Poses.spike3End),
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            new Delay(.5),
+            Rotary.INSTANCE.nextChamber,
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Intake.INSTANCE.stop,
+
+            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.withinRangeLinear(0.5),
+            Follower.INSTANCE.withinRangeHeading(.2),
+            Launcher.INSTANCE.Launch3(),
+            Launcher.INSTANCE.setHalfOn,
+
+
+
+            Intake.INSTANCE.stop
     );
 
     @Override
@@ -112,7 +132,7 @@ public class AutonClose2 extends NextFTCOpMode {
         Follower.INSTANCE.turnOffLinear.schedule();
         Follower.INSTANCE.turnOffHeading.schedule();
 
-        Follower.INSTANCE.setStartingPose(new Pose2D(Distance.fromIn(0),Distance.fromIn(0), Angle.fromDeg(0))).schedule();
+        Follower.INSTANCE.setStartingPose(Poses.closeStart).schedule();
 
     }
 
