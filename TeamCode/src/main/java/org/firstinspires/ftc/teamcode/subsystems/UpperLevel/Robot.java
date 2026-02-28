@@ -5,6 +5,7 @@ import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 
 import org.firstinspires.ftc.teamcode.Util.Timer;
+import org.firstinspires.ftc.teamcode.Util.Vector2D;
 import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Follower;
 import org.firstinspires.ftc.teamcode.subsystems.MidLevel.Intake;
@@ -98,9 +99,9 @@ public class Robot extends SubsystemGroup {
         OuttakeWheel.INSTANCE.targetSpeed = 0;
 
         Gamepads.gamepad2().a().whenBecomesTrue(setTeamColorBlue);
-        Gamepads.gamepad2().b().whenBecomesTrue(setTeamColorRed);
+        Gamepads.gamepad2().y().whenBecomesTrue(setTeamColorRed);
         Gamepads.gamepad1().a().whenBecomesTrue(setTeamColorBlue);
-        Gamepads.gamepad1().b().whenBecomesTrue(setTeamColorRed);
+        Gamepads.gamepad1().y().whenBecomesTrue(setTeamColorRed);
     }
 
     /**
@@ -126,9 +127,7 @@ public class Robot extends SubsystemGroup {
                 .whenBecomesTrue(Intake.INSTANCE.run)
                 .whenBecomesFalse(Intake.INSTANCE.stop);
 
-        Gamepads.gamepad2().a()
-                .whenBecomesTrue(Intake.INSTANCE.run)
-                .whenBecomesFalse(Intake.INSTANCE.stop);
+
 
         // SET HALF ON THE ROTARY AND MAKES SURE FLIPPER IS NOT IN THE WAY
         Gamepads.gamepad1().y().toggleOnBecomesTrue()
@@ -164,17 +163,42 @@ public class Robot extends SubsystemGroup {
         Gamepads.gamepad1().circle().toggleOnBecomesTrue()
                 .whenBecomesTrue(OuttakeFlipper.INSTANCE.setFullOn)
                 .whenBecomesFalse(OuttakeFlipper.INSTANCE.setFullOff);
-        Gamepads.gamepad2().square()
-                .whenBecomesTrue(Odometry.INSTANCE.reset);
+
+        Gamepads.gamepad2().a()
+                .whenBecomesTrue(Intake.INSTANCE.run)
+                .whenBecomesFalse(Intake.INSTANCE.stop)
+                .whenBecomesTrue(Rotary.INSTANCE.setHalfChamberOn)
+                .whenBecomesFalse(Rotary.INSTANCE.setHalfChamberOff);
+
+
+        Gamepads.gamepad2().dpadDown()
+                .whenBecomesTrue(Odometry.INSTANCE.reset)
+                .whenBecomesTrue(Follower.INSTANCE.setStartingPose(0,0,0));
+
         Gamepads.gamepad2().rightBumper()
                 .whenBecomesTrue(() -> teleSlowmode = true);
+
         Gamepads.gamepad2().leftBumper()
                 .whenBecomesTrue(()-> teleSlowmode = false);
 
+        Gamepads.gamepad2().x().whenBecomesTrue(Launcher.INSTANCE.launchGreen);
+        Gamepads.gamepad2().b().whenBecomesTrue(Launcher.INSTANCE.launchPurple);
+        Gamepads.gamepad2().y().whenBecomesTrue(Launcher.INSTANCE.Launch3());
 
-        Gamepads.gamepad2().y().toggleOnBecomesTrue().
+        Gamepads.gamepad2().rightTrigger().greaterThan(0.3)
+                .whenBecomesTrue(OuttakeWheel.INSTANCE.setSpeedHigher);
+
+        Gamepads.gamepad2().leftTrigger().greaterThan(0.3)
+                .whenBecomesTrue(OuttakeWheel.INSTANCE.setSpeedLower);
+
+        Gamepads.gamepad2().dpadUp().toggleOnBecomesTrue().
                 whenBecomesTrue(Follower.INSTANCE.turnOffFieldCentric)
                 .whenBecomesFalse(Follower.INSTANCE.turnOnFieldCentric);
+
+        Gamepads.gamepad2().dpadLeft().whenBecomesTrue(Rotary.INSTANCE.nextChamber);
+        Gamepads.gamepad2().dpadRight().whenBecomesTrue(Rotary.INSTANCE.previousChamber);
+
+
     }
 
 
@@ -183,6 +207,13 @@ public class Robot extends SubsystemGroup {
 
         joinedTelemetry.addData("Team Color Select", "Press A (Or Bottom Button) to select BLUE\nPress Y (Or Top Button) to select RED");
         joinedTelemetry.addData("Current Team Color", Follower.INSTANCE.teamcolor.toString());
+
+//        if(ActiveOpMode.gamepad2().a || ActiveOpMode.gamepad1().a) {
+//            setTeamColorBlue.schedule();
+//        }
+//        if (ActiveOpMode.gamepad2().y || ActiveOpMode.gamepad1().y) {
+//            setTeamColorRed.schedule();
+//        }
 
         loopTimer.reset();
     }
@@ -207,6 +238,7 @@ public class Robot extends SubsystemGroup {
 
 
     public void setAuton() {
+        teleOp = false;
         OuttakeWheel.INSTANCE.targetSpeed = 0;
         swerveDrivetrain = new SwerveDrivetrain();
 
@@ -215,8 +247,8 @@ public class Robot extends SubsystemGroup {
         Follower.INSTANCE.setHeading(0).schedule();
         Follower.INSTANCE.setLinear(0,0).schedule();
 
-        Odometry.INSTANCE.initReal();
-        Odometry.INSTANCE.reset.schedule();
+//        Odometry.INSTANCE.initReal();
+//        Odometry.INSTANCE.reset.schedule();
 //        RotarySubsystem.INSTANCE.reset();
 
     }
@@ -235,13 +267,14 @@ public class Robot extends SubsystemGroup {
         Follower.INSTANCE.teamcolor = color;
     }
 
-    public InstantCommand setTeamColorBlue = new InstantCommand(() -> teamColor = TEAMCOLOR.BLUE);
-    public InstantCommand setTeamColorRed = new InstantCommand(() -> teamColor = TEAMCOLOR.RED);
+    public InstantCommand setTeamColorBlue = new InstantCommand(() -> Follower.INSTANCE.teamcolor = TEAMCOLOR.BLUE);
+    public InstantCommand setTeamColorRed = new InstantCommand(() -> Follower.INSTANCE.teamcolor = TEAMCOLOR.RED);
 
     // Flag to enable/disable telemetry debug output - defaults to disabled
     // When true, periodic() method will output diagnostic information
     // These flags are configured via FTC Dashboard using the @Configurable annotation
     public static boolean isTelemetry = false;
+    public static boolean OdoTelemetry = false;
     public static boolean loopTimeTelemetry = true;
     public static boolean rotaryTelemetry = false;
     public static boolean outtakeTelemetry = false;
@@ -259,10 +292,17 @@ public class Robot extends SubsystemGroup {
     public void periodic() {
 
         if (teleOp) {
-            swerveDrivetrain.simpleRunDrive(
-                    ActiveOpMode.gamepad2().left_stick_x * (teleSlowmode ? 0.5 : 1),
-                    ActiveOpMode.gamepad2().left_stick_y  * (teleSlowmode ? 0.5 : 1),
-                    ActiveOpMode.gamepad2().right_stick_x  * (teleSlowmode ? 0.5 : 1)
+//            swerveDrivetrain.simpleRunDrive(
+//                    -ActiveOpMode.gamepad2().left_stick_x * (teleSlowmode ? 0.5 : 1),
+//                    ActiveOpMode.gamepad2().left_stick_y  * (teleSlowmode ? 0.5 : 1),
+//                    ActiveOpMode.gamepad2().right_stick_x  * (teleSlowmode ? 0.5 : 1)
+//            );
+
+            swerveDrivetrain.runDrive(Follower.INSTANCE.getTeleOpLinear(
+                    -ActiveOpMode.gamepad2().left_stick_x * (teleSlowmode ? 0.5 : 1),
+                    ActiveOpMode.gamepad2().left_stick_y  * (teleSlowmode ? 0.5 : 1)
+            ),
+                    new Vector2D(-ActiveOpMode.gamepad2().right_stick_x  * (teleSlowmode ? 0.5 : 1),0)
             );
         } else {
             Follower.INSTANCE.update(Odometry.INSTANCE.getX(),Odometry.INSTANCE.getY(),Odometry.INSTANCE.getHeading());
@@ -272,7 +312,9 @@ public class Robot extends SubsystemGroup {
 
 
 
-
+        if (OdoTelemetry) {
+            joinedTelemetry.addLine(Odometry.INSTANCE.debugText());
+        }
 
         // Only output debug info if telemetry is enabled
         if(isTelemetry) {

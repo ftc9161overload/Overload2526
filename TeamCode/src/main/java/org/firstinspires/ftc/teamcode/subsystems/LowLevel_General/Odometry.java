@@ -25,7 +25,8 @@ public class Odometry implements Subsystem {
     public void initialize() {
         pinpointDriver = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, UniConstants.PINPOINT);
         pinpointDriver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        pinpointDriver.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        pinpointDriver.setOffsets(178,-178,DistanceUnit.MM);
     }
 
     public void initReal() {
@@ -62,6 +63,11 @@ public class Odometry implements Subsystem {
     @Override
     public void periodic() {
         pinpointDriver.update();
+    }
+
+    public String debugText() {
+        return
+                "ODOMETRY:\n X Pos: " + getX() + "\n Y Pos: " + getY() + "\n Heading: " + getHeading();
     }
 
 

@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Util.Timer;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
 
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.CommandGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
@@ -392,6 +393,7 @@ public class Rotary implements Subsystem {
      * Run this at the start of autonomous to establish absolute position.
      */
     public SequentialGroup home = new SequentialGroup(
+            new Delay(.5),
             findWall(),
             findEdge(),
             finishHoming
@@ -463,6 +465,8 @@ public class Rotary implements Subsystem {
             }
         }
     });
+
+
 
     /**
      * Rotates to whichever chamber contains a PURPLE ball.

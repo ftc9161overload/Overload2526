@@ -114,7 +114,8 @@ public class Launcher extends SubsystemGroup {
      */
     public Command Launch1() {
         return new SequentialGroup(
-                setup(),                                      // Spin up flywheel if needed
+                setup(),// Spin up flywheel if needed
+                setHalfOff,
                 OuttakeWheel.INSTANCE.withinRange(), // Wait for flywheel at speed
                 Rotary.INSTANCE.lock,                // Lock chamber position
                 Rotary.INSTANCE.withinRange(),       // Wait for precise alignment
@@ -126,6 +127,16 @@ public class Launcher extends SubsystemGroup {
                 Rotary.INSTANCE.nextChamber          // Rotate to next chamber
         );
     }
+
+    public Command launchGreen = new InstantCommand(() -> {
+        Rotary.INSTANCE.greenChamber.schedule();
+        Launch1();
+    });
+
+    public Command launchPurple = new InstantCommand(() -> {
+        Rotary.INSTANCE.greenChamber.schedule();
+        Launch1();
+    });
 
     // ========== MULTI-LAUNCH SEQUENCE ==========
 

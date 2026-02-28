@@ -28,10 +28,10 @@ public class SwerveDrivetrain implements Subsystem {
     // ========================================================================
     // These offsets compensate for mechanical variations in servo mounting
 
-    public static int blOffset = 45;      // Back Left servo offset
+    public static int blOffset = 60;      // Back Left servo offset
     public static int brOffset = 2;    // Back Right servo offset
-    public static int flOffset = 143;       // Front Left servo offset
-    public static int frOffset = 39;     // Front Right servo offset
+    public static int flOffset = 148;       // Front Left servo offset
+    public static int frOffset = 36;     // Front Right servo offset
 
 
     // ========================================================================
@@ -131,14 +131,15 @@ public class SwerveDrivetrain implements Subsystem {
         // Back Left pod configuration
         bl.setServoReverse(true);
         bl.setServoMKII();
-        bl.setPDFL(0.5, 0.005, 0, 0.1);
+        bl.setPDFL(0.3, 0.005, 0, 0.05);
+        bl.setErrorMin(0.005);
 
 
         // Front Right pod configuration
         fr.setServoMKII();
         fr.setServoReverse(false);
 //        fr.setPDFL(0.4, 0.005, 0, 0.2);
-        fr.setPDFL(0.3, 0.00, 0, 0.08);
+        fr.setPDFL(0.3, 0.00, 0, 0.05);
         fr.setErrorMin(0.005);
 
         // Front Left pod configuration
@@ -148,7 +149,7 @@ public class SwerveDrivetrain implements Subsystem {
 
         // Back Right pod configuration
         br.setServoReverse(false);
-        br.setPDFL(0.3, 0.005, 0, 0.06);
+        br.setPDFL(0.3, 0.005, 0, 0.05);
         br.setErrorMin(0.005);
 
 

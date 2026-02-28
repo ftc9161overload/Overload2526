@@ -47,7 +47,7 @@ public class AutonClose2 extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Launcher.INSTANCE.Launch3(),
-            Launcher.INSTANCE.setHalfOn,
+//            Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.set(Poses.spike1Start),
             Follower.INSTANCE.withinRangeLinear(0.5),
@@ -109,7 +109,7 @@ public class AutonClose2 extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeHeading(.2),
             Intake.INSTANCE.stop,
 
-            Follower.INSTANCE.set(Poses.closeGoal),
+//            Follower.INSTANCE.set(Poses.closeGoal),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Launcher.INSTANCE.Launch3(),
@@ -138,6 +138,7 @@ public class AutonClose2 extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
+        Robot.INSTANCE.waitForStart();
 
     }
 

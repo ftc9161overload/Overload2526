@@ -17,6 +17,7 @@ import dev.nextftc.core.units.Distance;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 
 /**
@@ -100,7 +101,11 @@ public class Follower implements Subsystem {
     // CONTROLLERS
     // ========================================================================
 
-    public static double pLin = 0.18, dLin  = .01, fLin = 0, lLin = 0.1;
+    public static double
+            pLin = 0.05,//0.18,
+            dLin  = 0,//.01,
+            fLin = 0,
+            lLin = 0.25;
 
     /** PID controller for linear (x,y) movement with feedforward */
     private final PDFLController linearCon = new PDFLController(0.0, 0, 0, 0);
@@ -109,7 +114,11 @@ public class Follower implements Subsystem {
 
     /** PID controller for rotational movement (heading) with feedforward */
 
-    public static double pHead = 0.1, dHead, fHead, lHead = 0.15;
+    public static double
+            pHead = 0.4,//0.1,
+            dHead,
+            fHead,
+            lHead = 0.2;
     private final PDFLControllerRadial headingCon = new PDFLControllerRadial(0.0, 0, 0, 0);
 
 
@@ -121,7 +130,7 @@ public class Follower implements Subsystem {
     private final Distance linearErrorMin = Distance.fromIn(0.25);
 
     /** Minimum heading error before controller output goes to zero */
-    private final Angle headingErrorMin = Angle.fromRad(0.1);
+    private final Angle headingErrorMin = Angle.fromRad(0.04);
 
 
     // ========================================================================
@@ -228,11 +237,14 @@ public class Follower implements Subsystem {
      * so the robot treats startingPose as (0, 0, 0).
      */
     private Pose2D applyStartingOffset(Pose2D raw) {
-        double x = raw.x.inIn + startingPose.x.inIn;
-        double y = raw.y.inIn + startingPose.y.inIn;
-        double heading = normAngle(Angle.fromRad(raw.heading.inRad + startingPose.heading.inRad)).inRad;
-        return new Pose2D(x, y, heading);
+        Vector2D pose = new Vector2D(raw.x.inIn,raw.y.inIn).rotate(startingPose.heading.inRad + Math.toRadians(0));
+        Angle heading = Angle.fromRad(raw.heading.inRad + startingPose.heading.inRad);
+        Pose2D retPose = new Pose2D(pose.x+startingPose.x.inIn,pose.y + startingPose.y.inIn, heading.inRad);
+
+        return  (teamcolor == Robot.TEAMCOLOR.BLUE ? retPose : flipPose(retPose));
     }
+
+
 
     /**
      * Sets the starting pose offset. All subsequent update() calls will be
@@ -536,7 +548,7 @@ public class Follower implements Subsystem {
             linearCon.update(Math.hypot(dx,dy));
             // Return velocity vector pointing toward target
 
-            return new Vector2D(linearCon.runPDFL(linearErrorMin.inIn), 0).rotate(angleToTarget + Math.toRadians(90) - currentPose.heading.inRad);
+            return new Vector2D(linearCon.runPDFL(linearErrorMin.inIn), 0).rotate(angleToTarget + Math.toRadians(180) - currentPose.heading.inRad);
 
         }
         return new Vector2D(0, 0);
