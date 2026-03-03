@@ -17,23 +17,27 @@ public class Poses {
 
     // Robot starts here
     public static Pose2D closeStart = new Pose2D(22.0, 125.0, Math.toRadians(143.5));
+    public static Pose2D startFar = new Pose2D(56.0, 8, Math.toRadians(90));
 
     // First run: drive to goal, shoot, then pick up ring 1
+    public static Pose2D farGoal = new Pose2D(56.0, 13);
+
     public static Pose2D closeGoal       = new Pose2D(45.0, 103.0, Math.toRadians(140));
+
+
     public static Pose2D spike1Start    = new Pose2D(45.0,  84.0, Math.toRadians(180));
-    public static Pose2D spike1End    = new Pose2D(11.0,  84.0, Math.toRadians(180));
+    public static Pose2D spike1End    = new Pose2D(20.0,  84.0, Math.toRadians(180));
 
     // Second run: return to goal, shoot, then pick up ring 2
     // (same goal xy, heading unchanged at 140° on arrival)
     public static Pose2D spike2Start    = new Pose2D(45.0,  60.0, Math.toRadians(180));
-    public static Pose2D spike2End    = new Pose2D(11.0,  60.0, Math.toRadians(180));
+    public static Pose2D spike2End    = new Pose2D(20.0,  60.0, Math.toRadians(180));
 
     // Third run: return to goal, shoot, then pick up ring 3
     public static Pose2D spike3Start    = new Pose2D(45.0,  36.0, Math.toRadians(180));
-    public static Pose2D spike3End    = new Pose2D(11.0,  36.0, Math.toRadians(180));
+    public static Pose2D spike3End    = new Pose2D(20.0,  36.0, Math.toRadians(180));
 
     // -*- Common Starts -*-
-    public static Pose2D startFar = new Pose2D(56.133, 8, Math.toRadians(90));
 
     // Goal
     //public static Pose blueGoal = new Pose(16, Math.toRadians(132));
@@ -41,7 +45,7 @@ public class Poses {
 
     // Base
     public static Pose2D base = new Pose2D(105.203, 33.319, Math.toRadians(90));
-    
+
     /* Gate
     public static Pose2D gateBluePre = new Pose2D(20.571, Math.toRadians(71.123));
     public static Pose2D gateBlue = new Pose2D(15.628, Math.toRadians(71.123));
