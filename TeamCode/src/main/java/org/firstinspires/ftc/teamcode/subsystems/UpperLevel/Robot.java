@@ -199,6 +199,8 @@ public class Robot extends SubsystemGroup {
         Gamepads.gamepad2().dpadRight().whenBecomesTrue(Rotary.INSTANCE.previousChamber);
 
 
+
+        Gamepads.gamepad1().leftStickButton().whenBecomesTrue(Rotary.INSTANCE.home);
     }
 
 

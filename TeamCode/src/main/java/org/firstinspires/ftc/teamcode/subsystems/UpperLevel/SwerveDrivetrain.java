@@ -28,8 +28,8 @@ public class SwerveDrivetrain implements Subsystem {
     // ========================================================================
     // These offsets compensate for mechanical variations in servo mounting
 
-    public static int blOffset = 60;      // Back Left servo offset
-    public static int brOffset = 2;    // Back Right servo offset
+    public static int blOffset = -55;      // Back Left servo offset
+    public static int brOffset = 202;    // Back Right servo offset
     public static int flOffset = 148;       // Front Left servo offset
     public static int frOffset = 36;     // Front Right servo offset
 

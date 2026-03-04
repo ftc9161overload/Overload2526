@@ -92,7 +92,7 @@ public class Rotary implements Subsystem {
     /**
      * Lerp (smoothing) factor for PDFL controller
      */
-    private static final double l = 0.12;
+    private static final double l = 0.14;
 
     /**
      * Current feedforward value (modified by lock/unlock)
@@ -384,7 +384,7 @@ public class Rotary implements Subsystem {
      * Adds 0.16 radians to compensate for edge detection point.
      */
     private final Command finishHoming = new InstantCommand(() -> {
-        offset = currentPosition + 0.16;
+        offset = currentPosition + 0.14;
 
     });
 
@@ -599,7 +599,7 @@ public class Rotary implements Subsystem {
 
         // Calculate control output
         mCon.update(currentPosition);
-        double power = mCon.runPDFL(0.009);
+        double power = mCon.runPDFL(0.02);
 
         // Handle different operating modes
         if (findWall) {

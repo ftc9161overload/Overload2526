@@ -46,7 +46,7 @@ public class AutonClose2 extends NextFTCOpMode {
             Follower.INSTANCE.set(Poses.closeGoal),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
-            Launcher.INSTANCE.Launch3(),
+//            Launcher.INSTANCE.Launch3(),
 //            Launcher.INSTANCE.setHalfOn,
 
             Follower.INSTANCE.set(Poses.spike1Start),

@@ -28,19 +28,19 @@ public class Launcher extends SubsystemGroup {
     // ========== TIMING CONSTANTS ==========
 
     /** Time to wait for flipper to fully extend and launch element (seconds) */
-    private static final double FLIP_DURATION = 0.7;
+    public static final double FLIP_DURATION = 0.5;
 
     /** Time to wait for flipper to retract before next action (seconds) */
-    private static final double RETRACT_DURATION = 0.4;
+    public static final double RETRACT_DURATION = 0.2;
 
     /** Delay between consecutive launches in multi-launch sequence (seconds) */
-    private static final double LAUNCH_DELAY = 0.5;
+    public static final double LAUNCH_DELAY = 0.3;
 
     // ========== CONSTRUCTOR ==========
 
     /**
      * Private constructor enforces singleton pattern.
-     * Registers all child subsystems with the SubsystemGroup.
+     * Reg isters all child subsystems with the SubsystemGroup.
      */
     private Launcher() {
         super(
@@ -124,7 +124,7 @@ public class Launcher extends SubsystemGroup {
                 OuttakeFlipper.INSTANCE.setFullOff,  // Retract flipper
                 new Delay(RETRACT_DURATION),                  // Wait for full retraction
                 Rotary.INSTANCE.unlock,              // Allow rotary motion
-                Rotary.INSTANCE.nextChamber          // Rotate to next chamber
+                Rotary.INSTANCE.previousChamber          // Rotate to next chamber
         );
     }
 
