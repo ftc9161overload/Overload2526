@@ -35,21 +35,23 @@ public class AutonFarRyan extends NextFTCOpMode {
 
     // THIS IS WHERE THE AUTON NEEDS TO BE WRITTEN
     private final Command autonCommand = new SequentialGroup(
-//            Follower.INSTANCE.turnOnLinear,
-//            Follower.INSTANCE.turnOnHeading,
+            Follower.INSTANCE.turnOnLinear,
+            Follower.INSTANCE.turnOnHeading,
 
-            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.setLinear(Poses.farGoal),
+            Follower.INSTANCE.turnToGoal(),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Launcher.INSTANCE.Launch3(),
             Launcher.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.set(Poses.spike1Start),
+
+            Follower.INSTANCE.set(Poses.spike3Start),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Intake.INSTANCE.run,
 
-            Follower.INSTANCE.set(Poses.spike1End),
+            Follower.INSTANCE.set(Poses.spike3End),
             new Delay(.5),
             Rotary.INSTANCE.nextChamber,
             new Delay(.5),
@@ -60,7 +62,7 @@ public class AutonFarRyan extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeHeading(.2),
             Intake.INSTANCE.stop,
 
-            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.set(Poses.farGoal),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Launcher.INSTANCE.Launch3(),
@@ -82,18 +84,19 @@ public class AutonFarRyan extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeHeading(.2),
             Intake.INSTANCE.stop,
 
-            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.set(Poses.farGoal),
+            Follower.INSTANCE.turnToGoal(),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Launcher.INSTANCE.Launch3(),
             Launcher.INSTANCE.setHalfOn,
 
-            Follower.INSTANCE.set(Poses.spike3Start),
+            Follower.INSTANCE.set(Poses.spike1Start),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Intake.INSTANCE.run,
 
-            Follower.INSTANCE.set(Poses.spike3End),
+            Follower.INSTANCE.set(Poses.spike1End),
             new Delay(.5),
             Rotary.INSTANCE.nextChamber,
             new Delay(.5),
@@ -104,7 +107,8 @@ public class AutonFarRyan extends NextFTCOpMode {
             Follower.INSTANCE.withinRangeHeading(.2),
             Intake.INSTANCE.stop,
 
-            Follower.INSTANCE.set(Poses.closeGoal),
+            Follower.INSTANCE.set(Poses.farGoal),
+            Follower.INSTANCE.turnToGoal(),
             Follower.INSTANCE.withinRangeLinear(0.5),
             Follower.INSTANCE.withinRangeHeading(.2),
             Launcher.INSTANCE.Launch3(),

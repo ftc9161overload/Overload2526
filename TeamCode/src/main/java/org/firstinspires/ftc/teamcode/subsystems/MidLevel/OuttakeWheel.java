@@ -7,6 +7,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import org.firstinspires.ftc.teamcode.Util.Lerp;
 import org.firstinspires.ftc.teamcode.Util.PDFLController;
 import org.firstinspires.ftc.teamcode.Util.UniConstants;
+import org.firstinspires.ftc.teamcode.subsystems.LowLevel_General.Pose2D;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -166,6 +167,17 @@ public class OuttakeWheel implements Subsystem {
     public Command turnOff = new InstantCommand(() -> {
         targetSpeed = 0;
     });
+
+    /**
+     * Sets the flywheel target speed.
+     * @param rpm Desired flywheel speed in RPM
+     * @return Command that updates targetSpeed
+     */
+    public Command setTargetSpeed(int rpm) {
+        return new InstantCommand(() -> {
+            targetSpeed = Math.min(Math.max(rpm, 0), MAX_SPEED);
+        });
+    }
 
     // ========== PERIODIC UPDATE ==========
 

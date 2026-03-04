@@ -639,6 +639,23 @@ public class Follower implements Subsystem {
         return goalPose;
     }
 
+    /**
+     * Returns the distance from the robot's current position to the goal position.
+     * Automatically mirrors the goal pose when on RED alliance so the comparison
+     * occurs in the same coordinate frame as currentPose.
+     *
+     * @return Distance to goal
+     */
+    public Distance getDistanceToGoal() {
+
+        // Ensure the goal is in the same frame as currentPose
+        Pose2D goal = (teamcolor == Robot.TEAMCOLOR.RED) ? flipPose(goalPose) : goalPose;
+
+        double dx = goal.x.inIn - currentPose.x.inIn;
+        double dy = goal.y.inIn - currentPose.y.inIn;
+
+        return Distance.fromIn(Math.hypot(dx, dy));
+    }
 
     // ========================================================================
     // PERIODIC UPDATE
